@@ -1,68 +1,25 @@
+import msvcrt
 import sys
-
+from UserStruct import UserStruct
+from GiftStruct import GiftStruct
 import requests
 import time
 import ctypes
 import os
 
 
-class UserStruct:
-    ID = 0
-    name = ""
-    brand= ""
-    level= 0
-    type = 0
-
-    def __init__(self, json=None):
-        if json:
-            self.parse(json)
-
-    def parse(self, json):
-        if "Msg" in json:
-            if "user" in json["Msg"]:
-                self.ID = json["Msg"]['user']['user_id']
-                self.name = json["Msg"]['user']['name']
-                self.type = json["Msg"]['user']['user_type']
-            if "discipulus_info" in json["Msg"]:
-                self.level = json["Msg"]["discipulus_info"]["level"]
-                self.brand = json["Msg"]["discipulus_info"]["discipulus_group_title"]
-        if self.type is None:
-            self.type = 0
-
-    def __str__(self):
-        if self.level == 0:
-            if self.type != 0:
-                return "[]{}".format(self.name)
-            return "{}".format(self.name)
-        else:
-            if self.type != 0:
-                return "[{}{}]{}".format(self.brand, self.level, self.name)
-            return "<{}{}>{}".format(self.brand,self.level,self.name)
+def warning(*args):
+    print(*args)
 
 
-    def __unicode__(self):
-        return self.__str__()
+def debug(*args):
+    # print(args)
+    pass
 
 
-class GiftStruct:
-    ID = 0
-    count = 0
-
-    def __init__(self, json=None):
-        if json:
-            self.parse(json)
-
-    def parse(self, json):
-        if "Msg" in json:
-            if "present_end_info" in json["Msg"]:
-                self.ID = json["Msg"]['present_end_info']['id']
-                self.count = json["Msg"]['present_end_info']['count']
-            elif "present_info" in json["Msg"]:
-                self.ID = json["Msg"]['present_info']['id']
-                self.count = json["Msg"]['present_info']['repeat_count']
 
 
-def readInput(caption, default, timeout=5):
+def readInput(caption, default, timeout:int=5):
     start_time = time.time()
     print('{}({})\r\n>'.format(caption,default), end="")
     input = ''
@@ -73,8 +30,11 @@ def readInput(caption, default, timeout=5):
                 break
             elif ord(chr) == 27:
                 break
-            elif ord(chr) >= 32:  # space_char
-                input += str(chr)
+            elif ord(chr) == 8:
+                if input != "":
+                    input = input[:-1]
+            elif 32 <= ord(chr) <= 126:  # space_char
+                input += chr.decode("utf8")
         if len(input) == 0 and (time.time() - start_time) > timeout:
             break
 
@@ -144,12 +104,11 @@ class XiGuaLiveApi:
     roomInfo = {}
     roomID = 0
     cursor = ""
-    giftList = {10001:"西瓜"}
 
     def __init__(self, room: int):
         self.room = room
         self.updRoomInfo()
-        self.updGiftList()
+        GiftStruct.update(self.roomID)
 
     def notLiveError(self):
         print("主播未开播")
@@ -158,21 +117,12 @@ class XiGuaLiveApi:
         print(msg)
 
     def onPresent(self, user:UserStruct, gift:GiftStruct):
-        if gift.ID not in self.giftList:
-            giftN = "未知礼物：{}".format(gift.ID)
-        else:
-            giftN = self.giftList[gift.ID]
         return
-        print("礼物连击：", user, giftN, "x", gift.count)
+        # print("礼物连击：", user, "的", gift)
 
     def onPresentEnd(self, user:UserStruct, gift:GiftStruct):
-        if gift.ID not in self.giftList:
-            self.updGiftList()
-            giftN = "未知礼物：{}".format(gift.ID)
-        else:
-            giftN = self.giftList[gift.ID]
         set_cmd_text_color(BACKGROUND_WHITE | FOREGROUND_BLACK)
-        print("感谢", user, "送出的", giftN, "x", gift.count)
+        print("感谢", user, "送出的", gift)
         resetColor()
 
     def onAd(self, i):
@@ -218,45 +168,27 @@ class XiGuaLiveApi:
 
     def onLeave(self, json:any):
         print("消息：", "主播离开一小会")
-        self.debug(json)
+        debug(json)
         return
-
-    def updGiftList(self):
-        p = s.get("https://live.ixigua.com/api/gifts/{roomID}".format(roomID=self.roomID))
-        d = p.json()
-        self.debug(d)
-        if "data" not in d:
-            self.warning("Warning: Api Has Changed")
-            return
-        for i in d["data"]:
-            self.debug(i["ID"], i["Name"])
-            self.giftList[i["ID"]] = i["Name"]
-
-    def warning(self, *args):
-        print(args)
-
-    def debug(self, *args):
-        # print(args)
-        pass
 
     def enterRoom(self):
         p = s.post("https://live.ixigua.com/api/room/enter/{roomID}".format(roomID=self.roomID))
-        self.debug(p.json())
+        debug(p.json())
 
     def updRoomInfo(self):
         p = s.get("https://live.ixigua.com/api/room/{room}".format(room=self.room))
         d = p.json()
-        self.debug(d)
+        debug(d)
         if "data" not in d:
             self.apiChangedError("数据结构改变，请与我联系")
-            self.debug(d)
+            debug(d)
             return
         self.roomInfo = d["data"]
         print("进入", self.roomInfo["anchorInfo"]["name"], "的直播间")
         if "Id" in d["data"]:
             self.roomID = d["data"]["Id"]
         else:
-            self.warning("无法获取RoomID，请与我联系")
+            warning("无法获取RoomID，请与我联系")
         if "FinishTime" in d["data"]:
             self.isLive = False
             self.notLiveError()
@@ -270,18 +202,18 @@ class XiGuaLiveApi:
             cursor=self.cursor
         ))
         d = p.json()
-        self.debug(d)
+        debug(d)
         if "data" not in d:
             self.apiChangedError("数据结构改变，请与我联系")
-            self.debug(d)
+            debug(d)
             return
         if "Extra" not in d["data"]:
             self.apiChangedError("数据结构改变，请与我联系")
-            self.debug(d["data"])
+            debug(d["data"])
             return
         if "Cursor" not in d["data"]["Extra"]:
             self.apiChangedError("数据结构改变，请与我联系")
-            self.debug(d["data"])
+            debug(d["data"])
             return
         else:
             self.cursor = d["data"]["Extra"]["Cursor"]
@@ -307,16 +239,21 @@ class XiGuaLiveApi:
             elif i['Method'] == "VideoLiveDiggMessage":
                 self.onLike(UserStruct(i))
             else:
-                self.debug(i)
+                debug(i)
 
 
 if __name__ == "__main__":
     room = 97621754276 #永恒
     # room = 75366565294
     # room = 83940182312 #Dae
+    resetColor()
     if len(sys.argv)>1:
         room = int(sys.argv[1])
-    resetColor()
+    else:
+        try:
+            room = int(readInput("请输入房间号，默认为永恒的直播间", room, 3))
+        except ValueError:
+            pass
     print("西瓜直播弹幕助手 by JerryYan")
     print("正在进入房间", room)
     api = XiGuaLiveApi(room)
@@ -328,7 +265,7 @@ if __name__ == "__main__":
             try:
                 api.getDanmaku()
             except Exception as e:
-                api.warning(e)
+                warning(e)
             time.sleep(1)
         else:
             print("主播未开播，等待1分钟后重试")
