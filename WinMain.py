@@ -109,9 +109,9 @@ class WinMain(Api):
                 return self.getTitle()
             else:
                 if self.roomMember > 0:
-                    return "观看人数:{} 人气:{} --弹幕助手 by JerryYan".format(self.roomMember, self.roomPopularity)
+                    return "观看:{} 人气:{} --弹幕助手 by JerryYan".format(self.roomMember, self.roomPopularity)
                 else:
-                    return "观看人数:待刷新数据 人气:{} --弹幕助手 by JerryYan".format(self.roomPopularity)
+                    return "观看:待刷新 人气:{} --弹幕助手 by JerryYan".format(self.roomPopularity)
 
 
     def onMessage(self, msg: str):
