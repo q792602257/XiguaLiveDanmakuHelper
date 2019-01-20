@@ -42,7 +42,7 @@ class Gift:
             giftN = self.giftList[self.ID]["Name"]
         else:
             giftN = "未知礼物[{}]".format(self.ID)
-        return "感谢 {user} 送出的 {count} 个 {name}".format(user= self.user, count= self.count, name= giftN)
+        return "{user} 送出的 {count} 个 {name}".format(user= self.user, count= self.count, name= giftN)
 
     def __unicode__(self):
         return self.__str__()

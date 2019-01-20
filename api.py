@@ -43,7 +43,7 @@ class XiGuaLiveApi:
         print("礼物连击：", gift)
 
     def onPresentEnd(self, gift: Gift):
-        print("礼物", gift)
+        print("感谢", gift)
 
     def onAd(self, i):
         # print(i)

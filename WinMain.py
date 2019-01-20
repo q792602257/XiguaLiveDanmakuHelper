@@ -146,7 +146,7 @@ class WinMain(Api):
 
     def onPresentEnd(self, gift: Gift):
         set_cmd_text_color(BACKGROUND_WHITE | FOREGROUND_BLACK)
-        print(gift)
+        print("感谢", gift)
         resetColor()
 
     def onLike(self, user: User):
@@ -154,6 +154,7 @@ class WinMain(Api):
 
     def onLeave(self, json: any):
         return
+
 
 def warning(*args):
     print(*args)
