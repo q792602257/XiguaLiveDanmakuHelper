@@ -2,7 +2,7 @@ from User import User
 
 
 class MemberMsg:
-    type:int = -1
+    type:int = 0
     content:str = ""
     user:User = None
 
@@ -23,7 +23,7 @@ class MemberMsg:
             return "{} 被禁言了".format(self.user)
         elif self.type == 4:
             return "{} 被取消禁言了".format(self.user)
-        elif self.type == 0:
+        elif self.type == 1:
             return "{} 进入了房间".format(self.user)
         else:
             return self.content

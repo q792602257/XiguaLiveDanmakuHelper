@@ -42,7 +42,7 @@ class XiGuaLiveApi:
         print(*args)
 
     def onPresent(self, gift: Gift):
-        print("礼物连击：", gift)
+        print("礼物连击 : ", gift)
 
     def onPresentEnd(self, gift: Gift):
         print("感谢", gift)
@@ -121,6 +121,7 @@ class XiGuaLiveApi:
         if "LiveMsgs" not in d["data"]:
             return
         for i in d['data']['LiveMsgs']:
+            print(i)
             if i['Method'] == "VideoLivePresentMessage":
                 self.onPresent(Gift(i))
             elif i['Method'] == "VideoLivePresentEndTipMessage":
