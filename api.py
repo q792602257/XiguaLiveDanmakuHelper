@@ -9,6 +9,7 @@ import time
 
 s = requests.Session()
 
+DEBUG:bool = False
 
 class XiGuaLiveApi:
     isLive: bool = False
@@ -121,7 +122,8 @@ class XiGuaLiveApi:
         if "LiveMsgs" not in d["data"]:
             return
         for i in d['data']['LiveMsgs']:
-            print(i)
+            if DEBUG:
+                print(i)
             if i['Method'] == "VideoLivePresentMessage":
                 self.onPresent(Gift(i))
             elif i['Method'] == "VideoLivePresentEndTipMessage":
@@ -149,6 +151,11 @@ if __name__ == "__main__":
     room = 97621754276  # 永恒
     # room = 75366565294
     # room = 83940182312 #Dae
+    if len(sys.argv) > 1:
+        if sys.argv[-1] == "d":
+            DEBUG = True
+        room = int(sys.argv[1])
+
     print("西瓜直播弹幕助手 by JerryYan")
     api = XiGuaLiveApi(room)
     print("进入", api.roomLiver, "的直播间")
