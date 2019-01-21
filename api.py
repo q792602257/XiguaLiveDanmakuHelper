@@ -154,8 +154,10 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         if sys.argv[-1] == "d":
             DEBUG = True
-        room = int(sys.argv[1])
-
+        try:
+            room = int(sys.argv[1])
+        except ValueError:
+            pass
     print("西瓜直播弹幕助手 by JerryYan")
     api = XiGuaLiveApi(room)
     print("进入", api.roomLiver, "的直播间")
