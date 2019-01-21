@@ -1,4 +1,6 @@
 import sys
+
+from MemberMsg import MemberMsg
 from User import User
 from Gift import Gift
 from Chat import Chat
@@ -52,26 +54,23 @@ class XiGuaLiveApi:
     def onChat(self, chat: Chat):
         print(chat)
 
-    def onEnter(self, user: User, content: str == ""):
-        if content == "":
-            print("消息：", user, "进入直播间")
-        else:
-            print("消息：", content.format(user))
+    def onEnter(self, msg:MemberMsg):
+        print("提示 : ", msg)
 
     def onSubscribe(self, user: User):
-        print("消息：", user, "关注了主播")
+        print("消息 : ", user, "关注了主播")
 
     def onJoin(self, user: User):
         print("感谢", user, "加入了粉丝团")
 
     def onMessage(self, msg: str):
-        print("消息：", msg)
+        print("消息 : ", msg)
 
     def onLike(self, user: User):
         print("用户", user, "点了喜欢")
 
     def onLeave(self, json: any):
-        print("消息：", "主播离开一小会")
+        print("消息 : ", "主播离开一小会")
 
     def _enterRoom(self):
         if not self.isValidRoom:
@@ -132,7 +131,7 @@ class XiGuaLiveApi:
                 self.onChat(Chat(i))
             elif i['Method'] == "VideoLiveMemberMessage":
                 self._updateRoomInfo(i)
-                self.onEnter(User(i), i["Msg"]["content"])
+                self.onEnter(MemberMsg(i))
             elif i['Method'] == "VideoLiveSocialMessage":
                 self.onSubscribe(User(i))
             elif i['Method'] == "VideoLiveJoinDiscipulusMessage":

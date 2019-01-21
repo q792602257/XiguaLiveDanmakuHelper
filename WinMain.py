@@ -3,6 +3,7 @@ import sys
 import time
 
 from Gift import Gift
+from MemberMsg import MemberMsg
 from User import User
 
 from Chat import Chat
@@ -116,7 +117,7 @@ class WinMain(Api):
 
     def onMessage(self, msg: str):
         set_cmd_text_color(FOREGROUND_DARKGRAY)
-        print("消息：", msg)
+        print("消息 : ", msg)
         resetColor()
 
     def onJoin(self, user: User):
@@ -127,15 +128,10 @@ class WinMain(Api):
     def onSubscribe(self, user: User):
         return
 
-    def onEnter(self, user: User, content: str == ""):
-        if content == "":
-            if user.name == "三国空白" or user.name == "四维v":
-                set_cmd_text_color(FOREGROUND_DARKGRAY)
-                print("消息：", user, "进入直播间")
-                resetColor()
-        else:
+    def onEnter(self, msg:MemberMsg):
+        if msg.type != 0:
             set_cmd_text_color(FOREGROUND_DARKGRAY)
-            print("消息：", content.format(user))
+            print("提示 : ", msg)
             resetColor()
 
     def onChat(self, chat: Chat):

@@ -30,7 +30,7 @@ class User:
         if self.level == 0:
             if self.type == 1:
                 return "[房管]{}".format(self.name)
-            elif self.type == 2:
+            elif self.type == 3:
                 return "[主播]{}".format(self.name)
             else:
                 return "{}".format(self.name)
