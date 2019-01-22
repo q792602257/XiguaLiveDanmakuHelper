@@ -28,15 +28,16 @@ class XiGuaLiveApi:
         Gift.update(self.roomID)
         self._enterRoom()
 
-    def notLiveError(self):
-        print("主播未开播")
-
     def _updateRoomInfo(self, json):
         if "Msg" in json:
             if "member_count" in json["Msg"]:
                 self.roomMember = json["Msg"]["member_count"]
             if "popularity" in json["Msg"]:
                 self.roomPopularity = json["Msg"]["popularity"]
+        elif "data" in json:
+            if "popularity" in json["data"]:
+                self.roomPopularity = json["data"]["popularity"]
+
 
     def apiChangedError(self, msg: str, *args):
         print(msg)
@@ -85,22 +86,19 @@ class XiGuaLiveApi:
         if DEBUG:
             print(p.text)
         d = p.json()
-        if "data" not in d:
+        if "data" not in d or "title" not in d["data"] or "id" not in d["data"]:
             self.apiChangedError("无法获取RoomID，请与我联系")
             return
         self.isValidRoom = True
         self._rawRoomInfo = d["data"]
         self.roomLiver = User(d)
-        self.roomTitle = self._rawRoomInfo["title"]
-        if "id" in d["data"]:
-            self.roomID = d["data"]["id"]
-        else:
-            self.apiChangedError("无法获取RoomID，请与我联系")
-        if "FinishTime" in d["data"]:
-            self.isLive = False
-            self.notLiveError()
-        else:
+        self.roomTitle = d["data"]["title"]
+        self.roomID = d["data"]["id"]
+        self._updateRoomInfo(d)
+        if "status" in d["data"] and d["data"]["status"] == 2:
             self.isLive = True
+        else:
+            self.isLive = False
 
     def getDanmaku(self):
         if not self.isValidRoom:
@@ -111,17 +109,15 @@ class XiGuaLiveApi:
             cursor=self._cursor
         ))
         d = p.json()
-        if "data" not in d:
-            self.apiChangedError("数据结构改变，请与我联系", d)
-            return
-        if "Extra" not in d["data"]:
-            self.apiChangedError("数据结构改变，请与我联系", d)
-            return
-        if "Cursor" not in d["data"]["Extra"]:
+        if "data" not in d or "Extra" not in d["data"] or "Cursor" not in d["data"]["Extra"]:
+            if DEBUG:
+                print(d)
             self.apiChangedError("数据结构改变，请与我联系", d)
             return
         else:
             self._cursor = d["data"]["Extra"]["Cursor"]
+            if DEBUG:
+                print("Cursor",self._cursor)
         if "LiveMsgs" not in d["data"]:
             return
         for i in d['data']['LiveMsgs']:

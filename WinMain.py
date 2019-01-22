@@ -11,6 +11,7 @@ from api import XiGuaLiveApi as Api
 import msvcrt
 import ctypes
 
+SHOW_ALL = False
 
 def readInput(caption, default, timeout: int = 5):
     start_time = time.time()
@@ -126,19 +127,26 @@ class WinMain(Api):
         resetColor()
 
     def onSubscribe(self, user: User):
-        return
+        if SHOW_ALL:
+            set_cmd_text_color(FOREGROUND_DARKGRAY)
+            print("用户", user, "关注了主播")
+            resetColor()
 
     def onEnter(self, msg:MemberMsg):
-        if msg.type > 1:
+        if SHOW_ALL:
             set_cmd_text_color(FOREGROUND_DARKGRAY)
-            print("提示 : ", msg)
+            print("提示 :", msg)
             resetColor()
 
     def onChat(self, chat: Chat):
-        print(chat)
+        if SHOW_ALL:
+            print(chat)
 
     def onPresent(self, gift: Gift):
-        return
+        if SHOW_ALL:
+            set_cmd_text_color(FOREGROUND_DARKGRAY)
+            print("连击 :", gift)
+            resetColor()
 
     def onPresentEnd(self, gift: Gift):
         set_cmd_text_color(BACKGROUND_WHITE | FOREGROUND_BLACK)
@@ -146,7 +154,10 @@ class WinMain(Api):
         resetColor()
 
     def onLike(self, user: User):
-        return
+        if SHOW_ALL:
+            set_cmd_text_color(FOREGROUND_DARKGRAY)
+            print("用户", user, "点了喜欢")
+            resetColor()
 
     def onLeave(self, json: any):
         return
@@ -163,10 +174,15 @@ if __name__ == "__main__":
     resetColor()
     print("西瓜直播弹幕助手 by JerryYan")
     if len(sys.argv) > 1:
-        room = int(sys.argv[1])
+        if sys.argv[-1] == "a":
+            SHOW_ALL = True
+        try:
+            room = int(sys.argv[1])
+        except:
+            pass
     else:
         try:
-            room = int(readInput("请输入房间号，默认为永恒的直播间", room, 3))
+            room = int(readInput("请输入用户ID号，默认为永恒的ID号", room, 3))
         except ValueError:
             pass
     api = WinMain(room)
@@ -185,6 +201,8 @@ if __name__ == "__main__":
                 warning(e)
             time.sleep(1)
         else:
+            set_cmd_text_color(FOREGROUND_RED)
             print("主播未开播，等待1分钟后重试")
+            resetColor()
             time.sleep(60)
             api.updRoomInfo()
