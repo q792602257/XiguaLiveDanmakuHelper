@@ -129,7 +129,7 @@ class WinMain(Api):
         return
 
     def onEnter(self, msg:MemberMsg):
-        if msg.type != 0:
+        if msg.type > 1:
             set_cmd_text_color(FOREGROUND_DARKGRAY)
             print("提示 : ", msg)
             resetColor()
