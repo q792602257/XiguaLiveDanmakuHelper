@@ -77,9 +77,13 @@ class XiGuaLiveApi:
         if not self.isValidRoom:
             return
         p = s.post("https://live.ixigua.com/api/room/enter/{roomID}".format(roomID=self.roomID))
+        if DEBUG:
+            print(p.text)
 
     def updRoomInfo(self):
-        p = s.get("https://live.ixigua.com/api/room/{room}".format(room=self.room))
+        p = s.get("https://live.ixigua.com/api/room?anchorId={room}".format(room=self.room))
+        if DEBUG:
+            print(p.text)
         d = p.json()
         if "data" not in d:
             self.apiChangedError("无法获取RoomID，请与我联系")
@@ -87,10 +91,9 @@ class XiGuaLiveApi:
         self.isValidRoom = True
         self._rawRoomInfo = d["data"]
         self.roomLiver = User(d)
-        self.roomTitle = self._rawRoomInfo["Title"]
-        self.roomPopularity = self._rawRoomInfo["Extra2"]["Popularity"]
-        if "Id" in d["data"]:
-            self.roomID = d["data"]["Id"]
+        self.roomTitle = self._rawRoomInfo["title"]
+        if "id" in d["data"]:
+            self.roomID = d["data"]["id"]
         else:
             self.apiChangedError("无法获取RoomID，请与我联系")
         if "FinishTime" in d["data"]:

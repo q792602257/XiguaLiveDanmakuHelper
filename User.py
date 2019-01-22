@@ -14,15 +14,13 @@ class User:
             if "user" in json["Msg"]:
                 self.ID = json["Msg"]['user']['user_id']
                 self.name = json["Msg"]['user']['name']
-                self.type = json["Msg"]['user']['user_type']
             if "discipulus_info" in json["Msg"]:
                 self.level = json["Msg"]["discipulus_info"]["level"]
                 self.brand = json["Msg"]["discipulus_info"]["discipulus_group_title"]
         elif "data" in json:
             if "anchorInfo" in json["data"]:
-                self.ID = json["data"]['anchorInfo']['user_id']
+                self.ID = json["data"]['anchorInfo']['id']
                 self.name = json["data"]['anchorInfo']['name']
-                self.type = 0
         if self.type is None:
             self.type = 0
 
