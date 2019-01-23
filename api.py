@@ -22,7 +22,6 @@ class XiGuaLiveApi:
     roomPopularity: int = 0
     roomMember: int = 0
     _cursor = ""
-    playlist: str = None
 
     def __init__(self, room: int):
         self.room = room
@@ -96,12 +95,6 @@ class XiGuaLiveApi:
         self.roomTitle = d["data"]["title"]
         self.roomID = d["data"]["id"]
         self._updateRoomInfo(d)
-        if "playInfo" not in d["data"] or "Main" not in d["data"]["playInfo"]:
-            if self.playlist is None:
-                self.apiChangedError("无法获取直播链接")
-                self.playlist = False
-        else:
-            self.playlist = d["data"]["playInfo"]["Main"]["1"]["Url"]["HlsUrl"]
         if "status" in d["data"] and d["data"]["status"] == 2:
             self.isLive = True
         else:
@@ -119,7 +112,7 @@ class XiGuaLiveApi:
         if "data" not in d or "Extra" not in d["data"] or "Cursor" not in d["data"]["Extra"]:
             if DEBUG:
                 print(d)
-            self.apiChangedError("数据结构改变，请与我联系", d)
+            self.apiChangedError("数据结构改变，请与我联系")
             return
         else:
             self._cursor = d["data"]["Extra"]["Cursor"]
@@ -127,9 +120,12 @@ class XiGuaLiveApi:
                 print("Cursor", self._cursor)
         if "LiveMsgs" not in d["data"]:
             self.updRoomInfo()
+            return
         for i in d['data']['LiveMsgs']:
             if DEBUG:
                 print(i)
+            if "Method" not in i:
+                continue
             if i['Method'] == "VideoLivePresentMessage":
                 self.onPresent(Gift(i))
             elif i['Method'] == "VideoLivePresentEndTipMessage":
