@@ -23,10 +23,12 @@ class MemberMsg:
             return "{} 被禁言了".format(self.user)
         elif self.type == 4:
             return "{} 被取消禁言了".format(self.user)
+        elif self.type == 5:
+            return "{} 被任命为房管".format(self.user)
         elif self.type == 1:
             return "{} 进入了房间".format(self.user)
         else:
-            return self.content
+            return self.content.format(self.user)
 
     def __unicode__(self):
         return self.__str__()
