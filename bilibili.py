@@ -25,6 +25,7 @@ class VideoPart:
 
 class Bilibili:
     def __init__(self, cookie=None):
+        self.videos = []
         self.session = requests.session()
         if cookie:
             self.session.headers["cookie"] = cookie
@@ -189,6 +190,29 @@ class Bilibili:
         :param no_reprint: (optional) 0=可以转载, 1=禁止转载(default)
         :type no_reprint: int
         """
+        self.preUpload(parts)
+        self.finishUpload(title,tid,tag,desc,source,cover,no_reprint)
+
+    def preUpload(self,parts):
+        """
+        :param parts: e.g. VideoPart('part path', 'part title', 'part desc'), or [VideoPart(...), VideoPart(...)]
+        :type parts: VideoPart or list<VideoPart>
+        :param title: video's title
+        :type title: str
+        :param tid: video type, see: https://member.bilibili.com/x/web/archive/pre
+                                  or https://github.com/uupers/BiliSpider/wiki/%E8%A7%86%E9%A2%91%E5%88%86%E5%8C%BA%E5%AF%B9%E5%BA%94%E8%A1%A8
+        :type tid: int
+        :param tag: video's tag
+        :type tag: list<str>
+        :param desc: video's description
+        :type desc: str
+        :param source: (optional) 转载地址
+        :type source: str
+        :param cover: (optional) cover's URL, use method *cover_up* to get
+        :type cover: str
+        :param no_reprint: (optional) 0=可以转载, 1=禁止转载(default)
+        :type no_reprint: int
+        """
 
         self.session.headers['Content-Type'] = 'application/json; charset=utf-8'
         if not isinstance(parts, list):
@@ -227,7 +251,8 @@ class Bilibili:
             biz_id = json['biz_id']
             chunk_size = json['chunk_size']
             self.session.headers['X-Upos-Auth'] = auth  # add auth header
-            r = self.session.post('https:{}/{}?uploads&output=json'.format(endpoint, upos_uri.replace('upos://', '')))
+            r = self.session.post(
+                'https:{}/{}?uploads&output=json'.format(endpoint, upos_uri.replace('upos://', '')))
             # {"upload_id":"72eb747b9650b8c7995fdb0efbdc2bb6","key":"\/i181012ws2wg1tb7tjzswk2voxrwlk1u.mp4","OK":1,"bucket":"ugc"}
             json = r.json()
             upload_id = json['upload_id']
@@ -244,7 +269,7 @@ class Bilibili:
                                          'partNumber={part_number}&uploadId={upload_id}&chunk={chunk}&chunks={chunks}&size={size}&start={start}&end={end}&total={total}'
                                          .format(endpoint=endpoint,
                                                  upos_uri=upos_uri.replace('upos://', ''),
-                                                 part_number=chunks_index+1,  # starts with 1
+                                                 part_number=chunks_index + 1,  # starts with 1
                                                  upload_id=upload_id,
                                                  chunk=chunks_index,
                                                  chunks=chunks_num,
@@ -255,7 +280,8 @@ class Bilibili:
                                                  ),
                                          chunks_data,
                                          )
-                    print('{} : {}/{}'.format(datetime.strftime(datetime.now(), "%y%m%d %H%M") ,chunks_index, chunks_num), r.text)
+                    print('{} : UPLOAD {}/{}'.format(datetime.strftime(datetime.now(), "%y%m%d %H%M"), chunks_index,
+                                              chunks_num), r.text)
 
                 # NOT DELETE! Refer to https://github.com/comwrg/bilibiliupload/issues/15#issuecomment-424379769
                 self.session.post('https:{endpoint}/{upos_uri}?'
@@ -265,15 +291,23 @@ class Bilibili:
                                           name=filename,
                                           upload_id=upload_id,
                                           biz_id=biz_id,
-                                  ),
-                                  {"parts": [{"partNumber": i, "eTag": "etag"} for i in range(1, chunks_num+1)]},
-                )
+                                          ),
+                                  {"parts": [{"partNumber": i, "eTag": "etag"} for i in range(1, chunks_num + 1)]},
+                                  )
 
-            videos.append({'filename': upos_uri.replace('upos://ugc/', '').split('.')[0],
-                           'title'   : part.title,
-                           'desc'    : part.desc})
+            self.videos.append({'filename': upos_uri.replace('upos://ugc/', '').split('.')[0],
+                           'title': part.title,
+                           'desc': part.desc})
 
-        # if source is empty, copyright=1, else copyright=2
+    def finishUpload(self,
+                     title,
+                     tid,
+                     tag,
+                     desc,
+                     source='',
+                     cover='',
+                     no_reprint=1,
+                     ):
         copyright = 2 if source else 1
         r = self.session.post('https://member.bilibili.com/x/vu/web/add?csrf=' + self.csrf,
                               json={
@@ -287,9 +321,11 @@ class Bilibili:
                                   "cover"     : cover,
                                   "mission_id": 0,
                                   "order_id"  : 0,
-                                  "videos"    : videos}
+                                  "videos"    : self.videos}
                               )
         print(r.text)
+
+
 
     def addChannel(self, name, intro=''):
         """
