@@ -7,6 +7,8 @@
 
 import os
 import re
+from datetime import datetime
+
 import rsa
 import math
 import base64
@@ -253,7 +255,7 @@ class Bilibili:
                                                  ),
                                          chunks_data,
                                          )
-                    print('{}/{}'.format(chunks_index, chunks_num), r.text)
+                    print('{} : {}/{}'.format(datetime.strftime(datetime.now(), "%y%m%d %H%M") ,chunks_index, chunks_num), r.text)
 
                 # NOT DELETE! Refer to https://github.com/comwrg/bilibiliupload/issues/15#issuecomment-424379769
                 self.session.post('https:{endpoint}/{upos_uri}?'
@@ -355,10 +357,3 @@ class Bilibili:
         # {"code":0,"data":{"url":"http://i0.hdslb.com/bfs/archive/67db4a6eae398c309244e74f6e85ae8d813bd7c9.jpg"},"message":"","ttl":1}
         return r.json()['data']['url']
 
-
-def main():
-    pass
-
-
-if __name__ == '__main__':
-    main()
