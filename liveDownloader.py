@@ -69,14 +69,16 @@ class downloader(XiGuaLiveApi):
                     q.put(i)
         self.genNewName()
     def genNewName(self):
-        if len(self.files) > 1000:
+        if len(self.files) > 800:
             q.put(True)
             self.files.clear()
 
 
 def download(path=datetime.strftime(datetime.now(),"%Y%m%d_%H%M.ts")):
+    global isUpload
     print("{} : Download Daemon Starting".format(datetime.strftime(datetime.now(), "%y%m%d %H%M")))
     n = False
+    isUpload = False
     i = q.get()
     while True:
         if isinstance(i, bool):
@@ -95,6 +97,8 @@ def download(path=datetime.strftime(datetime.now(),"%Y%m%d_%H%M.ts")):
     if n:
         uq.put(path)
     print("{} : Download Daemon Quiting".format(datetime.strftime(datetime.now(), "%y%m%d %H%M")))
+    isUpload = True
+
 
 
 def upload(date = datetime.strftime(datetime.now(), "%Y_%m_%d")):
@@ -103,6 +107,7 @@ def upload(date = datetime.strftime(datetime.now(), "%Y_%m_%d")):
     while True:
         if isinstance(i, bool):
             if i is True:
+                print("自动投稿中，请稍后")
                 b.finishUpload("【永恒de草薙直播录播】直播于 {} 自动投递实际测试".format(date),
                                  17, ["永恒de草薙", "三国", "三国战记", "自动投递", "直播", "录播"],
                                  "自动投递实际测试\n原主播：永恒de草薙\n直播时间：晚上6点多到白天6点左右",
@@ -155,14 +160,16 @@ if __name__ == "__main__":
                 ut = threading.Thread(target=upload, args=(d,))
                 ut.setDaemon(True)
                 ut.start()
-            api.preDownload()
-            isUpload = True
+            try:
+                api.preDownload()
+            except:
+                pass
             time.sleep(3)
         else:
             q.put(False)
             if isUpload:
-                print("自动投稿中，请稍后")
                 uq.put(True)
+                isUpload = False
             else:
                 pass
                 # print("主播未开播，等待1分钟后重试")
