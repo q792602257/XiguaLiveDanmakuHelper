@@ -18,8 +18,10 @@ class VideoPart:
         self.title = title
         self.desc = desc
 
+
 class Bilibili:
     def __init__(self, cookie=None):
+        self.files = []
         self.videos = []
         self.session = requests.session()
         if cookie:
@@ -41,12 +43,12 @@ class Bilibili:
         :return: if success return True
                  else return msg json
         """
-        APPKEY    = '1d8b6e7d45233436'
+        APPKEY = '1d8b6e7d45233436'
         ACTIONKEY = 'appkey'
-        BUILD     = 520001
-        DEVICE    = 'android'
-        MOBI_APP  = 'android'
-        PLATFORM  = 'android'
+        BUILD = 520001
+        DEVICE = 'android'
+        MOBI_APP = 'android'
+        PLATFORM = 'android'
         APPSECRET = '560c52ccd288fed045859ed18bffd973'
 
         def md5(s):
@@ -81,9 +83,9 @@ class Bilibili:
             :return: hash, key
             """
             r = self.session.post(
-                    'https://passport.bilibili.com/api/oauth2/getKey',
-                    signed_body({'appkey': APPKEY}),
-                 )
+                'https://passport.bilibili.com/api/oauth2/getKey',
+                signed_body({'appkey': APPKEY}),
+            )
             # {"ts":1544152439,"code":0,"data":{"hash":"99c7573759582e0b","key":"-----BEGIN PUBLIC----- -----END PUBLIC KEY-----\n"}}
             json = r.json()
             data = json['data']
@@ -98,19 +100,19 @@ class Bilibili:
         self.session.headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8'
         h, k = getkey()
         pwd = base64.b64encode(
-                  rsa.encrypt(
-                      (h + pwd).encode('utf-8'),
-                      rsa.PublicKey.load_pkcs1_openssl_pem(k.encode())
-                  )
-              )
+            rsa.encrypt(
+                (h + pwd).encode('utf-8'),
+                rsa.PublicKey.load_pkcs1_openssl_pem(k.encode())
+            )
+        )
         user = parse.quote_plus(user)
-        pwd  = parse.quote_plus(pwd)
+        pwd = parse.quote_plus(pwd)
 
         r = self.session.post(
-                'https://passport.bilibili.com/api/v2/oauth2/login',
-                signed_body('appkey={appkey}&password={password}&username={username}'
-                            .format(appkey=APPKEY, username=user, password=pwd))
-            )
+            'https://passport.bilibili.com/api/v2/oauth2/login',
+            signed_body('appkey={appkey}&password={password}&username={username}'
+                        .format(appkey=APPKEY, username=user, password=pwd))
+        )
         try:
             json = r.json()
         except:
@@ -122,21 +124,20 @@ class Bilibili:
             r = self.session.get('https://passport.bilibili.com/captcha')
             captcha = cnn_captcha(base64.b64encode(r.content))
             r = self.session.post(
-                    'https://passport.bilibili.com/api/v2/oauth2/login',
-                    signed_body('actionKey={actionKey}&appkey={appkey}&build={build}&captcha={captcha}&device={device}'
-                                '&mobi_app={mobi_app}&password={password}&platform={platform}&username={username}'
-                                .format(actionKey=ACTIONKEY,
-                                        appkey=APPKEY,
-                                        build=BUILD,
-                                        captcha=captcha,
-                                        device=DEVICE,
-                                        mobi_app=MOBI_APP,
-                                        password=pwd,
-                                        platform=PLATFORM,
-                                        username=user)),
-                )
+                'https://passport.bilibili.com/api/v2/oauth2/login',
+                signed_body('actionKey={actionKey}&appkey={appkey}&build={build}&captcha={captcha}&device={device}'
+                            '&mobi_app={mobi_app}&password={password}&platform={platform}&username={username}'
+                            .format(actionKey=ACTIONKEY,
+                                    appkey=APPKEY,
+                                    build=BUILD,
+                                    captcha=captcha,
+                                    device=DEVICE,
+                                    mobi_app=MOBI_APP,
+                                    password=pwd,
+                                    platform=PLATFORM,
+                                    username=user)),
+            )
             json = r.json()
-
 
         if json['code'] is not 0:
             return r.text
@@ -153,7 +154,6 @@ class Bilibili:
         self.session.headers['Referer'] = 'https://space.bilibili.com/{mid}/#!/'.format(mid=self.mid)
 
         return True
-
 
     def upload(self,
                parts,
@@ -186,38 +186,23 @@ class Bilibili:
         :type no_reprint: int
         """
         self.preUpload(parts)
-        self.finishUpload(title,tid,tag,desc,source,cover,no_reprint)
+        self.finishUpload(title, tid, tag, desc, source, cover, no_reprint)
 
-    def preUpload(self,parts):
+    def preUpload(self, parts):
         """
         :param parts: e.g. VideoPart('part path', 'part title', 'part desc'), or [VideoPart(...), VideoPart(...)]
         :type parts: VideoPart or list<VideoPart>
-        :param title: video's title
-        :type title: str
-        :param tid: video type, see: https://member.bilibili.com/x/web/archive/pre
-                                  or https://github.com/uupers/BiliSpider/wiki/%E8%A7%86%E9%A2%91%E5%88%86%E5%8C%BA%E5%AF%B9%E5%BA%94%E8%A1%A8
-        :type tid: int
-        :param tag: video's tag
-        :type tag: list<str>
-        :param desc: video's description
-        :type desc: str
-        :param source: (optional) 转载地址
-        :type source: str
-        :param cover: (optional) cover's URL, use method *cover_up* to get
-        :type cover: str
-        :param no_reprint: (optional) 0=可以转载, 1=禁止转载(default)
-        :type no_reprint: int
         """
 
         self.session.headers['Content-Type'] = 'application/json; charset=utf-8'
         if not isinstance(parts, list):
             parts = [parts]
 
-        videos = []
         for part in parts:
             filepath = part.path
             filename = os.path.basename(filepath)
             filesize = os.path.getsize(filepath)
+            self.files.append(part)
             r = self.session.get('https://member.bilibili.com/preupload?'
                                  'os=upos&upcdn=ws&name={name}&size={size}&r=upos&profile=ugcupos%2Fyb&ssl=0'
                                  .format(name=filename, size=filesize))
@@ -276,7 +261,7 @@ class Bilibili:
                                          chunks_data,
                                          )
                     print('{} : UPLOAD {}/{}'.format(datetime.strftime(datetime.now(), "%y%m%d %H%M"), chunks_index,
-                                              chunks_num), r.text)
+                                                     chunks_num), r.text)
 
                 # NOT DELETE! Refer to https://github.com/comwrg/bilibiliupload/issues/15#issuecomment-424379769
                 self.session.post('https:{endpoint}/{upos_uri}?'
@@ -291,8 +276,8 @@ class Bilibili:
                                   )
 
             self.videos.append({'filename': upos_uri.replace('upos://ugc/', '').split('.')[0],
-                           'title': part.title,
-                           'desc': part.desc})
+                                'title': part.title,
+                                'desc': part.desc})
 
     def finishUpload(self,
                      title,
@@ -303,26 +288,142 @@ class Bilibili:
                      cover='',
                      no_reprint=1,
                      ):
+        """
+        :param title: video's title
+        :type title: str
+        :param tid: video type, see: https://member.bilibili.com/x/web/archive/pre
+                                  or https://github.com/uupers/BiliSpider/wiki/%E8%A7%86%E9%A2%91%E5%88%86%E5%8C%BA%E5%AF%B9%E5%BA%94%E8%A1%A8
+        :type tid: int
+        :param tag: video's tag
+        :type tag: list<str>
+        :param desc: video's description
+        :type desc: str
+        :param source: (optional) 转载地址
+        :type source: str
+        :param cover: (optional) cover's URL, use method *cover_up* to get
+        :type cover: str
+        :param no_reprint: (optional) 0=可以转载, 1=禁止转载(default)
+        :type no_reprint: int
+        """
+        self.session.headers['Content-Type'] = 'application/json; charset=utf-8'
         copyright = 2 if source else 1
         r = self.session.post('https://member.bilibili.com/x/vu/web/add?csrf=' + self.csrf,
                               json={
-                                  "copyright" : copyright,
-                                  "source"    : source,
-                                  "title"     : title,
-                                  "tid"       : tid,
-                                  "tag"       : ','.join(tag),
+                                  "copyright": copyright,
+                                  "source": source,
+                                  "title": title,
+                                  "tid": tid,
+                                  "tag": ','.join(tag),
                                   "no_reprint": no_reprint,
-                                  "desc"      : desc,
-                                  "cover"     : cover,
+                                  "desc": desc,
+                                  "cover": cover,
                                   "mission_id": 0,
-                                  "order_id"  : 0,
-                                  "videos"    : self.videos}
+                                  "order_id": 0,
+                                  "videos": self.videos}
                               )
         print(r.text)
-        for _p in self.videos:
+        for _p in self.files:
             os.remove(_p.path)
 
+    def appendUpload(self,
+                     aid,
+                     parts,
+                     title="",
+                     tid="",
+                     tag="",
+                     desc="",
+                     source='',
+                     cover='',
+                     no_reprint=1,
+                     ):
+        """
+        :param aid: just aid
+        :type aid: int
+        :param parts: e.g. VideoPart('part path', 'part title', 'part desc'), or [VideoPart(...), VideoPart(...)]
+        :type parts: VideoPart or list<VideoPart>
+        :param title: video's title
+        :type title: str
+        :param tid: video type, see: https://member.bilibili.com/x/web/archive/pre
+                                  or https://github.com/uupers/BiliSpider/wiki/%E8%A7%86%E9%A2%91%E5%88%86%E5%8C%BA%E5%AF%B9%E5%BA%94%E8%A1%A8
+        :type tid: int
+        :param tag: video's tag
+        :type tag: list<str>
+        :param desc: video's description
+        :type desc: str
+        :param source: (optional) 转载地址
+        :type source: str
+        :param cover: (optional) cover's URL, use method *cover_up* to get
+        :type cover: str
+        :param no_reprint: (optional) 0=可以转载, 1=禁止转载(default)
+        :type no_reprint: int
+        """
+        self.session.headers['Content-Type'] = 'application/json; charset=utf-8'
+        p = self.session.get("https://member.bilibili.com/x/web/archive/view?aid={}&history=".format(aid))
+        j = p.json()
+        if len(self.videos) == 0:
+            for i in j['data']['videos']:
+                self.videos.append({'filename': i['filename'],
+                                    'title': i["title"],
+                                    'desc': i["desc"]})
+        if (title == ""): title = j["data"]["archive"]['title']
+        if (tag == ""): tag = j["data"]["archive"]['tag']
+        if (no_reprint == ""): no_reprint = j["data"]["archive"]['no_reprint']
+        if (desc == ""): desc = j["data"]["archive"]['desc']
+        if (source == ""): source = j["data"]["archive"]['source']
+        if (tid == ""): tid = j["data"]["archive"]['tid']
+        self.preUpload(parts)
+        self.editUpload(aid, title, tid, tag, desc, source, cover, no_reprint)
 
+    def editUpload(self,
+                   aid,
+                   title,
+                   tid,
+                   tag,
+                   desc,
+                   source='',
+                   cover='',
+                   no_reprint=1,
+                   ):
+        """
+        :param aid: just aid
+        :type aid: int
+        :param parts: e.g. VideoPart('part path', 'part title', 'part desc'), or [VideoPart(...), VideoPart(...)]
+        :type parts: VideoPart or list<VideoPart>
+        :param title: video's title
+        :type title: str
+        :param tid: video type, see: https://member.bilibili.com/x/web/archive/pre
+                                  or https://github.com/uupers/BiliSpider/wiki/%E8%A7%86%E9%A2%91%E5%88%86%E5%8C%BA%E5%AF%B9%E5%BA%94%E8%A1%A8
+        :type tid: int
+        :param tag: video's tag
+        :type tag: list<str>
+        :param desc: video's description
+        :type desc: str
+        :param source: (optional) 转载地址
+        :type source: str
+        :param cover: (optional) cover's URL, use method *cover_up* to get
+        :type cover: str
+        :param no_reprint: (optional) 0=可以转载, 1=禁止转载(default)
+        :type no_reprint: int
+        """
+        copyright = 2 if source else 1
+        r = self.session.post('https://member.bilibili.com/x/vu/web/edit?csrf=' + self.csrf,
+                              json={
+                                  "aid": aid,
+                                  "copyright": copyright,
+                                  "source": source,
+                                  "title": title,
+                                  "tid": tid,
+                                  "tag": ','.join(tag),
+                                  "no_reprint": no_reprint,
+                                  "desc": desc,
+                                  "cover": cover,
+                                  "mission_id": 0,
+                                  "order_id": 0,
+                                  "videos": self.videos}
+                              )
+        print(r.text)
+        for _p in self.files:
+            os.remove(_p.path)
 
     def addChannel(self, name, intro=''):
         """
@@ -333,14 +434,14 @@ class Bilibili:
         :type intro: str
         """
         r = self.session.post(
-                url='https://space.bilibili.com/ajax/channel/addChannel',
-                data={
-                    'name' : name,
-                    'intro': intro,
-                    'aids' : '',
-                    'csrf' : self.csrf,
-                },
-                # name=123&intro=123&aids=&csrf=565d7ed17cef2cc8ad054210c4e64324&_=1497077610768
+            url='https://space.bilibili.com/ajax/channel/addChannel',
+            data={
+                'name': name,
+                'intro': intro,
+                'aids': '',
+                'csrf': self.csrf,
+            },
+            # name=123&intro=123&aids=&csrf=565d7ed17cef2cc8ad054210c4e64324&_=1497077610768
 
         )
         # return
@@ -357,13 +458,13 @@ class Bilibili:
         """
 
         r = self.session.post(
-                url='https://space.bilibili.com/ajax/channel/addVideo',
-                data={
-                    'aids': '%2C'.join(aids),
-                    'cid' : cid,
-                    'csrf': self.csrf
-                }
-                # aids=9953555%2C9872953&cid=15814&csrf=565d7ed17cef2cc8ad054210c4e64324&_=1497079332679
+            url='https://space.bilibili.com/ajax/channel/addVideo',
+            data={
+                'aids': '%2C'.join(aids),
+                'cid': cid,
+                'csrf': self.csrf
+            }
+            # aids=9953555%2C9872953&cid=15814&csrf=565d7ed17cef2cc8ad054210c4e64324&_=1497079332679
         )
         print(r.json())
 
@@ -380,13 +481,12 @@ class Bilibili:
         else:
             f = img
         r = self.session.post(
-                url='https://member.bilibili.com/x/vu/web/cover/up',
-                data={
-                    'cover': b'data:image/jpeg;base64,' + (base64.b64encode(f.read())),
-                    'csrf': self.csrf,
-                }
+            url='https://member.bilibili.com/x/vu/web/cover/up',
+            data={
+                'cover': b'data:image/jpeg;base64,' + (base64.b64encode(f.read())),
+                'csrf': self.csrf,
+            }
         )
         # print(r.text)
         # {"code":0,"data":{"url":"http://i0.hdslb.com/bfs/archive/67db4a6eae398c309244e74f6e85ae8d813bd7c9.jpg"},"message":"","ttl":1}
         return r.json()['data']['url']
-
