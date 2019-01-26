@@ -1,9 +1,4 @@
 # coding=utf-8
-"""
-:author: comwrg
-:license: MIT
-:time: 2017/06/09
-"""
 
 import os
 import re
@@ -324,6 +319,8 @@ class Bilibili:
                                   "videos"    : self.videos}
                               )
         print(r.text)
+        for _p in self.videos:
+            os.remove(_p.path)
 
 
 
