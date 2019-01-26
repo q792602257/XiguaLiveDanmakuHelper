@@ -1,18 +1,16 @@
 import sys
 import time
 from datetime import datetime
-import dotenv
 import m3u8
 import queue
 import threading
-
+from config import config
 from api import XiGuaLiveApi
 from bilibili import *
 
 q = queue.Queue()
 base_uri = ""
 isUpload = False
-env = dotenv.main.DotEnv(".env")
 uq = queue.Queue()
 d = datetime.strftime(datetime.now(),"%Y_%m_%d")
 
@@ -108,10 +106,8 @@ def upload(date = datetime.strftime(datetime.now(), "%Y_%m_%d")):
         if isinstance(i, bool):
             if i is True:
                 print("自动投稿中，请稍后")
-                b.finishUpload("【永恒de草薙直播录播】直播于 {} 自动投递实际测试".format(date),
-                                 17, ["永恒de草薙", "三国", "三国战记", "自动投递", "直播", "录播"],
-                                 "自动投递实际测试\n原主播：永恒de草薙\n直播时间：晚上6点多到白天6点左右",
-                                 source= "https://live.ixigua.com/userlive/97621754276", no_reprint= 0)
+                b.finishUpload(config["t_t"].format(date),17, config["tag"],config["des"],
+                               source= "https://live.ixigua.com/userlive/97621754276", no_reprint= 0)
             print("{} : Upload Daemon Receive Command {}".format(datetime.strftime(datetime.now(), "%y%m%d %H%M"), i))
             break
         print("{} : Upload {}".format(datetime.strftime(datetime.now(), "%y%m%d %H%M"), i))
@@ -124,7 +120,7 @@ def upload(date = datetime.strftime(datetime.now(), "%Y_%m_%d")):
 
 
 b = Bilibili()
-b.login(env.get("b_u"), env.get("b_p"))
+b.login(config["b_u"], config["b_p"])
 
 if __name__ == "__main__":
     room = 97621754276  # 永恒
