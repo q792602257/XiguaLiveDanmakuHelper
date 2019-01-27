@@ -150,9 +150,9 @@ class XiGuaLiveApi:
 
 
 if __name__ == "__main__":
-    # room = 97621754276  # 永恒
+    room = 97621754276  # 永恒
     # room = 75366565294
-    room = 83940182312 #Dae
+    # room = 83940182312 #Dae
     if len(sys.argv) > 1:
         if sys.argv[-1] == "d":
             DEBUG = True
