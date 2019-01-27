@@ -44,7 +44,7 @@ class XiGuaLiveApi:
         print(*args)
 
     def onPresent(self, gift: Gift):
-        print("礼物连击 : ", gift)
+        print("礼物连击 :", gift)
 
     def onPresentEnd(self, gift: Gift):
         print("感谢", gift)
@@ -57,22 +57,22 @@ class XiGuaLiveApi:
         print(chat)
 
     def onEnter(self, msg: MemberMsg):
-        print("提示 : ", msg)
+        print("提示 :", msg)
 
     def onSubscribe(self, user: User):
-        print("消息 : ", user, "关注了主播")
+        print("消息 :", user, "关注了主播")
 
     def onJoin(self, user: User):
         print("感谢", user, "加入了粉丝团")
 
     def onMessage(self, msg: str):
-        print("消息 : ", msg)
+        print("消息 :", msg)
 
     def onLike(self, user: User):
         print("用户", user, "点了喜欢")
 
     def onLeave(self, json: any):
-        print("消息 : ", "主播离开一小会")
+        print("消息 :", "主播离开一小会")
 
     def _enterRoom(self):
         if not self.isValidRoom:
@@ -150,9 +150,9 @@ class XiGuaLiveApi:
 
 
 if __name__ == "__main__":
-    room = 97621754276  # 永恒
+    # room = 97621754276  # 永恒
     # room = 75366565294
-    # room = 83940182312 #Dae
+    room = 83940182312 #Dae
     if len(sys.argv) > 1:
         if sys.argv[-1] == "d":
             DEBUG = True
