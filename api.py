@@ -155,7 +155,10 @@ if __name__ == "__main__":
     room = 97621754276  # 永恒
     # room = 75366565294
     # room = 83940182312 #Dae
+<<<<<<< HEAD
     # room = 58649240617 #ll
+=======
+>>>>>>> f7727a3c3962342c753890954a25cbe05c113cf9
     if len(sys.argv) > 1:
         if sys.argv[-1] == "d":
             DEBUG = True
