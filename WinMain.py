@@ -104,17 +104,13 @@ class WinMain(Api):
         if self._tmp > 10:
             self._tmp = 0
         if self._tmp < 5 :
-            return "{} {} --弹幕助手 by JerryYan".format(self.roomLiver, "的直播间")
+            return "{} 的直播间 --弹幕助手 by JerryYan".format(self.roomLiver)
         else:
             if self.roomPopularity == 0:
                 self._tmp = 0
                 return self.getTitle()
             else:
-                if self.roomMember > 0:
-                    return "观看:{} 人气:{} --弹幕助手 by JerryYan".format(self.roomMember, self.roomPopularity)
-                else:
-                    return "观看:待刷新 人气:{} --弹幕助手 by JerryYan".format(self.roomPopularity)
-
+                return "人气:{} --弹幕助手 by JerryYan".format(self.roomPopularity)
 
     def onMessage(self, msg: str):
         set_cmd_text_color(FOREGROUND_DARKGRAY)

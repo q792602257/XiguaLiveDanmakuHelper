@@ -21,7 +21,7 @@ class XiGuaLiveApi:
     roomLiver: User = None
     roomPopularity: int = 0
     roomMember: int = 0
-    _cursor = ""
+    _cursor:str = "0"
 
     def __init__(self, room: int):
         self.room = room
@@ -30,11 +30,9 @@ class XiGuaLiveApi:
         self._enterRoom()
 
     def _updateRoomInfo(self, json):
-        if "Msg" in json:
-            if "member_count" in json["Msg"]:
-                self.roomMember = json["Msg"]["member_count"]
-            if "popularity" in json["Msg"]:
-                self.roomPopularity = json["Msg"]["popularity"]
+        if "extra" in json:
+            if "member_count" in json["extra"] and json["extra"]["member_count"] > 0:
+                self.roomPopularity = json["extra"]["member_count"]
         elif "data" in json:
             if "popularity" in json["data"]:
                 self.roomPopularity = json["data"]["popularity"]
@@ -77,7 +75,11 @@ class XiGuaLiveApi:
     def _enterRoom(self):
         if not self.isValidRoom:
             return
-        p = s.post("https://live.ixigua.com/api/room/enter/{roomID}".format(roomID=self.roomID))
+        p = s.post("https://i.snssdk.com/videolive/room/enter&version_code=730"
+                   "&device_platform=android",
+                   data="room_id={roomID}&version_code=730"
+                   "&device_platform=android".format(roomID=self.roomID),
+                   headers={"Content-Type":"application/x-www-form-urlencoded"})
         if DEBUG:
             print(p.text)
 
@@ -103,56 +105,57 @@ class XiGuaLiveApi:
     def getDanmaku(self):
         if not self.isValidRoom:
             return
-        p = s.get("https://live.ixigua.com/api/msg/list/{roomID}?AnchorID={room}&Cursor={cursor}".format(
-            roomID=self.roomID,
-            room=self.room,
-            cursor=self._cursor
-        ))
+        p = s.get("https://i.snssdk.com/videolive/im/get_msg?cursor={cursor}&room_id={roomID}&version_code=730"
+                  "&device_platform=android".format(
+                      roomID=self.roomID,
+                      cursor=self._cursor
+                  ))
         d = p.json()
-        if "data" not in d or "Extra" not in d["data"] or "Cursor" not in d["data"]["Extra"]:
+        if "data" not in d or "extra" not in d or "cursor" not in d["extra"]:
             if DEBUG:
                 print(d)
             self.apiChangedError("数据结构改变，请与我联系")
             return
         else:
-            self._cursor = d["data"]["Extra"]["Cursor"]
+            self._cursor = d["extra"]["cursor"]
             if DEBUG:
                 print("Cursor", self._cursor)
-        if "LiveMsgs" not in d["data"]:
+        if len(d['data']) == 0:
             self.updRoomInfo()
             return
-        for i in d['data']['LiveMsgs']:
+        for i in d['data']:
             if DEBUG:
                 print(i)
-            if "Method" not in i:
+            if "common" not in i and "method" not in i["common"]:
                 continue
-            if i['Method'] == "VideoLivePresentMessage":
+            if i["common"]['method'] == "VideoLivePresentMessage":
                 self.onPresent(Gift(i))
-            elif i['Method'] == "VideoLivePresentEndTipMessage":
+            elif i["common"]['method'] == "VideoLivePresentEndTipMessage":
                 self.onPresentEnd(Gift(i))
-            elif i['Method'] == "VideoLiveRoomAdMessage":
+            elif i["common"]['method'] == "VideoLiveRoomAdMessage":
                 self.onAd(i)
-            elif i['Method'] == "VideoLiveChatMessage":
+            elif i["common"]['method'] == "VideoLiveChatMessage":
                 self.onChat(Chat(i))
-            elif i['Method'] == "VideoLiveMemberMessage":
+            elif i["common"]['method'] == "VideoLiveMemberMessage":
                 self._updateRoomInfo(i)
                 self.onEnter(MemberMsg(i))
-            elif i['Method'] == "VideoLiveSocialMessage":
+            elif i["common"]['method'] == "VideoLiveSocialMessage":
                 self.onSubscribe(User(i))
-            elif i['Method'] == "VideoLiveJoinDiscipulusMessage":
+            elif i["common"]['method'] == "VideoLiveJoinDiscipulusMessage":
                 self.onJoin(User(i))
-            elif i['Method'] == "VideoLiveControlMessage":
+            elif i["common"]['method'] == "VideoLiveControlMessage":
                 print("消息：", "主播离开一小会")
-            elif i['Method'] == "VideoLiveDiggMessage":
+            elif i["common"]['method'] == "VideoLiveDiggMessage":
                 self.onLike(User(i))
             else:
                 pass
 
 
 if __name__ == "__main__":
-    # room = 97621754276  # 永恒
+    room = 97621754276  # 永恒
     # room = 75366565294
-    room = 83940182312 #Dae
+    # room = 83940182312 #Dae
+    # room = 58649240617 #ll
     if len(sys.argv) > 1:
         if sys.argv[-1] == "d":
             DEBUG = True

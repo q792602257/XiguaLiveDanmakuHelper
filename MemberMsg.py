@@ -12,11 +12,11 @@ class MemberMsg:
 
     def parse(self, json):
         self.user = User(json)
-        if "Msg" in json:
-            if "action" in json["Msg"]:
-                self.type = json["Msg"]['action']
-            elif "content" in json["Msg"]:
-                self.content = json["Msg"]['content']
+        if "extra" in json:
+            if "action" in json["extra"]:
+                self.type = json["extra"]['action']
+            elif "content" in json["extra"]:
+                self.content = json["extra"]['content']
 
     def __str__(self):
         if self.type == 3:
@@ -28,6 +28,7 @@ class MemberMsg:
         elif self.type == 1:
             return "{} 进入了房间".format(self.user)
         else:
+            print(self.type)
             return self.content.format(self.user)
 
     def __unicode__(self):

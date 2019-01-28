@@ -2,8 +2,8 @@ from User import User
 
 class Chat:
 
-    content:str=""
-    user:User=None
+    content: str =""
+    user:    User=None
 
     def __init__(self, json=None):
         if json:
@@ -11,9 +11,9 @@ class Chat:
 
     def parse(self, json):
         self.user = User(json)
-        if "Msg" in json:
-            if "content" in json["Msg"]:
-                self.content = json["Msg"]['content']
+        if "extra" in json:
+            if "content" in json["extra"]:
+                self.content = json["extra"]['content']
 
     def __str__(self):
         return "{} : {}".format(self.user,self.content)
