@@ -83,6 +83,19 @@ class XiGuaLiveApi:
         if DEBUG:
             print(p.text)
 
+    def searchLive(self, keyword):
+        ret = []
+        p = s.get("https://security.snssdk.com/video/app/search/live/?version_code=730&device_platform=android"
+              "&format=json&keyword={}".format(keyword))
+        d = p.json()
+        if "data" not in d:
+            for i in d["data"]:
+                if i["block_type"] != 2:
+                    continue
+                for _i in i["cells"]:
+                    ret.append(_i["room"])
+        return ret
+
     def updRoomInfo(self):
         p = s.get("https://live.ixigua.com/api/room?anchorId={room}".format(room=self.room))
         if DEBUG:
@@ -105,8 +118,8 @@ class XiGuaLiveApi:
     def getDanmaku(self):
         if not self.isValidRoom:
             return
-        p = s.get("https://i.snssdk.com/videolive/im/get_msg?cursor={cursor}&room_id={roomID}&version_code=730"
-                  "&device_platform=android".format(
+        p = s.get("https://i.snssdk.com/videolive/im/get_msg?cursor={cursor}&room_id={roomID}"
+                  "&version_code=730&device_platform=android".format(
                       roomID=self.roomID,
                       cursor=self._cursor
                   ))
@@ -155,10 +168,6 @@ if __name__ == "__main__":
     room = 97621754276  # 永恒
     # room = 75366565294
     # room = 83940182312 #Dae
-<<<<<<< HEAD
-    # room = 58649240617 #ll
-=======
->>>>>>> f7727a3c3962342c753890954a25cbe05c113cf9
     if len(sys.argv) > 1:
         if sys.argv[-1] == "d":
             DEBUG = True
