@@ -3,9 +3,9 @@ import sys
 import time
 
 from Gift import Gift
+from Lottery import Lottery
 from MemberMsg import MemberMsg
 from User import User
-
 from Chat import Chat
 from api import XiGuaLiveApi as Api
 import msvcrt
@@ -136,7 +136,14 @@ class WinMain(Api):
 
     def onChat(self, chat: Chat):
         if SHOW_ALL:
-            print(chat)
+            resetColor()
+            if not chat.isFiltered:
+                print(chat)
+
+    def onLottery(self, i:Lottery):
+        set_cmd_text_color(FOREGROUND_WHITE | BACKGROUND_DARKGRAY)
+        print(i)
+        resetColor()
 
     def onPresent(self, gift: Gift):
         if SHOW_ALL:
@@ -164,7 +171,7 @@ def warning(*args):
 
 
 if __name__ == "__main__":
-    room = 97621754276  # 永恒
+    room = 6651493149011086094  # 永恒
     # room = 75366565294
     # room = 83940182312 #Dae
     resetColor()
@@ -178,7 +185,7 @@ if __name__ == "__main__":
             pass
     else:
         try:
-            room = int(readInput("请输入用户ID号，默认为永恒的ID号", room, 3))
+            room = int(readInput("请输入房间号，默认为永恒的房间号", room, 3))
         except ValueError:
             pass
     api = WinMain(room)
@@ -190,11 +197,8 @@ if __name__ == "__main__":
     print("=" * 30)
     while True:
         if api.isLive:
-            try:
-                os.system("title {}".format(api.getTitle()))
-                api.getDanmaku()
-            except Exception as e:
-                warning(e)
+            os.system("title {}".format(api.getTitle()))
+            api.getDanmaku()
             time.sleep(1)
         else:
             set_cmd_text_color(FOREGROUND_RED)

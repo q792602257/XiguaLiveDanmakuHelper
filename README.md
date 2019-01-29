@@ -4,10 +4,11 @@
 界面版：[q792602257/XiguaDanmakuHelperGUI](https://github.com/q792602257/XiguaDanmakuHelperGUI "C# ver")
 
 ### 计划更新：
++ Digg消息（点亮了喜欢）实例化
 + √ ~~使用android app协议~~
 
         已使用
-        除从用户ID获取roomID及判断是否在播外，其他均改为Android Api
+        除从用户ID获取roomID外，其他均改为Android Api
 
 + √ ~~闲的无聊的时候看一看有没有好用的GUI轮子可以用用~~
 

@@ -28,7 +28,8 @@ class MemberMsg:
         elif self.type == 1:
             return "{} 进入了房间".format(self.user)
         else:
-            print(self.type)
+            if self.content == "":
+                return "未知消息{} 关于用户 {}".format(self.type, self.user)
             return self.content.format(self.user)
 
     def __unicode__(self):

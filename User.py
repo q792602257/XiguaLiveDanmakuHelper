@@ -23,10 +23,10 @@ class User:
                 self.type = json["extra"]["user_room_auth_status"]["user_type"]
                 self.block = json["extra"]["user_room_auth_status"]["is_block"]
                 self.mute = json["extra"]["user_room_auth_status"]["is_silence"]
-        elif "data" in json:
-            if "anchorInfo" in json["data"]:
-                self.ID = json["data"]['anchorInfo']['id']
-                self.name = json["data"]['anchorInfo']['name']
+        elif "room" in json:
+            if "user_info" in json["room"]:
+                self.ID = json["room"]['user_info']['user_id']
+                self.name = json["room"]['user_info']['name']
         if self.type is None:
             self.type = 0
         if isinstance(self.level, str):

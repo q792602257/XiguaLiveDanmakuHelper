@@ -23,12 +23,13 @@ class downloader(XiGuaLiveApi):
         self.updPlayList()
 
     def updPlayList(self):
-        if "playInfo" not in self._rawRoomInfo or "Main" not in self._rawRoomInfo["playInfo"]:
+        if "stream_url" not in self._rawRoomInfo:
             if self.playlist is None:
                 self.apiChangedError("无法获取直播链接")
                 self.playlist = False
         else:
-            self.playlist = self._rawRoomInfo["playInfo"]["Main"]["1"]["Url"]["HlsUrl"]
+            self.playlist = self._rawRoomInfo["stream_url"]["alternate_pull_url"]
+            self.playlist = self.playlist.replace("_uhd","").replace("_sd","").replace("_ld","")
 
     def onLike(self, user):
         pass
@@ -119,7 +120,7 @@ def upload(date=datetime.strftime(datetime.now(), "%Y_%m_%d")):
             if i is True:
                 print("自动投稿中，请稍后")
                 b.finishUpload(config["t_t"].format(date), 17, config["tag"], config["des"],
-                               source="https://live.ixigua.com/userlive/97621754276", no_reprint=0)
+                               source=config["src"], no_reprint=0)
             break
         print("{} : Upload {}".format(datetime.strftime(datetime.now(), "%y%m%d %H%M"), i))
         try:
@@ -134,7 +135,7 @@ b = Bilibili()
 b.login(config["b_u"], config["b_p"])
 
 if __name__ == "__main__":
-    room = 97621754276  # 永恒
+    room = 6651493149011086094  # 永恒
     # room = 75366565294
     # room = 83940182312 #Dae
     # room = 5947850784 #⑦
@@ -181,7 +182,8 @@ if __name__ == "__main__":
                 uq.put(True)
                 isUpload = False
             else:
-                pass
+                del config
+                from config import config
                 # print("主播未开播，等待1分钟后重试")
             time.sleep(60)
             api.updRoomInfo()
