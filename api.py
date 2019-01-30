@@ -91,7 +91,7 @@ class XiGuaLiveApi:
             self.apiChangedError("Api发生改变，请及时联系我")
             return False
         self._rawRoomInfo = d["room"]
-        self.isLive = d["room"]['status'] == 2
+        self.isLive = True
         self.roomLiver = User(d)
         self.roomTitle = d["room"]["title"]
         self.roomPopularity = d["room"]["user_count"]
@@ -182,7 +182,7 @@ class XiGuaLiveApi:
 
 
 if __name__ == "__main__":
-    room = 6651493149011086094  # 永恒
+    room = 97621754276  # 永恒
     # room = 75366565294
     # room = 83940182312 #Dae
     if len(sys.argv) > 1:
@@ -193,7 +193,7 @@ if __name__ == "__main__":
         except ValueError:
             pass
     print("西瓜直播弹幕助手 by JerryYan")
-    api = XiGuaLiveApi(room)
+    api = XiGuaLiveApi.findRoomByUserId(room)
     if not api.isValidRoom:
         print(api.roomID)
         input("房间不存在")

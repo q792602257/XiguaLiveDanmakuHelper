@@ -171,7 +171,7 @@ def warning(*args):
 
 
 if __name__ == "__main__":
-    room = 6651493149011086094  # 永恒
+    room = 97621754276  # 永恒
     # room = 75366565294
     # room = 83940182312 #Dae
     resetColor()
@@ -188,7 +188,7 @@ if __name__ == "__main__":
             room = int(readInput("请输入房间号，默认为永恒的房间号", room, 3))
         except ValueError:
             pass
-    api = WinMain(room)
+    api = WinMain.findRoomByUserId(room)
     print("进入", api.roomLiver, "的直播间")
     if not api.isValidRoom:
         input("房间不存在")
