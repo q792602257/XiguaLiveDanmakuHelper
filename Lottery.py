@@ -48,10 +48,11 @@ class Lottery:
         if self.isFinished:
             ret = "恭喜以下中奖用户：\n"
             for i in self.luckyUsers:
-                ret += "\t{} {}\n".format(i,self.prizeName)
-            ret += "\t参与人数：{}".format(self.joinedUserCount)
+                ret += "> {} {}\n".format(i,self.prizeName)
+            ret += "> 参与人数：{}".format(self.joinedUserCount)
             return ret
         elif self.isActive:
-            return "正在抽奖中。。。参与人数：{}".format(self.joinedUserCount)
+            return "正在抽奖中。。。\n" \
+                   "> 参与人数：{}".format(self.joinedUserCount)
         else:
             return "抽奖已失效"

@@ -17,6 +17,7 @@ class XiGuaLiveApi:
     isLive: bool = False
     isValidRoom: bool = False
     _rawRoomInfo = {}
+    name: str = ""
     roomID: int = 0
     roomTitle: str = ""
     roomLiver: User = None
@@ -25,10 +26,9 @@ class XiGuaLiveApi:
     _updRoomCount:int = 0
     lottery:Lottery = None
 
-    def __init__(self, roomId: int = 6651493149011086094):
-        self.roomID = roomId
+    def __init__(self, name: str = "永恒de草薙"):
+        self.name = name
         self.updRoomInfo()
-        Gift.update(self.roomID)
 
     def _updateRoomInfo(self, json):
         if "extra" in json:
@@ -63,7 +63,7 @@ class XiGuaLiveApi:
         print("消息 :", user, "关注了主播")
 
     def onJoin(self, user: User):
-        print("感谢", user, "加入了粉丝团")
+        print("欢迎", user, "加入了粉丝团")
 
     def onMessage(self, msg: str):
         print("消息 :", msg)
@@ -78,27 +78,45 @@ class XiGuaLiveApi:
         print("中奖消息 :", i)
 
     def updRoomInfo(self):
-        p = s.post("https://i.snssdk.com/videolive/room/enter?version_code=730"
-                   "&device_platform=android",
-                   data="room_id={roomID}&version_code=730"
-                   "&device_platform=android".format(roomID=self.roomID),
-                   headers={"Content-Type":"application/x-www-form-urlencoded"})
-        d = p.json()
-        self.isValidRoom = d["base_resp"]["status_code"] == 0
-        if d["base_resp"]["status_code"] != 0:
-            return False
-        if "room" not in d and d["room"] is None:
-            self.apiChangedError("Api发生改变，请及时联系我")
-            return False
-        self._rawRoomInfo = d["room"]
-        self.isLive = d["room"]["status"] == 2
-        self.roomLiver = User(d)
-        self.roomTitle = d["room"]["title"]
-        self.roomPopularity = d["room"]["user_count"]
-        l = Lottery(d)
-        if l.isActive:
-            self.lottery = l
-        return True
+        if self.isLive:
+            p = s.post("https://i.snssdk.com/videolive/room/enter?version_code=730"
+                       "&device_platform=android",
+                       data="room_id={roomID}&version_code=730"
+                       "&device_platform=android".format(roomID=self.roomID),
+                       headers={"Content-Type":"application/x-www-form-urlencoded"})
+            d = p.json()
+            self.isValidRoom = d["base_resp"]["status_code"] == 0
+            if d["base_resp"]["status_code"] != 0:
+                return False
+            if "room" not in d and d["room"] is None:
+                self.apiChangedError("Api发生改变，请及时联系我")
+                return False
+            self._rawRoomInfo = d["room"]
+            self.isLive = d["room"]["status"] == 2
+            self.roomLiver = User(d)
+            self.roomTitle = d["room"]["title"]
+            self.roomPopularity = d["room"]["user_count"]
+            l = Lottery(d)
+            if l.isActive:
+                self.lottery = l
+            return True
+        else:
+            p = s.get("https://security.snssdk.com/video/app/search/live/?version_code=730&device_platform=android"
+                      "&format=json&keyword={}".format(self.name))
+            d = p.json()
+            if "data" in d:
+                for i in d["data"]:
+                    if i["block_type"] != 0:
+                        continue
+                    if len(i["cells"]) == 0:
+                        return
+                    self.isLive = i["cells"][0]["anchor"]["user_info"]["is_living"]
+                    self.roomID = int(i["cells"][0]["anchor"]["room_id"])
+                    self.roomLiver = User(i["cells"][0])
+            if self.isLive:
+                return self.updRoomInfo()
+            else:
+                return False
 
     @staticmethod
     def findRoomByUserId(userId:int):
@@ -119,7 +137,7 @@ class XiGuaLiveApi:
         d = p.json()
         if "data" in d:
             for i in d["data"]:
-                if i["block_type"] != 2:
+                if i["block_type"] != 0:
                     continue
                 for _i in i["cells"]:
                     ret.append(_i["room"])
@@ -170,7 +188,7 @@ class XiGuaLiveApi:
             else:
                 pass
         self._updRoomCount += 1
-        if self._updRoomCount > 30 or len(d['data']) == 0:
+        if self._updRoomCount > 120 or len(d['data']) == 0:
             if self.lottery is not None:
                 self.lottery.checkFinished()
                 if self.lottery.isFinished:
@@ -182,18 +200,13 @@ class XiGuaLiveApi:
 
 
 if __name__ == "__main__":
-    room = 97621754276  # 永恒
-    # room = 75366565294
-    # room = 83940182312 #Dae
-    if len(sys.argv) > 1:
+    name = "永恒de草薙"
+    if len(sys.argv) > 2:
         if sys.argv[-1] == "d":
             DEBUG = True
-        try:
-            room = int(sys.argv[1])
-        except ValueError:
-            pass
+        name = sys.argv[1]
     print("西瓜直播弹幕助手 by JerryYan")
-    api = XiGuaLiveApi.findRoomByUserId(room)
+    api = XiGuaLiveApi(name)
     if not api.isValidRoom:
         print(api.roomID)
         input("房间不存在")

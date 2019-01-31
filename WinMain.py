@@ -31,7 +31,9 @@ def readInput(caption, default, timeout: int = 5):
                     msvcrt.putch(b"\b")
                 if len(input) == 0:
                     start_time = time.time()
-            elif 32 <= ord(chr) <= 126:  # space_char
+            elif 32 > ord(chr) or 255 > ord(chr) > 126:  # space_char
+                continue
+            else:
                 input += chr.decode("utf8")
         if len(input) == 0 and (time.time() - start_time) > timeout:
             break
@@ -119,7 +121,7 @@ class WinMain(Api):
 
     def onJoin(self, user: User):
         set_cmd_text_color(BACKGROUND_WHITE | FOREGROUND_BLACK)
-        print("感谢", user, "加入了粉丝团")
+        print("欢迎", user, "加入了粉丝团")
         resetColor()
 
     def onSubscribe(self, user: User):
@@ -171,24 +173,14 @@ def warning(*args):
 
 
 if __name__ == "__main__":
-    room = 97621754276  # 永恒
-    # room = 75366565294
-    # room = 83940182312 #Dae
+    name = "永恒de草薙"
     resetColor()
     print("西瓜直播弹幕助手 by JerryYan")
     if len(sys.argv) > 1:
-        if sys.argv[-1] == "a":
-            SHOW_ALL = True
-        try:
-            room = int(sys.argv[1])
-        except:
-            pass
+        name = sys.argv[1]
     else:
-        try:
-            room = int(readInput("请输入房间号，默认为永恒的房间号", room, 3))
-        except ValueError:
-            pass
-    api = WinMain.findRoomByUserId(room)
+        name = readInput("请输入主播用户名(请用拼音字母)，默认为", name, 3)
+    api = WinMain(name)
     print("进入", api.roomLiver, "的直播间")
     if not api.isValidRoom:
         input("房间不存在")
@@ -198,7 +190,10 @@ if __name__ == "__main__":
     while True:
         if api.isLive:
             os.system("title {}".format(api.getTitle()))
-            api.getDanmaku()
+            try:
+                api.getDanmaku()
+            except Exception as e:
+                print(e.__str__())
             time.sleep(1)
         else:
             set_cmd_text_color(FOREGROUND_RED)

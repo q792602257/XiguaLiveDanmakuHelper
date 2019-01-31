@@ -16,7 +16,11 @@ class Gift:
 
     def parse(self, json):
         self.user = User(json)
-        if "extra" in json:
+        if "common" in json and json["common"] is not None:
+            if Gift.roomID != int(json["common"]["room_id"]):
+                Gift.roomID = int(json["common"]["room_id"])
+                self.update()
+        if "extra" in json and json["extra"] is not None:
             if "present_info" in json["extra"] and json["extra"]['present_info'] is not None:
                 self.ID = int(json["extra"]['present_info']['id'])
                 self.count = json["extra"]['present_info']['repeat_count']
@@ -25,11 +29,11 @@ class Gift:
                 self.count = json["extra"]['present_end_info']['count']
         if self.ID in self.giftList:
             self.amount = self.giftList[self.ID]["Price"] * self.count
+        else:
+            self.update()
 
-    @staticmethod
-    def update(roomID):
-        Gift.roomID = roomID
-        p = requests.get("https://i.snssdk.com/videolive/gift/get_gift_list?room_id={roomID}".format(roomID= roomID))
+    def update(self):
+        p = requests.get("https://i.snssdk.com/videolive/gift/get_gift_list?room_id={roomID}".format(roomID = self.roomID))
         d = p.json()
         if "gift_info" not in d:
             print("错误：礼物更新失败")

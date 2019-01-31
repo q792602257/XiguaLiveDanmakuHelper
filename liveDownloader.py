@@ -135,18 +135,15 @@ b = Bilibili()
 b.login(config["b_u"], config["b_p"])
 
 if __name__ == "__main__":
-    room = 97621754276  # 永恒
+    name = "永恒de草薙"
     # room = 75366565294
     # room = 83940182312 #Dae
     # room = 5947850784 #⑦
     # room = 58649240617 #戏
     if len(sys.argv) > 1:
-        try:
-            room = int(sys.argv[1])
-        except ValueError:
-            pass
+        name = sys.argv[1]
     print("西瓜直播录播助手 by JerryYan")
-    api = downloader.findRoomByUserId(room)
+    api = downloader(name)
     print("进入", api.roomLiver, "的直播间")
     if not api.isValidRoom:
         input("房间不存在")
