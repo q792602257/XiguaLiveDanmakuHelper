@@ -222,7 +222,7 @@ class Bilibili:
                 "timeout": 900,
                 "auth": "os=upos&cdn=upcdnws&uid=&net_state=4&device=&build=&os_version=&ak=×tamp=&sign=",
                 "OK": 1
-            } 
+            }
             """
             json = r.json()
             upos_uri = json['upos_uri']
@@ -323,7 +323,7 @@ class Bilibili:
                               )
         print(r.text)
         for _p in self.files:
-            os.remove(_p.path)
+            shutil.move(_p.path, "/tmp/oss/")
 
     def appendUpload(self,
                      aid,
