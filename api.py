@@ -91,7 +91,7 @@ class XiGuaLiveApi:
             self.apiChangedError("Api发生改变，请及时联系我")
             return False
         self._rawRoomInfo = d["room"]
-        self.isLive = True
+        self.isLive = d["room"]["status"] == 2
         self.roomLiver = User(d)
         self.roomTitle = d["room"]["title"]
         self.roomPopularity = d["room"]["user_count"]
