@@ -23,7 +23,7 @@ class downloader(XiGuaLiveApi):
         self.updPlayList()
 
     def updPlayList(self):
-        if api.isLive:
+        if self.isLive:
             if "stream_url" not in self._rawRoomInfo:
                 if self.playlist is None:
                     self.apiChangedError("无法获取直播链接")
@@ -31,6 +31,8 @@ class downloader(XiGuaLiveApi):
                 else:
                     self.playlist = self._rawRoomInfo["stream_url"]["alternate_pull_url"]
                     self.playlist = self.playlist.replace("_uhd","").replace("_sd","").replace("_ld","")
+        else:
+            print("未开播，等待开播")
 
     def onLike(self, user):
         pass
