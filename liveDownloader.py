@@ -24,7 +24,7 @@ class downloader(XiGuaLiveApi):
 
     def updPlayList(self):
         if self.isLive:
-            if "stream_url" not in self._rawRoomInfo:
+            if "stream_url" in self._rawRoomInfo:
                 if self.playlist is None:
                     self.apiChangedError("无法获取直播链接")
                     self.playlist = False
@@ -79,7 +79,10 @@ class downloader(XiGuaLiveApi):
                     print("{} : Add Sequence {}".format(datetime.strftime(datetime.now(), "%y%m%d %H%M"),
                                                         len(self.files)))
                     q.put(i)
+        else:
+            print("PlayList {}".format(self.playlist))
         self.genNewName()
+
 
     def genNewName(self):
         if len(self.files) > 800:
@@ -169,10 +172,7 @@ if __name__ == "__main__":
                 ut = threading.Thread(target=upload, args=(d,))
                 ut.setDaemon(True)
                 ut.start()
-            try:
-                api.preDownload()
-            except:
-                pass
+            api.preDownload()
             time.sleep(3)
         else:
             if d is not None:
