@@ -23,13 +23,14 @@ class downloader(XiGuaLiveApi):
         self.updPlayList()
 
     def updPlayList(self):
-        if "stream_url" not in self._rawRoomInfo:
-            if self.playlist is None:
-                self.apiChangedError("无法获取直播链接")
-                self.playlist = False
-        else:
-            self.playlist = self._rawRoomInfo["stream_url"]["alternate_pull_url"]
-            self.playlist = self.playlist.replace("_uhd","").replace("_sd","").replace("_ld","")
+        if api.isLive:
+            if "stream_url" not in self._rawRoomInfo:
+                if self.playlist is None:
+                    self.apiChangedError("无法获取直播链接")
+                    self.playlist = False
+                else:
+                    self.playlist = self._rawRoomInfo["stream_url"]["alternate_pull_url"]
+                    self.playlist = self.playlist.replace("_uhd","").replace("_sd","").replace("_ld","")
 
     def onLike(self, user):
         pass
