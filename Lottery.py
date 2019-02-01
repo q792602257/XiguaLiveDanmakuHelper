@@ -18,7 +18,7 @@ class Lottery:
             self.parse(json)
 
     def parse(self, json):
-        if "lottery_info" not in json or json["lottery_info"] is not None:
+        if "lottery_info" in json and json["lottery_info"] is not None:
             self.isActive = int(json["lottery_info"]["status"]) > 0
             self.ID = json["lottery_info"]["lottery_id"]
             for i in json["lottery_info"]['conditions']:
@@ -29,13 +29,16 @@ class Lottery:
             self.prizeName = json["lottery_info"]["prize_info"]["name"]
             _delta = int(json["lottery_info"]["draw_time"]) - int(json["lottery_info"]["current_time"])
             self.finish = time.time()+_delta+1
+        elif "extra" in json and json["extra"] is not None:
+            if "lottery_info" in json["extra"] and json["extra"]["lottery_info"] is not None:
+                return self.parse(json["extra"])
 
     def update(self):
-        if self.finish > time.time():
-            self.checkFinished()
-            return True
-        else:
-            return False
+        if self.isActive:
+            if not self.isFinished and self.finish > time.time():
+                self.checkFinished()
+                return True
+        return False
 
     def checkFinished(self):
         p = requests.get("https://i.snssdk.com/videolive/lottery/check_user_right?lottery_id={}"
@@ -47,7 +50,7 @@ class Lottery:
             self.isActive = False
             self.isFinished = False
             return
-        self.isActive = int(d["lottery_info"]["status"]) == 1
+        self.isActive = int(d["lottery_info"]["status"]) > 0
         self.isFinished = int(d["lottery_info"]["status"]) == 2
         self.joinedUserCount = int(d["lottery_info"]["candidate_num"])
         if self.isFinished:
