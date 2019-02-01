@@ -27,7 +27,7 @@ class Gift:
             elif "present_end_info" in json["extra"] and json["extra"]['present_end_info'] is not None:
                 self.ID = int(json["extra"]['present_end_info']['id'])
                 self.count = json["extra"]['present_end_info']['count']
-        if self.ID in self.giftList:
+        if self.ID != 0 and self.ID in self.giftList:
             self.amount = self.giftList[self.ID]["Price"] * self.count
         else:
             self.update()

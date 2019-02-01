@@ -104,13 +104,13 @@ class XiGuaLiveApi:
             p = s.get("https://security.snssdk.com/video/app/search/live/?version_code=730&device_platform=android"
                       "&format=json&keyword={}".format(self.name))
             d = p.json()
-            self.isValidRoom = d["base_resp"]["status_code"] == 0
             if "data" in d and d["data"] is not None:
                 for i in d["data"]:
                     if i["block_type"] != 0:
                         continue
                     if len(i["cells"]) == 0:
                         return
+                    self.isValidRoom = True
                     self.isLive = i["cells"][0]["anchor"]["user_info"]["is_living"]
                     self.roomID = int(i["cells"][0]["anchor"]["room_id"])
                     self.roomLiver = User(i["cells"][0])
