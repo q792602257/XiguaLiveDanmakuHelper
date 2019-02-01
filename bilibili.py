@@ -2,6 +2,7 @@
 
 import os
 import re
+import shutil
 from datetime import datetime
 
 import rsa
@@ -10,6 +11,8 @@ import base64
 import hashlib
 import requests
 from urllib import parse
+
+from config import config
 
 
 class VideoPart:
@@ -322,8 +325,12 @@ class Bilibili:
                                   "videos": self.videos}
                               )
         print(r.text)
-        for _p in self.files:
-            shutil.move(_p.path, "/tmp/oss/")
+        if config["mv"]:
+            for _p in self.files:
+                shutil.move(_p.path, config["mtd"])
+        elif config["del"]:
+            for _p in self.files:
+                os.remove(_p.path)
 
     def appendUpload(self,
                      aid,
