@@ -221,6 +221,9 @@ if __name__ == "__main__":
         if api.isLive:
             try:
                 api.getDanmaku()
+            except requests.exceptions.BaseHTTPError:
+                print("网络错误，请确认网络")
+                time.sleep(5)
             except Exception as e:
                 print(e)
             time.sleep(1)

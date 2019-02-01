@@ -2,6 +2,8 @@ import os
 import sys
 import time
 
+import requests
+
 from Gift import Gift
 from Lottery import Lottery
 from MemberMsg import MemberMsg
@@ -192,6 +194,9 @@ if __name__ == "__main__":
             os.system("title {}".format(api.getTitle()))
             try:
                 api.getDanmaku()
+            except requests.exceptions.BaseHTTPError:
+                print("网络错误，请确认网络")
+                time.sleep(5)
             except Exception as e:
                 print(e.__str__())
             time.sleep(1)
