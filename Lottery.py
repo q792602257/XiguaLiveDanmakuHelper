@@ -1,5 +1,5 @@
 import requests
-
+import time
 from LuckyUser import LuckyUser
 
 
@@ -11,6 +11,7 @@ class Lottery:
     luckyUsers = []
     joinedUserCount = 0
     prizeName = ""
+    finish:int = 0
 
     def __init__(self, json=None):
         if json:
@@ -26,6 +27,15 @@ class Lottery:
                 self.content = i["content"]
             self.joinedUserCount = int(json["lottery_info"]["candidate_num"])
             self.prizeName = json["lottery_info"]["prize_info"]["name"]
+            _delta = int(json["lottery_info"]["draw_time"]) - int(json["lottery_info"]["current_time"])
+            self.finish = time.time()+_delta+1
+
+    def update(self):
+        if self.finish > time.time():
+            self.checkFinished()
+            return True
+        else:
+            return False
 
     def checkFinished(self):
         p = requests.get("https://i.snssdk.com/videolive/lottery/check_user_right?lottery_id={}"

@@ -422,8 +422,6 @@ class Bilibili:
                                   "videos": self.videos}
                               )
         print(r.text)
-        for _p in self.files:
-            os.remove(_p.path)
 
     def addChannel(self, name, intro=''):
         """

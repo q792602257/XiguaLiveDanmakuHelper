@@ -104,7 +104,8 @@ class XiGuaLiveApi:
             p = s.get("https://security.snssdk.com/video/app/search/live/?version_code=730&device_platform=android"
                       "&format=json&keyword={}".format(self.name))
             d = p.json()
-            if "data" in d:
+            self.isValidRoom = d["base_resp"]["status_code"] == 0
+            if "data" in d and d["data"] is not None:
                 for i in d["data"]:
                     if i["block_type"] != 0:
                         continue
@@ -145,6 +146,7 @@ class XiGuaLiveApi:
 
     def getDanmaku(self):
         if not self.isValidRoom:
+            self.updRoomInfo()
             return
         p = s.get("https://i.snssdk.com/videolive/im/get_msg?cursor={cursor}&room_id={roomID}"
                   "&version_code=730&device_platform=android".format(
@@ -188,12 +190,12 @@ class XiGuaLiveApi:
             else:
                 pass
         self._updRoomCount += 1
+        if self.lottery is not None:
+            self.lottery.update()
         if self._updRoomCount > 120 or len(d['data']) == 0:
-            if self.lottery is not None:
-                self.lottery.checkFinished()
-                if self.lottery.isFinished:
-                    self.onLottery(self.lottery)
-                    self.lottery = None
+            if self.lottery.isFinished:
+                self.onLottery(self.lottery)
+                self.lottery = None
             self.updRoomInfo()
             self._updRoomCount = 0
             return
