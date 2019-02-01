@@ -6,7 +6,7 @@ class Gift:
     ID:int = 0
     count:int = 0
     roomID:int = 0
-    giftList:dict = {10001: {"Name": "西瓜", "Price": 0}}
+    giftList:dict = {}
     amount:int = 0
     user:User = None
 
@@ -33,7 +33,8 @@ class Gift:
             self.update()
 
     def update(self):
-        p = requests.get("https://i.snssdk.com/videolive/gift/get_gift_list?room_id={roomID}".format(roomID = self.roomID))
+        p = requests.get("https://i.snssdk.com/videolive/gift/get_gift_list?room_id={roomID}"
+                         "&version_code=730&device_platform=android".format(roomID = self.roomID))
         d = p.json()
         if "gift_info" not in d:
             print("错误：礼物更新失败")
