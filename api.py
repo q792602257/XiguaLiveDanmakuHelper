@@ -203,8 +203,8 @@ class XiGuaLiveApi:
 
 
 if __name__ == "__main__":
-    # name = "永恒de草薙"
-    name = "尤美"
+    name = "永恒de草薙"
+    # name = "尤美"
     if len(sys.argv) > 2:
         if sys.argv[-1] == "d":
             DEBUG = True
