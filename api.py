@@ -189,9 +189,10 @@ class XiGuaLiveApi:
                 self.onLike(User(i))
             else:
                 pass
-            self.lottery = Lottery(i)
+            if self.lottery is None or self.lottery.ID == 0:
+                self.lottery = Lottery(i)
         self._updRoomCount += 1
-        if self.lottery is not None or self.lottery.ID != 0:
+        if self.lottery is not None and self.lottery.ID != 0:
             self.lottery.update()
         if self.lottery.isFinished:
             self.onLottery(self.lottery)
@@ -204,7 +205,6 @@ class XiGuaLiveApi:
 
 if __name__ == "__main__":
     name = "永恒de草薙"
-    # name = "尤美"
     if len(sys.argv) > 2:
         if sys.argv[-1] == "d":
             DEBUG = True
