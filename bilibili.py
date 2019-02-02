@@ -12,8 +12,6 @@ import hashlib
 import requests
 from urllib import parse
 
-from config import config
-
 
 class VideoPart:
     def __init__(self, path, title='', desc=''):
@@ -325,12 +323,8 @@ class Bilibili:
                                   "videos": self.videos}
                               )
         print(r.text)
-        if config["mv"]:
-            for _p in self.files:
-                shutil.move(_p.path, config["mtd"])
-        elif config["del"]:
-            for _p in self.files:
-                os.remove(_p.path)
+        self.files.clear()
+        self.videos.clear()
 
     def appendUpload(self,
                      aid,

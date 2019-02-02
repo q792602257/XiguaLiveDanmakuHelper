@@ -12,6 +12,7 @@ q = queue.Queue()
 base_uri = ""
 isUpload = False
 uq = queue.Queue()
+eq = queue.Queue()
 
 
 class downloader(XiGuaLiveApi):
@@ -20,7 +21,8 @@ class downloader(XiGuaLiveApi):
 
     def updRoomInfo(self):
         super(downloader, self).updRoomInfo()
-        self.updPlayList()
+        if self.isLive:
+            self.updPlayList()
 
     def updPlayList(self):
         if self.isLive:
@@ -96,6 +98,7 @@ def download(path=datetime.strftime(datetime.now(), "%Y%m%d_%H%M.ts")):
     n = False
     isUpload = False
     i = q.get()
+    f = open(path, "ab")
     while True:
         if isinstance(i, bool):
             print("{} : Download Daemon Receive Command {}".format(datetime.strftime(datetime.now(), "%y%m%d %H%M"), i))
@@ -105,15 +108,27 @@ def download(path=datetime.strftime(datetime.now(), "%Y%m%d_%H%M.ts")):
             _p = requests.get("{}{}".format(base_uri, i))
         except:
             continue
-        f = open(path, "ab")
         f.write(_p.content)
-        f.close()
         n = True
         i = q.get()
+    f.close()
     if n:
         isUpload = True
-        uq.put(path)
+        eq.put(path)
     print("{} : Download Daemon Quiting".format(datetime.strftime(datetime.now(), "%y%m%d %H%M")))
+
+
+def encode():
+    while True:
+        i = eq.get()
+        os.system("ffmpeg -y -i {} -vcodec copy -acodec copy -vbsf h264_mp4toannexb {}".format(
+            i, i[:13] + ".mp4"
+        ))
+        uq.put(i[:13] + ".mp4")
+        if config["mv"]:
+            shutil.move(i, config["mtd"])
+        elif config["del"]:
+            os.remove(i)
 
 
 def upload(date=datetime.strftime(datetime.now(), "%Y_%m_%d")):
@@ -127,6 +142,12 @@ def upload(date=datetime.strftime(datetime.now(), "%Y_%m_%d")):
                 print("自动投稿中，请稍后")
                 b.finishUpload(config["t_t"].format(date), 17, config["tag"], config["des"],
                                source=config["src"], no_reprint=0)
+                if config["mv"]:
+                    for _p in b.files:
+                        shutil.move(_p.path, config["mtd"])
+                elif config["del"]:
+                    for _p in b.files:
+                        os.remove(_p.path)
             break
         print("{} : Upload {}".format(datetime.strftime(datetime.now(), "%y%m%d %H%M"), i))
         try:
@@ -142,10 +163,7 @@ b.login(config["b_u"], config["b_p"])
 
 if __name__ == "__main__":
     name = "永恒de草薙"
-    # room = 75366565294
-    # room = 83940182312 #Dae
-    # room = 5947850784 #⑦
-    # room = 58649240617 #戏
+    # name = "mini游戏解说"
     if len(sys.argv) > 1:
         name = sys.argv[1]
     print("西瓜直播录播助手 by JerryYan")
@@ -159,6 +177,9 @@ if __name__ == "__main__":
     _preT = datetime.strftime(datetime.now(), "%Y%m%d_%H%M.ts")
     t = threading.Thread(target=download, args=(_preT,))
     ut = threading.Thread(target=upload, args=(d,))
+    et = threading.Thread(target=encode)
+    et.setDaemon(True)
+    et.start()
     while True:
         if api.isLive:
             if d is None:
