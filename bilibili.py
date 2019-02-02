@@ -323,6 +323,8 @@ class Bilibili:
                                   "videos": self.videos}
                               )
         print(r.text)
+
+    def clear(self):
         self.files.clear()
         self.videos.clear()
 

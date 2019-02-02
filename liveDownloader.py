@@ -148,10 +148,11 @@ def upload(date=datetime.strftime(datetime.now(), "%Y_%m_%d")):
                 elif config["del"]:
                     for _p in b.files:
                         os.remove(_p.path)
+                b.clear()
             break
         print("{} : Upload {}".format(datetime.strftime(datetime.now(), "%y%m%d %H%M"), i))
         try:
-            b.preUpload(VideoPart(i, i))
+            b.preUpload(VideoPart(i, os.path.basename(i)))
         except:
             continue
         i = uq.get()
