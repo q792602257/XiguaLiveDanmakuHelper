@@ -1,5 +1,5 @@
-from User import User
-from Lottery import Lottery
+from .User import User
+from .Lottery import Lottery
 
 
 class Chat:

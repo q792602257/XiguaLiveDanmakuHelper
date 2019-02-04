@@ -1,10 +1,10 @@
 import sys
 
-from MemberMsg import MemberMsg
-from User import User
-from Gift import Gift
-from Chat import Chat
-from Lottery import Lottery
+from Struct.MemberMsg import MemberMsg
+from Struct.User import User
+from Struct.Gift import Gift
+from Struct.Chat import Chat
+from Struct.Lottery import Lottery
 import requests
 import time
 
@@ -194,9 +194,9 @@ class XiGuaLiveApi:
         self._updRoomCount += 1
         if self.lottery is not None and self.lottery.ID != 0:
             self.lottery.update()
-        if self.lottery.isFinished:
-            self.onLottery(self.lottery)
-            self.lottery = None
+            if self.lottery.isFinished:
+                self.onLottery(self.lottery)
+                self.lottery = None
         if self._updRoomCount > 120 or len(d['data']) == 0:
             self.updRoomInfo()
             self._updRoomCount = 0

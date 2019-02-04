@@ -1,6 +1,6 @@
 import requests
 import time
-from LuckyUser import LuckyUser
+from .LuckyUser import LuckyUser
 
 
 class Lottery:

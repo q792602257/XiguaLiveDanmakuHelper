@@ -4,11 +4,11 @@ import time
 
 import requests
 
-from Gift import Gift
-from Lottery import Lottery
-from MemberMsg import MemberMsg
-from User import User
-from Chat import Chat
+from Struct.MemberMsg import MemberMsg
+from Struct.User import User
+from Struct.Gift import Gift
+from Struct.Chat import Chat
+from Struct.Lottery import Lottery
 from api import XiGuaLiveApi as Api
 import msvcrt
 import ctypes
