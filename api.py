@@ -103,7 +103,11 @@ class XiGuaLiveApi:
         else:
             p = s.get("https://security.snssdk.com/video/app/search/live/?version_code=730&device_platform=android"
                       "&format=json&keyword={}".format(self.name))
-            d = p.json()
+            try:
+                d = p.json()
+            except json.decoder.JSONDecodeError as e:
+                print(p.text())
+                return
             if "data" in d and d["data"] is not None:
                 for i in d["data"]:
                     if i["block_type"] != 0:
