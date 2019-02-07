@@ -1,3 +1,4 @@
+import json
 import sys
 
 from Struct.MemberMsg import MemberMsg
