@@ -163,10 +163,8 @@ b = Bilibili()
 b.login(config["b_u"], config["b_p"])
 
 if __name__ == "__main__":
-    name = "永恒de草薙"
+    name = config["l_u"]
     # name = "mini游戏解说"
-    if len(sys.argv) > 1:
-        name = sys.argv[1]
     print("西瓜直播录播助手 by JerryYan")
     api = downloader(name)
     print("进入", api.roomLiver, "的直播间")
