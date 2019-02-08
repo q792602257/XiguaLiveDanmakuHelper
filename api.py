@@ -107,7 +107,7 @@ class XiGuaLiveApi:
             try:
                 d = p.json()
             except json.decoder.JSONDecodeError as e:
-                print(p.text())
+                print(p.text)
                 return
             if "data" in d and d["data"] is not None:
                 for i in d["data"]:
