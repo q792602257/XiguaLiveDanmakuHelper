@@ -1,3 +1,4 @@
+# coding=utf-8
 import requests
 import time
 from .LuckyUser import LuckyUser
@@ -56,6 +57,8 @@ class Lottery:
         if self.isFinished:
             for i in d["lottery_info"]["lucky_users"]:
                 self.luckyUsers.append(LuckyUser(i))
+        else:
+            self.luckyUsers = []
 
     def __str__(self):
         if self.isFinished:
