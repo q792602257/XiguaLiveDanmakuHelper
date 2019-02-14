@@ -240,12 +240,11 @@ class Bilibili:
 
             with open(filepath, 'rb') as f:
                 chunks_num = math.ceil(filesize / chunk_size)
-                chunks_index = -1
+                chunks_index = 0
+                chunks_data = f.read(chunk_size)
                 while True:
-                    chunks_data = f.read(chunk_size)
                     if not chunks_data:
                         break
-                    chunks_index += 1  # start with 0
                     r = self.session.put('https:{endpoint}/{upos_uri}?'
                                          'partNumber={part_number}&uploadId={upload_id}&chunk={chunk}&chunks={chunks}&size={size}&start={start}&end={end}&total={total}'
                                          .format(endpoint=endpoint,
@@ -261,8 +260,12 @@ class Bilibili:
                                                  ),
                                          chunks_data,
                                          )
+                    if r.text != "MULTIPART_PUT_SUCCESS":
+                        continue
                     print('{} : UPLOAD {}/{}'.format(datetime.strftime(datetime.now(), "%y%m%d %H%M"), chunks_index,
                                                      chunks_num), r.text)
+                    chunks_data = f.read(chunk_size)
+                    chunks_index += 1  # start with 0
 
                 # NOT DELETE! Refer to https://github.com/comwrg/bilibiliupload/issues/15#issuecomment-424379769
                 self.session.post('https:{endpoint}/{upos_uri}?'
