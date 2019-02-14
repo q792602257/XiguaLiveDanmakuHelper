@@ -260,7 +260,7 @@ class Bilibili:
                                                  ),
                                          chunks_data,
                                          )
-                    if r.text != "MULTIPART_PUT_SUCCESS":
+                    if r.status_code != 200:
                         continue
                     print('{} : UPLOAD {}/{}'.format(datetime.strftime(datetime.now(), "%y%m%d %H%M"), chunks_index,
                                                      chunks_num), r.text)
