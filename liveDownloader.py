@@ -12,7 +12,6 @@ q = queue.Queue()
 base_uri = ""
 isUpload = False
 uq = queue.Queue()
-eq = queue.Queue()
 
 
 class downloader(XiGuaLiveApi):
@@ -35,6 +34,7 @@ class downloader(XiGuaLiveApi):
                     self.playlist = self.playlist.replace("_uhd","").replace("_sd","").replace("_ld","")
         else:
             print("未开播，等待开播")
+            self.files = []
 
     def onLike(self, user):
         pass
@@ -114,21 +114,8 @@ def download(path=datetime.strftime(datetime.now(), "%Y%m%d_%H%M.ts")):
     f.close()
     if n:
         isUpload = True
-        eq.put(path)
+        uq.put(path)
     print("{} : Download Daemon Quiting".format(datetime.strftime(datetime.now(), "%y%m%d %H%M")))
-
-
-def encode():
-    while True:
-        i = eq.get()
-        os.system("ffmpeg -y -i {} -vcodec copy -acodec copy -vbsf h264_mp4toannexb {}".format(
-            i, i[:13] + ".mp4"
-        ))
-        uq.put(i[:13] + ".mp4")
-        if config["mv"]:
-            shutil.move(i, config["mtd"])
-        elif config["del"]:
-            os.remove(i)
 
 
 def upload(date=datetime.strftime(datetime.now(), "%Y_%m_%d")):
@@ -142,12 +129,6 @@ def upload(date=datetime.strftime(datetime.now(), "%Y_%m_%d")):
                 print("自动投稿中，请稍后")
                 b.finishUpload(config["t_t"].format(date), 17, config["tag"], config["des"],
                                source=config["src"], no_reprint=0)
-                if config["mv"]:
-                    for _p in b.files:
-                        shutil.move(_p.path, config["mtd"])
-                elif config["del"]:
-                    for _p in b.files:
-                        os.remove(_p.path)
                 b.clear()
             break
         print("{} : Upload {}".format(datetime.strftime(datetime.now(), "%y%m%d %H%M"), i))
@@ -155,7 +136,13 @@ def upload(date=datetime.strftime(datetime.now(), "%Y_%m_%d")):
             b.preUpload(VideoPart(i, os.path.basename(i)))
         except:
             continue
+        
+        if config["mv"]:
+            shutil.move(_p.path, config["mtd"])
+        elif config["del"]:
+            os.remove(_p.path)
         i = uq.get()
+                
     print("{} : Upload Daemon Quiting".format(datetime.strftime(datetime.now(), "%y%m%d %H%M")))
 
 
@@ -164,7 +151,6 @@ b.login(config["b_u"], config["b_p"])
 
 if __name__ == "__main__":
     name = config["l_u"]
-    # name = "mini游戏解说"
     print("西瓜直播录播助手 by JerryYan")
     api = downloader(name)
     print("进入", api.roomLiver, "的直播间")
@@ -176,9 +162,7 @@ if __name__ == "__main__":
     _preT = datetime.strftime(datetime.now(), "%Y%m%d_%H%M.ts")
     t = threading.Thread(target=download, args=(_preT,))
     ut = threading.Thread(target=upload, args=(d,))
-    et = threading.Thread(target=encode)
-    et.setDaemon(True)
-    et.start()
+    
     while True:
         if api.isLive:
             if d is None:
@@ -193,7 +177,7 @@ if __name__ == "__main__":
                 ut.setDaemon(True)
                 ut.start()
             api.preDownload()
-            time.sleep(3)
+            time.sleep(4)
         else:
             if d is not None:
                 q.put(False)
@@ -201,7 +185,6 @@ if __name__ == "__main__":
             if isUpload:
                 uq.put(True)
                 isUpload = False
-            else:
                 del config
                 from config import config
                 # print("主播未开播，等待1分钟后重试")
