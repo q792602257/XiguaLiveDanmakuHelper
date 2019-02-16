@@ -138,9 +138,9 @@ def upload(date=datetime.strftime(datetime.now(), "%Y_%m_%d")):
             continue
         
         if config["mv"]:
-            shutil.move(_p.path, config["mtd"])
+            shutil.move(i, config["mtd"])
         elif config["del"]:
-            os.remove(_p.path)
+            os.remove(i)
         i = uq.get()
                 
     print("{} : Upload Daemon Quiting".format(datetime.strftime(datetime.now(), "%y%m%d %H%M")))
