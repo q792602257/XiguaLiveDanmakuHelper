@@ -55,10 +55,7 @@ class Lottery:
         self.isFinished = int(d["lottery_info"]["status"]) == 2
         self.joinedUserCount = int(d["lottery_info"]["candidate_num"])
         if self.isFinished:
-            for i in d["lottery_info"]["lucky_users"]:
-                self.luckyUsers.append(LuckyUser(i))
-        else:
-            self.luckyUsers = []
+            self.luckyUsers = [ LuckyUser(i) for i in d["lottery_info"]["lucky_users"] ]
 
     def __str__(self):
         if self.isFinished:
