@@ -22,6 +22,9 @@ class downloader(XiGuaLiveApi):
         super(downloader, self).updRoomInfo()
         if self.isLive:
             self.updPlayList()
+        else:
+            print("未开播，等待开播")
+            self.files = []
 
     def updPlayList(self):
         if self.isLive:
@@ -32,9 +35,7 @@ class downloader(XiGuaLiveApi):
                 else:
                     self.playlist = self._rawRoomInfo["stream_url"]["alternate_pull_url"]
                     self.playlist = self.playlist.replace("_uhd","").replace("_sd","").replace("_ld","")
-        else:
-            print("未开播，等待开播")
-            self.files = []
+
 
     def onLike(self, user):
         pass
