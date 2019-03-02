@@ -91,6 +91,7 @@ class downloader(XiGuaLiveApi):
         if len(self.files) > 800:
             q.put(True)
             self.files.clear()
+            self.updRoomInfo()
 
 
 def download(path=datetime.strftime(datetime.now(), "%Y%m%d_%H%M.ts")):
@@ -137,13 +138,13 @@ def upload(date=datetime.strftime(datetime.now(), "%Y_%m_%d")):
             b.preUpload(VideoPart(i, os.path.basename(i)))
         except:
             continue
-        
+
         if config["mv"]:
             shutil.move(i, config["mtd"])
         elif config["del"]:
             os.remove(i)
         i = uq.get()
-                
+
     print("{} : Upload Daemon Quiting".format(datetime.strftime(datetime.now(), "%y%m%d %H%M")))
 
 
@@ -163,7 +164,7 @@ if __name__ == "__main__":
     _preT = datetime.strftime(datetime.now(), "%Y%m%d_%H%M.ts")
     t = threading.Thread(target=download, args=(_preT,))
     ut = threading.Thread(target=upload, args=(d,))
-    
+
     while True:
         if api.isLive:
             if d is None:
