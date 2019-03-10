@@ -12,7 +12,7 @@ q = queue.Queue()
 base_uri = ""
 isUpload = False
 uq = queue.Queue()
-
+eq = queue.Queue()
 
 class downloader(XiGuaLiveApi):
     files = []
@@ -116,8 +116,20 @@ def download(path=datetime.strftime(datetime.now(), "%Y%m%d_%H%M.ts")):
     f.close()
     if n:
         isUpload = True
-        uq.put(path)
+        eq.put(path)
     print("{} : Download Daemon Quiting".format(datetime.strftime(datetime.now(), "%y%m%d %H%M")))
+
+
+def encode():
+    i = eq.get()
+    while True:
+        os.system("ffmpeg -i {} -c:a copy -c:v copy -f mp4 {}".format(i,i[:-3] + ".mp4"))
+        if config["mv"]:
+            shutil.move(i, config["mtd"])
+        elif config["del"]:
+            os.remove(i)
+        uq.put(i[:-3] + ".mp4")
+        i = eq.get()
 
 
 def upload(date=datetime.strftime(datetime.now(), "%Y_%m_%d")):
@@ -138,11 +150,7 @@ def upload(date=datetime.strftime(datetime.now(), "%Y_%m_%d")):
             b.preUpload(VideoPart(i, os.path.basename(i)))
         except:
             continue
-
-        if config["mv"]:
-            shutil.move(i, config["mtd"])
-        elif config["del"]:
-            os.remove(i)
+        os.remove(i)
         i = uq.get()
 
     print("{} : Upload Daemon Quiting".format(datetime.strftime(datetime.now(), "%y%m%d %H%M")))
