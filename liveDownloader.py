@@ -172,6 +172,9 @@ if __name__ == "__main__":
     _preT = datetime.strftime(datetime.now(), "%Y%m%d_%H%M.ts")
     t = threading.Thread(target=download, args=(_preT,))
     ut = threading.Thread(target=upload, args=(d,))
+    et = threading.Thread(target=encode)
+    et.setDaemon(True)
+    et.start()
 
     while True:
         if api.isLive:
