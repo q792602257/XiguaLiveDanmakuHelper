@@ -123,12 +123,12 @@ def download(path=datetime.strftime(datetime.now(), "%Y%m%d_%H%M.ts")):
 def encode():
     i = eq.get()
     while True:
-        os.system("ffmpeg -i {} -c:a copy -c:v copy -f mp4 {}".format(i,i[:-3] + ".mp4"))
+        os.system("ffmpeg -i {} -c:a copy -c:v copy -f flv {}".format(i,i[:-3] + ".flv"))
         if config["mv"]:
             shutil.move(i, config["mtd"])
         elif config["del"]:
             os.remove(i)
-        uq.put(i[:-3] + ".mp4")
+        uq.put(i[:-3] + ".flv")
         i = eq.get()
 
 
