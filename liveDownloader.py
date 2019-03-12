@@ -146,6 +146,8 @@ def upload(date=datetime.strftime(datetime.now(), "%Y_%m_%d")):
                 b.clear()
             break
         print("{} : Upload {}".format(datetime.strftime(datetime.now(), "%y%m%d %H%M"), i))
+        if not os.path.exist(i):
+            continue
         try:
             b.preUpload(VideoPart(i, os.path.basename(i)))
         except:
