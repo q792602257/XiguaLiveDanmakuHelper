@@ -163,7 +163,11 @@ class XiGuaLiveApi:
         if "data" not in d or "extra" not in d or "cursor" not in d["extra"]:
             if DEBUG:
                 print(d)
-            self.apiChangedError("数据结构改变，请与我联系")
+            if "base_resp" in d:
+                if d["base_resp"]["status_code"] != 10038:
+                    print(d["base_resp"]["status_message"])
+            else:
+                self.apiChangedError("数据结构改变，请与我联系")
             return
         else:
             self._cursor = d["extra"]["cursor"]
