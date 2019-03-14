@@ -309,6 +309,8 @@ class Bilibili:
         :param no_reprint: (optional) 0=可以转载, 1=禁止转载(default)
         :type no_reprint: int
         """
+        if len(self.videos) == 0:
+            return
         self.session.headers['Content-Type'] = 'application/json; charset=utf-8'
         copyright = 2 if source else 1
         r = self.session.post('https://member.bilibili.com/x/vu/web/add?csrf=' + self.csrf,

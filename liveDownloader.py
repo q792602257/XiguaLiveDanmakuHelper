@@ -1,7 +1,6 @@
 import sys
 import time
 from datetime import datetime
-import m3u8
 import queue
 import threading
 from config import config
@@ -74,6 +73,7 @@ def download(url):
     path = datetime.strftime(datetime.now(), "%Y%m%d_%H%M.flv")
     p = requests.get(url, stream=True)
     if p.status_code != 200:
+        isUpload = True
         return True
     f = open(path, "ab")
     try:
@@ -90,6 +90,7 @@ def download(url):
     uq.put(path)
     print("{} : Download Daemon Quiting".format(datetime.strftime(datetime.now(), "%y%m%d %H%M")))
     download(url)
+
 
 def upload(date=datetime.strftime(datetime.now(), "%Y_%m_%d")):
     print("{} : Upload Daemon Starting".format(datetime.strftime(datetime.now(), "%y%m%d %H%M")))
