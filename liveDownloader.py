@@ -74,21 +74,22 @@ def download(url):
     p = requests.get(url, stream=True)
     if p.status_code != 200:
         isUpload = True
+        print("{} : Download Response 404 ,will stop looping".format(datetime.strftime(datetime.now(), "%y%m%d %H%M")))
         return True
+    print("{} : Download {}".format(datetime.strftime(datetime.now(), "%y%m%d %H%M"), path))
     f = open(path, "ab")
     try:
-        print("{} : Download {}".format(datetime.strftime(datetime.now(), "%y%m%d %H%M"), path))
         for t in p.iter_content(chunk_size=64*1024):
             if t:
                 f.write(t)
             if os.path.getsize(path) > 1024*1024*1024*1.5:
                 break
-    except:
-        pass
+        print("{} : Download Quiting".format(datetime.strftime(datetime.now(), "%y%m%d %H%M")))
+    except Exception as e:
+        print("{} : Download Quiting With Exception {}".format(datetime.strftime(datetime.now(), "%y%m%d %H%M"),e.__str__()))
     f.close()
     isUpload = True
     uq.put(path)
-    print("{} : Download Daemon Quiting".format(datetime.strftime(datetime.now(), "%y%m%d %H%M")))
     download(url)
 
 
