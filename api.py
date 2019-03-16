@@ -33,6 +33,11 @@ class XiGuaLiveApi:
         self.updRoomInfo()
 
     def _updateRoomInfo(self, json):
+        """
+        更新房间人气的方法
+        Update Room Popularity
+        :param json: Recived Message
+        """
         if "extra" in json:
             if "member_count" in json["extra"] and json["extra"]["member_count"] > 0:
                 self.roomPopularity = json["extra"]["member_count"]
@@ -41,27 +46,63 @@ class XiGuaLiveApi:
                 self.roomPopularity = json["data"]["popularity"]
 
     def apiChangedError(self, msg: str, *args):
+        """
+        API发生更改时的提示
+        Warning while Detected Api has Changed
+        :param msg:
+        :param args:
+        """
         print(msg)
         print(*args)
 
     def onPresent(self, gift: Gift):
+        """
+        礼物连击中的消息
+        Message On Sending Presents
+        :param gift: Struct of Gift Messsage
+        """
         print("礼物连击 :", gift)
 
     def onPresentEnd(self, gift: Gift):
+        """
+        礼物送完了的提示信息
+        Message On Finished Send Present
+        :param gift: Struct of Gift Messsage
+        """
         print("感谢", gift)
 
     def onAd(self, i):
+        """
+        全局广播
+        All Channel Boardcasting Message( Just An Ad )
+        :param i: JSON DATA if you wanna using it
+        """
         # print(i)
         pass
 
     def onChat(self, chat: Chat):
+        """
+        聊天信息
+        On Chatting
+        :param chat: Struct of Chat Messsage
+        """
         if not chat.isFiltered:
             print(chat)
 
     def onEnter(self, msg: MemberMsg):
+        """
+        进入房间消息
+        On Entering Room
+        :param msg: Struct of Member Messsage
+        """
         print("提示 :", msg)
 
     def onSubscribe(self, user: User):
+        """
+        关注主播时的消息
+        On Subscribe
+        :param user: Struct of User Messsage
+        """
         print("消息 :", user, "关注了主播")
 
     def onJoin(self, user: User):
@@ -74,12 +115,26 @@ class XiGuaLiveApi:
         print("用户", user, "点了喜欢")
 
     def onLeave(self, json: any):
+        """
+        下播消息
+        On Liver Leave
+        :param json:
+        """
         print("消息 :", "主播离开了")
+        self.updRoomInfo()
 
     def onLottery(self, i:Lottery):
+        """
+        中奖的内容
+        :param i:
+        """
         print("中奖消息 :", i)
 
     def updRoomInfo(self):
+        """
+        更新房间信息（可能写的很垃圾）
+        :return:
+        """
         if self.isLive:
             p = s.post("https://i.snssdk.com/videolive/room/enter?version_code=730"
                        "&device_platform=android",
@@ -127,6 +182,11 @@ class XiGuaLiveApi:
 
     @staticmethod
     def findRoomByUserId(userId:int):
+        """
+        通过UserId查找用户的房间号(已弃用)
+        :param userId: 用户ID
+        :return: XiGuaLiveApi
+        """
         p = s.get("https://live.ixigua.com/api/room?anchorId={room}".format(room=userId))
         if DEBUG:
             print(p.text)
@@ -138,6 +198,11 @@ class XiGuaLiveApi:
 
     @staticmethod
     def searchLive(keyword):
+        """
+        通过关键词搜索主播
+        :param keyword: 关键词
+        :return:
+        """
         ret = []
         p = s.get("https://security.snssdk.com/video/app/search/live/?version_code=730&device_platform=android"
                   "&format=json&keyword={}".format(keyword))
@@ -151,6 +216,9 @@ class XiGuaLiveApi:
         return ret
 
     def getDanmaku(self):
+        """
+        获取弹幕
+        """
         if not self.isValidRoom:
             self.updRoomInfo()
             return

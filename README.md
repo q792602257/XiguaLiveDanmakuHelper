@@ -4,7 +4,8 @@
 界面版：[q792602257/XiguaDanmakuHelperGUI](https://github.com/q792602257/XiguaDanmakuHelperGUI "C# ver")
 
 ### 计划更新：
-+ Digg消息（点亮了喜欢）实例化
++ ~~Digg消息（点亮了喜欢）实例化~~
+        现APP端无法发送点亮喜欢消息
 + 可以输入中文用户名进行查询
 + √ ~~使用android app协议~~
 
