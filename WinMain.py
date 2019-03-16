@@ -21,7 +21,7 @@ def readInput(caption, default, timeout: int = 5):
     input = ''
     while True:
         if msvcrt.kbhit():
-            chr = msvcrt.getche()
+            chr = msvcrt.getwche()
             if ord(chr) == 13:  # enter_key
                 break
             elif ord(chr) == 27:
@@ -30,13 +30,15 @@ def readInput(caption, default, timeout: int = 5):
                 if input != "":
                     input = input[:-1]
                     msvcrt.putch(b" ")
+                    msvcrt.putch(b" ")
+                    msvcrt.putch(b"\b")
                     msvcrt.putch(b"\b")
                 if len(input) == 0:
                     start_time = time.time()
             elif 32 > ord(chr) or 255 > ord(chr) > 126:  # space_char
                 continue
             else:
-                input += chr.decode("utf8")
+                input += chr
         if len(input) == 0 and (time.time() - start_time) > timeout:
             break
 
@@ -181,7 +183,7 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         name = sys.argv[1]
     else:
-        name = readInput("请输入主播用户名(请用拼音字母)，默认为", name, 3)
+        name = readInput("请输入主播用户名，默认为", name, 3)
     api = WinMain(name)
     print("进入", api.roomLiver, "的直播间")
     if not api.isValidRoom:
