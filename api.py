@@ -136,12 +136,15 @@ class XiGuaLiveApi:
         :return:
         """
         if self.isLive:
-            p = s.post("https://i.snssdk.com/videolive/room/enter?version_code=730"
-                       "&device_platform=android",
-                       data="room_id={roomID}&version_code=730"
-                       "&device_platform=android".format(roomID=self.roomID),
-                       headers={"Content-Type":"application/x-www-form-urlencoded"})
-            d = p.json()
+            try:
+                p = s.post("https://i.snssdk.com/videolive/room/enter?version_code=730"
+                           "&device_platform=android",
+                           data="room_id={roomID}&version_code=730"
+                           "&device_platform=android".format(roomID=self.roomID),
+                           headers={"Content-Type":"application/x-www-form-urlencoded"})
+                d = p.json()
+            except:
+                return False
             self.isValidRoom = d["base_resp"]["status_code"] == 0
             if d["base_resp"]["status_code"] != 0:
                 return False
@@ -263,6 +266,8 @@ class XiGuaLiveApi:
                 self.onJoin(User(i))
             elif i["common"]['method'] == "VideoLiveControlMessage":
                 print("消息：", "主播离开一小会")
+                # 这个消息代表主播下播了，直接更新房间信息
+                self.updRoomInfo()
             elif i["common"]['method'] == "VideoLiveDiggMessage":
                 self.onLike(User(i))
             else:
@@ -270,11 +275,13 @@ class XiGuaLiveApi:
             if self.lottery is None or self.lottery.ID == 0:
                 self.lottery = Lottery(i)
         self._updRoomCount += 1
+        # 更新抽奖信息
         if self.lottery is not None and self.lottery.ID != 0:
             self.lottery.update()
             if self.lottery.isFinished:
                 self.onLottery(self.lottery)
                 self.lottery = None
+        # 2分钟自动更新下房间信息
         if self._updRoomCount > 120 or len(d['data']) == 0:
             self.updRoomInfo()
             self._updRoomCount = 0
