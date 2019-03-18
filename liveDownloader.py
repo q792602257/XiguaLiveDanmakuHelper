@@ -11,7 +11,7 @@ q = queue.Queue()
 base_uri = ""
 isUpload = False
 uq = queue.Queue()
-eq = queue.Queue()
+
 
 class downloader(XiGuaLiveApi):
     files = []
@@ -89,6 +89,9 @@ def download(url):
         print("{} : Download Quiting With Exception {}".format(datetime.strftime(datetime.now(), "%y%m%d %H%M"),e.__str__()))
     f.close()
     isUpload = True
+    if os.path.getsize(path) == 0:
+        os.remove(path)
+        return False
     uq.put(path)
     download(url)
 
