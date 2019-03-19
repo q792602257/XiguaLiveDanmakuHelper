@@ -11,7 +11,7 @@ q = queue.Queue()
 base_uri = ""
 isUpload = False
 uq = queue.Queue()
-
+eq = queue.Queue()
 
 class downloader(XiGuaLiveApi):
     files = []
@@ -92,8 +92,15 @@ def download(url):
     if os.path.getsize(path) == 0:
         os.remove(path)
         return False
-    uq.put(path)
+    eq.put(path)
     download(url)
+
+def encode():
+    i = eq.get()
+    while True:
+        if(os.path.exists(i)):
+            os.system("ffmpeg -i {} -c:v copy -c:a copy -f mp4 {}".format(i,i[:13]+".mp4"))
+            uq.put(i[:13]+".mp4")
 
 
 def upload(date=datetime.strftime(datetime.now(), "%Y_%m_%d")):
@@ -142,6 +149,9 @@ if __name__ == "__main__":
     d = datetime.strftime(datetime.now(), "%Y_%m_%d")
     t = threading.Thread(target=download)
     ut = threading.Thread(target=upload, args=(d,))
+    et = threading.Thread(target=encode, args=())
+    et.setDaemon(True)
+    et.start()
 
     while True:
         if api.isLive:
