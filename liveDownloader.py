@@ -96,12 +96,15 @@ def download(url):
     download(url)
 
 def encode():
-    i = eq.get()
     while True:
+        i = eq.get()
         if(os.path.exists(i)):
             os.system("ffmpeg -i {} -c:v copy -c:a copy -f mp4 {}".format(i,i[:13]+".mp4"))
             uq.put(i[:13]+".mp4")
-
+            if config["mv"]:
+                shutil.move(i, config["mtd"])
+            elif config["del"]:
+                os.remove(i)
 
 def upload(date=datetime.strftime(datetime.now(), "%Y_%m_%d")):
     print("{} : Upload Daemon Starting".format(datetime.strftime(datetime.now(), "%y%m%d %H%M")))
@@ -125,10 +128,7 @@ def upload(date=datetime.strftime(datetime.now(), "%Y_%m_%d")):
             b.preUpload(VideoPart(i, os.path.basename(i)))
         except:
             continue
-        if config["mv"]:
-            shutil.move(i, config["mtd"])
-        elif config["del"]:
-            os.remove(i)
+        os.remove(i)
         i = uq.get()
 
     print("{} : Upload Daemon Quiting".format(datetime.strftime(datetime.now(), "%y%m%d %H%M")))
