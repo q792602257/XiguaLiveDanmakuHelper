@@ -13,6 +13,7 @@ isUpload = False
 uq = queue.Queue()
 eq = queue.Queue()
 
+
 class downloader(XiGuaLiveApi):
     files = []
     playlist: str = None
@@ -33,8 +34,7 @@ class downloader(XiGuaLiveApi):
                     self.playlist = False
                 else:
                     self.playlist = self._rawRoomInfo["stream_url"]["flv_pull_url"]
-                    self.playlist = self.playlist.replace("_uhd","").replace("_sd","").replace("_ld","")
-
+                    self.playlist = self.playlist.replace("_uhd", "").replace("_sd", "").replace("_ld", "")
 
     def onLike(self, user):
         pass
@@ -68,43 +68,45 @@ class downloader(XiGuaLiveApi):
 
 
 def download(url):
-    global isUpload
-    isUpload = False
     path = datetime.strftime(datetime.now(), "%Y%m%d_%H%M.flv")
     p = requests.get(url, stream=True)
     if p.status_code != 200:
-        isUpload = True
         print("{} : Download Response 404 ,will stop looping".format(datetime.strftime(datetime.now(), "%y%m%d %H%M")))
         return True
     print("{} : Download {}".format(datetime.strftime(datetime.now(), "%y%m%d %H%M"), path))
     f = open(path, "ab")
     try:
-        for t in p.iter_content(chunk_size=64*1024):
+        for t in p.iter_content(chunk_size=64 * 1024):
             if t:
                 f.write(t)
-            if os.path.getsize(path) > 1024*1024*1024*1.5:
+            if os.path.getsize(path) > 1024 * 1024 * 1024 * 1.5:
                 break
         print("{} : Download Quiting".format(datetime.strftime(datetime.now(), "%y%m%d %H%M")))
     except Exception as e:
-        print("{} : Download Quiting With Exception {}".format(datetime.strftime(datetime.now(), "%y%m%d %H%M"),e.__str__()))
+        print("{} : Download Quiting With Exception {}".format(datetime.strftime(datetime.now(), "%y%m%d %H%M"),
+                                                               e.__str__()))
     f.close()
-    isUpload = True
     if os.path.getsize(path) == 0:
         os.remove(path)
         return False
     eq.put(path)
     download(url)
 
+
 def encode():
+    global isUpload
     while True:
+        isUpload = False
         i = eq.get()
-        if(os.path.exists(i)):
-            os.system("ffmpeg -i {} -c:v copy -c:a copy -f mp4 {}".format(i,i[:13]+".mp4"))
-            uq.put(i[:13]+".mp4")
+        if os.path.exists(i):
+            os.system("ffmpeg -i {} -c:v copy -c:a copy -f mp4 {}".format(i, i[:13] + ".mp4"))
+            uq.put(i[:13] + ".mp4")
             if config["mv"]:
                 shutil.move(i, config["mtd"])
             elif config["del"]:
                 os.remove(i)
+        isUpload = True
+
 
 def upload(date=datetime.strftime(datetime.now(), "%Y_%m_%d")):
     print("{} : Upload Daemon Starting".format(datetime.strftime(datetime.now(), "%y%m%d %H%M")))
@@ -152,7 +154,7 @@ if __name__ == "__main__":
     et = threading.Thread(target=encode, args=())
     et.setDaemon(True)
     et.start()
-
+    _count = 0
     while True:
         if api.isLive:
             if d is None:
@@ -166,12 +168,14 @@ if __name__ == "__main__":
                 ut = threading.Thread(target=upload, args=(d,))
                 ut.setDaemon(True)
                 ut.start()
-            try:
-                api.updRoomInfo()
-            except:
-                time.sleep(30)
-                continue
-            time.sleep(120)
+            time.sleep(20)
+            if _count % 6 == 0:
+                try:
+                    api.updRoomInfo()
+                except:
+                    time.sleep(10)
+                    continue
+                _count += 1
         else:
             if d is not None:
                 d = None
