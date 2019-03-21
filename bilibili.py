@@ -2,7 +2,7 @@
 
 import os
 import re
-import shutil
+import json as JSON
 from datetime import datetime
 
 import rsa
@@ -278,10 +278,12 @@ class Bilibili:
                                           ),
                                   {"parts": [{"partNumber": i, "eTag": "etag"} for i in range(1, chunks_num + 1)]},
                                   )
-
             self.videos.append({'filename': upos_uri.replace('upos://ugc/', '').split('.')[0],
                                 'title': part.title,
                                 'desc': part.desc})
+            __f = open("uploaded.json","w")
+            JSON.dump(self.videos, __f)
+
 
     def finishUpload(self,
                      title,
@@ -329,9 +331,21 @@ class Bilibili:
                               )
         print(r.text)
 
+    def reloadFromPrevious(self):
+        try:
+            __f = open("uploaded.json","r")
+            self.videos = JSON.load(__f)
+            print("RELOAD Success")
+        except:
+            print("RELOAD Failed")
+            self.videos = []
+
+
     def clear(self):
         self.files.clear()
         self.videos.clear()
+        if(os.path.exists("uploaded.json")):
+            os.remove("uploade.json")
 
     def appendUpload(self,
                      aid,
