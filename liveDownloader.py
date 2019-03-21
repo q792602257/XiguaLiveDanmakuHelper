@@ -1,3 +1,4 @@
+import shutil
 import sys
 import time
 from datetime import datetime
@@ -170,6 +171,10 @@ if __name__ == "__main__":
                 ut = threading.Thread(target=upload, args=(d,))
                 ut.setDaemon(True)
                 ut.start()
+            if not et.is_alive():
+                et = threading.Thread(target=encode, args=())
+                et.setDaemon(True)
+                et.start()
             if _count % 6 == 0:
                 try:
                     api.updRoomInfo()
