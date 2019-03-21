@@ -160,11 +160,13 @@ if __name__ == "__main__":
             if d is None:
                 d = datetime.strftime(datetime.now(), "%Y_%m_%d")
             if not t.is_alive():
+                _count = 0
                 _preT = api.playlist
                 t = threading.Thread(target=download, args=(_preT,))
                 t.setDaemon(True)
                 t.start()
             if not ut.is_alive():
+                _count = 0
                 ut = threading.Thread(target=upload, args=(d,))
                 ut.setDaemon(True)
                 ut.start()
@@ -172,7 +174,8 @@ if __name__ == "__main__":
                 try:
                     api.updRoomInfo()
                     _count = 0
-                except:
+                except Exception as e:
+                    print(e.__str__())
                     time.sleep(10)
                     _count += 1
                     continue
