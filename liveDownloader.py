@@ -97,9 +97,9 @@ def download(url):
 def encode():
     global isUpload
     while True:
-        isUpload = False
         i = eq.get()
         if os.path.exists(i):
+            isUpload = False
             os.system("ffmpeg -i {} -c:v copy -c:a copy -f mp4 {}".format(i, i[:13] + ".mp4"))
             uq.put(i[:13] + ".mp4")
             if config["mv"]:
