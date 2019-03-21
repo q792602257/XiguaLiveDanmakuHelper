@@ -332,14 +332,19 @@ class Bilibili:
         print(r.text)
 
     def reloadFromPrevious(self):
-        try:
-            __f = open("uploaded.json","r")
-            self.videos = JSON.load(__f)
-            print("RELOAD Success")
-        except:
+        if os.path.exists("uploaded.json"):
+            __f = open("uploaded.json", "r")
+            try:
+                self.videos = JSON.load(__f)
+                print("RELOAD Success")
+            except:
+                print("RELOAD Failed")
+                self.videos = []
+            __f.close()
+            os.remove("uploaded.json")
+        else:
             print("RELOAD Failed")
             self.videos = []
-
 
     def clear(self):
         self.files.clear()
