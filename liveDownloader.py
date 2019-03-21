@@ -160,6 +160,7 @@ if __name__ == "__main__":
             if _count % 6 == 0:
                 try:
                     api.updRoomInfo()
+                    _count = 0
                 except:
                     time.sleep(10)
                     _count += 1
