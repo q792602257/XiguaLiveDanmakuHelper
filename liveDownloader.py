@@ -157,6 +157,14 @@ if __name__ == "__main__":
     _count = 0
     while True:
         if api.isLive:
+            if _count % 6 == 0:
+                try:
+                    api.updRoomInfo()
+                except:
+                    time.sleep(10)
+                    _count += 1
+                    continue
+                _count += 1
             if d is None:
                 d = datetime.strftime(datetime.now(), "%Y_%m_%d")
             if not t.is_alive():
@@ -169,13 +177,6 @@ if __name__ == "__main__":
                 ut.setDaemon(True)
                 ut.start()
             time.sleep(20)
-            if _count % 6 == 0:
-                try:
-                    api.updRoomInfo()
-                except:
-                    time.sleep(10)
-                    continue
-                _count += 1
         else:
             if d is not None:
                 d = None
