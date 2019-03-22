@@ -175,7 +175,7 @@ if __name__ == "__main__":
                 et = threading.Thread(target=encode, args=())
                 et.setDaemon(True)
                 et.start()
-            if _count % 6 == 0:
+            if _count % 15 == 0:
                 try:
                     api.updRoomInfo()
                     _count = 0
@@ -184,7 +184,7 @@ if __name__ == "__main__":
                     time.sleep(10)
                     _count += 1
                     continue
-                _count += 1
+            _count += 1
             time.sleep(20)
         else:
             if d is not None:
