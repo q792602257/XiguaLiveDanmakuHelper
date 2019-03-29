@@ -188,6 +188,7 @@ class Bilibili:
         """
         self.preUpload(parts)
         self.finishUpload(title, tid, tag, desc, source, cover, no_reprint)
+        self.clean()
 
     def preUpload(self, parts):
         """
@@ -350,7 +351,7 @@ class Bilibili:
         self.files.clear()
         self.videos.clear()
         if(os.path.exists("uploaded.json")):
-            os.remove("uploade.json")
+            os.remove("uploaded.json")
 
     def appendUpload(self,
                      aid,
