@@ -53,7 +53,8 @@ class XiGuaLiveApi:
         :param args:
         """
         print(msg)
-        print(*args)
+        if DEBUG:
+            print(*args)
 
     def onPresent(self, gift: Gift):
         """
@@ -143,13 +144,22 @@ class XiGuaLiveApi:
                            "&device_platform=android".format(roomID=self.roomID),
                            headers={"Content-Type":"application/x-www-form-urlencoded"})
                 d = p.json()
-            except:
+            except Exception as e:
+                if DEBUG:
+                    print("ReqError@UpdRoomInfo")
+                    print(e.__str__())
+                    if p:
+                        print(p.status_code)
+                        print(p.text)
                 return False
             self.isValidRoom = d["base_resp"]["status_code"] == 0
             if d["base_resp"]["status_code"] != 0:
+                if DEBUG:
+                    print("CodeIsnot0@UpdRoomInfo")
+                    print(d)
                 return False
             if "room" not in d and d["room"] is None:
-                self.apiChangedError("Api发生改变，请及时联系我")
+                self.apiChangedError("Api发生改变，请及时联系我", d)
                 return False
             self._rawRoomInfo = d["room"]
             self.isLive = d["room"]["status"] == 2
@@ -161,12 +171,16 @@ class XiGuaLiveApi:
                 self.lottery = l
             return True
         else:
-            p = s.get("https://security.snssdk.com/video/app/search/live/?version_code=730&device_platform=android"
-                      "&format=json&keyword={}".format(self.name))
             try:
+                p = s.get("https://security.snssdk.com/video/app/search/live/?version_code=730&device_platform=android"
+                          "&format=json&keyword={}".format(self.name))
                 d = p.json()
             except json.decoder.JSONDecodeError as e:
-                print(p.text)
+                if DEBUG:
+                    print(e.__str__())
+                    if p:
+                        print(p.status_code)
+                        print(p.text)
                 return
             if "data" in d and d["data"] is not None:
                 for i in d["data"]:
@@ -175,8 +189,14 @@ class XiGuaLiveApi:
                     if len(i["cells"]) == 0:
                         return
                     self.isValidRoom = True
-                    self.isLive = i["cells"][0]["anchor"]["user_info"]["is_living"]
-                    self.roomID = int(i["cells"][0]["anchor"]["room_id"])
+                    if "is_living" in i["cells"][0]["anchor"]["user_info"]:
+                        self.isLive = i["cells"][0]["anchor"]["user_info"]["is_living"]
+                    else:
+                        self.isLive = False
+                    if "room_id" in i["cells"][0]["anchor"]:
+                        self.roomID = int(i["cells"][0]["anchor"]["room_id"])
+                    else:
+                        self.isLive = False
                     self.roomLiver = User(i["cells"][0])
             if self.isLive:
                 return self.updRoomInfo()

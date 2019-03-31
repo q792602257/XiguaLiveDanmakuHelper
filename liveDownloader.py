@@ -156,18 +156,18 @@ if __name__ == "__main__":
     et.setDaemon(True)
     et.start()
     _count = 0
+    _count_error = 0
     while True:
         if api.isLive:
             if d is None:
                 d = datetime.strftime(datetime.now(), "%Y_%m_%d")
             if not t.is_alive():
-                _count = 0
+                _count_error += 1
                 _preT = api.playlist
                 t = threading.Thread(target=download, args=(_preT,))
                 t.setDaemon(True)
                 t.start()
             if not ut.is_alive():
-                _count = 0
                 ut = threading.Thread(target=upload, args=(d,))
                 ut.setDaemon(True)
                 ut.start()
@@ -179,11 +179,14 @@ if __name__ == "__main__":
                 try:
                     api.updRoomInfo()
                     _count = 0
+                    _count_error = 0
                 except Exception as e:
                     print(e.__str__())
                     time.sleep(10)
-                    _count += 1
+                    _count_error += 1
                     continue
+            if _count_error > 15:
+                api.isLive = False
             _count += 1
             time.sleep(20)
         else:
@@ -196,4 +199,7 @@ if __name__ == "__main__":
                 from config import config
                 # print("主播未开播，等待1分钟后重试")
             time.sleep(60)
-            api.updRoomInfo()
+            try:
+                api.updRoomInfo()
+            except Exception as e:
+                print(e.__str__())
