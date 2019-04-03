@@ -182,7 +182,7 @@ if __name__ == "__main__":
                     _count_error = 0
                 except Exception as e:
                     print(e.__str__())
-                    time.sleep(10)
+                    time.sleep(20)
                     _count_error += 1
                     continue
             if _count_error > 15:
@@ -201,5 +201,6 @@ if __name__ == "__main__":
             time.sleep(60)
             try:
                 api.updRoomInfo()
+                _count_error = 0
             except Exception as e:
                 print(e.__str__())
