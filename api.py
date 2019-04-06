@@ -186,7 +186,7 @@ class XiGuaLiveApi:
                 for i in d["data"]:
                     if i["block_type"] != 0:
                         continue
-                    if len(i["cells"]) == 0:
+                    if "cells" not in i or len(i["cells"]) == 0:
                         return
                     self.isValidRoom = True
                     if "is_living" in i["cells"][0]["anchor"]["user_info"]:

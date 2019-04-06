@@ -10,7 +10,8 @@ from bilibili import *
 
 q = queue.Queue()
 base_uri = ""
-isUpload = False
+isEncode = False
+isDownload = False
 uq = queue.Queue()
 eq = queue.Queue()
 
@@ -69,13 +70,15 @@ class downloader(XiGuaLiveApi):
 
 
 def download(url):
+    global isDownload
     path = datetime.strftime(datetime.now(), "%Y%m%d_%H%M.flv")
     p = requests.get(url, stream=True)
     if p.status_code != 200:
         print("{} : Download Response 404 ,will stop looping".format(datetime.strftime(datetime.now(), "%y%m%d %H%M")))
         return True
+    isDownload = True
     print("{} : Download {}".format(datetime.strftime(datetime.now(), "%y%m%d %H%M"), path))
-    f = open(path, "ab")
+    f = open(path, "wb")
     try:
         for t in p.iter_content(chunk_size=64 * 1024):
             if t:
@@ -87,6 +90,7 @@ def download(url):
         print("{} : Download Quiting With Exception {}".format(datetime.strftime(datetime.now(), "%y%m%d %H%M"),
                                                                e.__str__()))
     f.close()
+    isDownload = False
     if os.path.getsize(path) == 0:
         os.remove(path)
         return False
@@ -95,18 +99,18 @@ def download(url):
 
 
 def encode():
-    global isUpload
+    global isEncode
     while True:
         i = eq.get()
         if os.path.exists(i):
-            isUpload = False
+            isEncode = True
             os.system("ffmpeg -i {} -c:v copy -c:a copy -f mp4 {}".format(i, i[:13] + ".mp4"))
             uq.put(i[:13] + ".mp4")
             if config["mv"]:
                 shutil.move(i, config["mtd"])
             elif config["del"]:
                 os.remove(i)
-        isUpload = True
+        isEncode = False
 
 
 def upload(date=datetime.strftime(datetime.now(), "%Y_%m_%d")):
@@ -192,9 +196,10 @@ if __name__ == "__main__":
         else:
             if d is not None:
                 d = None
-            if isUpload:
+            if not isEncode and not isDownload:
                 uq.put(True)
-                isUpload = False
+                isEncode = True
+                isDownload = True
                 del config
                 from config import config
                 # print("主播未开播，等待1分钟后重试")
