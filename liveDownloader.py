@@ -27,8 +27,8 @@ def download(url):
             if t:
                 f.write(t)
             _size = os.path.getsize(path)
-            modifyLastDownloadStatus("Download >{}< @ {:.2f}%".format(path, 100.0 * _size/config["size"]))
-            if _size > config["size"]:
+            modifyLastDownloadStatus("Download >{}< @ {:.2f}%".format(path, 100.0 * _size/config["p_s"]))
+            if _size > config["p_s"]:
                 break
         modifyLastDownloadStatus("Finished Download >{}<".format(path))
     except Exception as e:
