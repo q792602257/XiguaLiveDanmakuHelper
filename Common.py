@@ -114,7 +114,7 @@ def appendError(obj):
 
 class downloader(XiGuaLiveApi):
     files = []
-    playlist: str = None
+    playlist = None
 
     def updRoomInfo(self):
         global broadcaster, isBroadcasting, updateTime

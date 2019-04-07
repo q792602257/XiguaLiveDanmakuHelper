@@ -4,9 +4,9 @@ from .Lottery import Lottery
 
 class Chat:
 
-    content: str =""
-    user:    User=None
-    filterString:list = ["",]
+    content =""
+    user=None
+    filterString = ["",]
     isFiltered = False
 
     def __init__(self, json=None, lottery:Lottery = None):

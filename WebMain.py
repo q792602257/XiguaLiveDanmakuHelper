@@ -1,3 +1,5 @@
+from time import sleep
+
 from flask import Flask, jsonify, request
 import Common
 import threading
@@ -39,6 +41,18 @@ def getAllStats():
     }})
 
 
+@app.route("/stats/broadcast", methods=["GET"])
+def geBroadcastStats():
+    return jsonify({"message":"ok","code":200,"status":0,"data":{
+        "broadcast": {
+            "broadcaster": Common.broadcaster.__str__(),
+            "isBroadcasting": Common.isBroadcasting,
+            "streamUrl": Common.streamUrl,
+            "updateTime": Common.updateTime
+        }
+    }})
+
+
 @app.route("/stats/download", methods=["GET"])
 def geDownloadStats():
     return jsonify({"message":"ok","code":200,"status":0,"data":{
@@ -62,7 +76,11 @@ def getUploadStats():
 
 t = threading.Thread(target=RUN, args=(Common.config['l_u'],))
 t.setDaemon(True)
-
-if __name__ == "__main__":
-    t.start()
-    app.run()
+t.start()
+while True:
+    if t.is_alive():
+        sleep(240)
+    else:
+        t = threading.Thread(target=RUN, args=(Common.config['l_u'],))
+        t.setDaemon(True)
+        t.start()

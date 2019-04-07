@@ -1,11 +1,11 @@
 class User:
-    ID:     int = 0
-    name:   str = ""
-    brand:  str = ""
-    level:  int = 0
-    type:   int = 0
-    block: bool = False
-    mute:  bool = False
+    ID = 0
+    name = ""
+    brand = ""
+    level = 0
+    type = 0
+    block = False
+    mute = False
 
     def __init__(self, json=None):
         if json:
@@ -47,8 +47,7 @@ class User:
         else:
             if self.type != 0:
                 return "[{}{}]{}".format(self.brand, self.level, self.name)
-            return "<{}{}>{}".format(self.brand,self.level,self.name)
+            return "<{}{}>{}".format(self.brand, self.level, self.name)
 
     def __unicode__(self):
         return self.__str__()
-

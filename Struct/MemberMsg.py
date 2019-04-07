@@ -2,9 +2,9 @@ from .User import User
 
 
 class MemberMsg:
-    type:int = 0
-    content:str = ""
-    user:User = None
+    type = 0
+    content = ""
+    user = None
 
     def __init__(self, json=None):
         if json:
