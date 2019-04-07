@@ -188,7 +188,7 @@ class Bilibili:
         """
         self.preUpload(parts)
         self.finishUpload(title, tid, tag, desc, source, cover, no_reprint)
-        self.clean()
+        self.clear()
 
     def preUpload(self, parts):
         """

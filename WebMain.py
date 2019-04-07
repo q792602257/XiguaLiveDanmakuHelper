@@ -1,13 +1,20 @@
 from time import sleep
-
-from flask import Flask, jsonify, request
+from flask_cors import CORS
+from flask import Flask, jsonify, request, redirect, url_for
 import Common
 import threading
 from liveDownloader import run as RUN
 
 app = Flask("liveStatus")
 app.config['JSON_AS_ASCII'] = False
+CORS(app, supports_credentials=True)
+url_for('static', filename='index.html')
+url_for('static', filename='index.js')
 
+
+@app.route("/")
+def index():
+    return redirect("/static/index.html")
 
 @app.route("/config", methods=["GET"])
 def readConfig():
@@ -74,13 +81,19 @@ def getUploadStats():
     }})
 
 
-t = threading.Thread(target=RUN, args=(Common.config['l_u'],))
-t.setDaemon(True)
-t.start()
-while True:
-    if t.is_alive():
-        sleep(240)
-    else:
-        t = threading.Thread(target=RUN, args=(Common.config['l_u'],))
-        t.setDaemon(True)
-        t.start()
+def SubThread():
+    t = threading.Thread(target=RUN, args=(Common.config['l_u'],))
+    t.setDaemon(True)
+    t.start()
+    while True:
+        if t.is_alive():
+            sleep(240)
+        else:
+            t = threading.Thread(target=RUN, args=(Common.config['l_u'],))
+            t.setDaemon(True)
+            t.start()
+
+
+p = threading.Thread(target = SubThread)
+p.setDaemon(True)
+p.start()
