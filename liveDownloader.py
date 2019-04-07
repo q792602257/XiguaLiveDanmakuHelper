@@ -41,8 +41,10 @@ def download(url):
         return False
     encodeQueue.put(path)
     if forceStopDownload:
-        download(url)
         forceStopDownload = False
+        return
+    else:
+        download(url)
 
 
 def encode():
