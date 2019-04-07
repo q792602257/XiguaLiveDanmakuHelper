@@ -13,7 +13,7 @@ isDownload = False
 
 
 def download(url):
-    global isDownload
+    global isDownload, forceStopDownload
     path = datetime.strftime(datetime.now(), "%Y%m%d_%H%M.flv")
     p = requests.get(url, stream=True)
     if p.status_code != 200:
@@ -28,7 +28,7 @@ def download(url):
                 f.write(t)
             _size = os.path.getsize(path)
             modifyLastDownloadStatus("Download >{}< @ {:.2f}%".format(path, 100.0 * _size/config["p_s"]))
-            if _size > config["p_s"]:
+            if _size > config["p_s"] or forceStopDownload:
                 break
         modifyLastDownloadStatus("Finished Download >{}<".format(path))
     except Exception as e:
@@ -40,7 +40,9 @@ def download(url):
         os.remove(path)
         return False
     encodeQueue.put(path)
-    download(url)
+    if forceStopDownload:
+        download(url)
+        forceStopDownload = False
 
 
 def encode():
@@ -65,7 +67,6 @@ def upload(date=datetime.strftime(datetime.now(), "%Y_%m_%d")):
     while True:
         if isinstance(i, bool):
             if i is True:
-                appendUploadStatus("[{}]自动投稿中，请稍后".format(config["t_t"].format(date)))
                 b.finishUpload(config["t_t"].format(date), 17, config["tag"], config["des"],
                                source=config["src"], no_reprint=0)
                 b.clear()

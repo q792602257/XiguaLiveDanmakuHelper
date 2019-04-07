@@ -6,6 +6,14 @@ import json
 
 _config_fp = open("config.json","r",encoding="utf8")
 config = json.load(_config_fp)
+_config_fp.close()
+
+
+def reloadConfig():
+    global config, _config_fp
+    _config_fp = open("config.json", "r", encoding="utf8")
+    config = json.load(_config_fp)
+    _config_fp.close()
 
 dt_format="%Y/%m/%d %H:%M:%S"
 
@@ -13,6 +21,8 @@ broadcaster = ""
 streamUrl = ""
 isBroadcasting = False
 updateTime = ""
+
+forceStopDownload = False
 
 uploadQueue = queue.Queue()
 encodeQueue = queue.Queue()

@@ -8,8 +8,8 @@ from liveDownloader import run as RUN
 app = Flask("liveStatus")
 app.config['JSON_AS_ASCII'] = False
 CORS(app, supports_credentials=True)
-url_for('static', filename='index.html')
-url_for('static', filename='index.js')
+# url_for('static', filename='index.html')
+# url_for('static', filename='index.js')
 
 
 @app.route("/")
@@ -29,7 +29,28 @@ def readConfig():
 @app.route("/config", methods=["POST"])
 def writeConfig():
     # TODO : 完善
+    Common.reloadConfig()
     return jsonify({"message":"ok","code":200,"status":0,"data":request.form})
+
+
+@app.route("/encode/insert", methods=["POST"])
+def insertEncode():
+    if "filename" in request.form:
+        Common.encodeQueue.put(request.form["filename"])
+        return jsonify({"message":"ok","code":200,"status":0})
+
+
+@app.route("/upload/insert", methods=["POST"])
+def insertUpload():
+    if "filename" in request.form:
+        Common.uploadQueue.put(request.form["filename"])
+        return jsonify({"message":"ok","code":200,"status":0})
+
+
+@app.route("/upload/finish", methods=["POST"])
+def finishUpload():
+    Common.uploadQueue.put(True)
+    return jsonify({"message":"ok","code":200,"status":0})
 
 
 @app.route("/stats", methods=["GET"])

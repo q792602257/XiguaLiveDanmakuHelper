@@ -313,6 +313,7 @@ class Bilibili:
         """
         if len(self.videos) == 0:
             return
+        appendUploadStatus("[{}]投稿中，请稍后".format(title))
         self.session.headers['Content-Type'] = 'application/json; charset=utf-8'
         copyright = 2 if source else 1
         r = self.session.post('https://member.bilibili.com/x/vu/web/add?csrf=' + self.csrf,
