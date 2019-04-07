@@ -81,6 +81,7 @@ def upload(date=datetime.strftime(datetime.now(), "%Y_%m_%d")):
             b.preUpload(VideoPart(i, os.path.basename(i)))
         except Exception as e:
             appendError(e.__str__())
+            continue
         os.remove(i)
         i = uploadQueue.get()
 

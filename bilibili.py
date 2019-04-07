@@ -11,7 +11,7 @@ import base64
 import hashlib
 import requests
 from urllib import parse
-
+requests.adapters.DEFAULT_RETRIES = 10
 
 class VideoPart:
     def __init__(self, path, title='', desc=''):
