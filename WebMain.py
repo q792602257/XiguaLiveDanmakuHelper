@@ -73,6 +73,7 @@ def getAllStats():
         "config": {
             "forceNotBroadcasting": Common.forceNotBroadcasting,
             "forceStopDownload": Common.forceStopDownload,
+            "forceNotUpload": Common.forceNotUpload,
         }
     }})
 
@@ -95,6 +96,7 @@ def getConfigStats():
         "config": {
             "forceNotBroadcasting": Common.forceNotBroadcasting,
             "forceStopDownload": Common.forceStopDownload,
+            "forceNotUpload": Common.forceNotUpload,
         }
     }})
 

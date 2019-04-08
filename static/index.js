@@ -8,6 +8,7 @@ function update(){
                 $("#streamUrl").text(res.data.broadcast.streamUrl)
                 $("#forceNotBroadcasting").text(res.data.config.forceNotBroadcasting)
                 $("#forceStopDownload").text(res.data.config.forceStopDownload)
+                $("#forceNotUpload").text(res.data.config.forceNotUpload)
                 $("#updateTime").text(res.data.broadcast.updateTime)
                 $("#download").html(function(){
                     var ret = ""
