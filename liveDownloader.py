@@ -53,7 +53,7 @@ def encode():
     while True:
         i = encodeQueue.get()
         if forceNotEncode:
-            modifyLastUploadStatus("设置了不编码，所以[{}]不会编码".format(i))
+            modifyLastEncodeStatus("设置了不编码，所以[{}]不会编码".format(i))
             continue
         if os.path.exists(i):
             isEncode = True
