@@ -5,7 +5,7 @@
     <title>录播</title>
     <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
     <style type="text/css">
-        td{
+        td {
             border: solid 1px lightgrey;
         }
     </style>
@@ -46,6 +46,10 @@
             <td>是否设置强制不上传</td>
             <td><span id="forceNotUpload"></span></td>
         </tr>
+        <tr>
+            <td>是否设置强制不转码</td>
+            <td><span id="forceNotEncode"></span></td>
+        </tr>
     </table>
     <hr/>
     <h1>当前状态</h1>
@@ -69,6 +73,25 @@
         <tr>
             <td>操作日志</td>
             <td><span id="operation"></span></td>
+        </tr>
+    </table>
+    <hr/>
+    <h1>机器状态</h1>
+    <table>
+        <tr>
+            <td>CPU使用率</td>
+            <td><progress id="cpuP" max="100" value="0"></progress></td>
+            <td><span id="cpu"></span>%</td>
+        </tr>
+        <tr>
+            <td>内存使用率</td>
+            <td><progress id="memUsageP" max="100" value="0"></progress></td>
+            <td><span id="memUsed"></span>/<span id="memTotal"></span>(<span id="memUsage"></span>%)</td>
+        </tr>
+        <tr>
+            <td>磁盘使用率</td>
+            <td><progress id="diskUsageP" max="100" value="0"></progress></td>
+            <td><span id="diskUsed"></span>/<span id="diskTotal"></span>(<span id="diskUsage"></span>%)</td>
         </tr>
     </table>
 </div>

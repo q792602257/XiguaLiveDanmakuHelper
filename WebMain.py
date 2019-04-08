@@ -74,6 +74,7 @@ def getAllStats():
             "forceNotBroadcasting": Common.forceNotBroadcasting,
             "forceStopDownload": Common.forceStopDownload,
             "forceNotUpload": Common.forceNotUpload,
+            "forceNotEncode": Common.forceNotEncode,
         }
     }})
 

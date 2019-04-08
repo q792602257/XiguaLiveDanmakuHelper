@@ -25,7 +25,8 @@ updateTime = ""
 
 forceStopDownload = False
 forceNotBroadcasting = False
-forceNotUpload = False
+forceNotUpload = True
+forceNotEncode = True
 
 uploadQueue = queue.Queue()
 encodeQueue = queue.Queue()

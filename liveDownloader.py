@@ -49,8 +49,12 @@ def download(url):
 
 def encode():
     global isEncode
+    appendEncodeStatus("Encode Daemon Start")
     while True:
         i = encodeQueue.get()
+        if forceNotEncode:
+            modifyLastUploadStatus("设置了不编码，所以[{}]不会编码".format(i))
+            continue
         if os.path.exists(i):
             isEncode = True
             appendEncodeStatus("Encoding >{}< Start".format(i))
@@ -69,7 +73,7 @@ def upload(date=datetime.strftime(datetime.now(), "%Y_%m_%d")):
     appendUploadStatus("Upload Daemon Starting")
     while True:
         if forceNotUpload:
-            modifyLastUploadStatus("设置了不上传，所以不会上传了")
+            modifyLastUploadStatus("设置了不上传，所以[{}]不会上传了".format(i))
             i = uploadQueue.get()
             continue
         if isinstance(i, bool):
