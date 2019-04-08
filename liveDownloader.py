@@ -49,7 +49,7 @@ def download(url):
 
 def encode():
     global isEncode
-    appendEncodeStatus("Encode Daemon Start")
+    appendEncodeStatus("Encode Daemon Starting")
     while True:
         i = encodeQueue.get()
         if forceNotEncode:
