@@ -6,6 +6,7 @@ from flask import Flask, jsonify, request, redirect, render_template, Response
 import Common
 import threading
 from liveDownloader import run as RUN
+import psutil
 
 app = Flask("liveStatus")
 app.config['JSON_AS_ASCII'] = False
@@ -57,6 +58,7 @@ def finishUpload():
 
 @app.route("/stats", methods=["GET"])
 def getAllStats():
+    _disk = psutil.disk_usage("/")
     return jsonify({"message":"ok","code":200,"status":0,"data":{
         "download":Common.downloadStatus,
         "encode": Common.encodeStatus,
@@ -74,8 +76,24 @@ def getAllStats():
             "forceNotBroadcasting": Common.forceNotBroadcasting,
             "forceStopDownload": Common.forceStopDownload,
             "forceNotUpload": Common.forceNotUpload,
-            "forceNotEncode": Common.forceNotEncode,
-        }
+        },
+    }})
+
+
+@app.route("/stats/device", methods=["GET"])
+def getDeviceStatus():
+    _disk = psutil.disk_usage("/")
+    _mem  = psutil.virtual_memory()
+    return jsonify({"message":"ok","code":200,"status":0,"data":{
+        "status": {
+            "memTotal": Common.parseSize(_mem.total),
+            "memUsed": Common.parseSize(_mem.used),
+            "memUsage": _mem.percent,
+            "diskTotal": Common.parseSize(_disk.total),
+            "diskUsed": Common.parseSize(_disk.used),
+            "diskUsage": _disk.percent,
+            "cpu": psutil.cpu_percent(),
+        },
     }})
 
 

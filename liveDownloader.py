@@ -69,8 +69,8 @@ def encode():
 
 
 def upload(date=datetime.strftime(datetime.now(), "%Y_%m_%d")):
-    i = uploadQueue.get()
     appendUploadStatus("Upload Daemon Starting")
+    i = uploadQueue.get()
     while True:
         if forceNotUpload:
             modifyLastUploadStatus("设置了不上传，所以[{}]不会上传了".format(i))
