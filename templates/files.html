@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="zh_CN">
+<head>
+    <meta charset="UTF-8">
+    <title>文件</title>
+    <style>
+        td{
+            border: solid 1px lightgray;
+        }
+    </style>
+</head>
+<body>
+<h1>所有录像文件</h1>
+<table>
+    <tr>
+        <td>文件名</td><td>文件大小</td><td>链接</td>
+    </tr>
+    {%for i in files %}
+    <tr>
+        <td>{{i.name}}</td><td>{{i.size}}</td><td><a href="/files/download/{{i.name}}">下载文件</a></td>
+    </tr>
+    {% endfor %}
+</table>
+</body>
+</html>

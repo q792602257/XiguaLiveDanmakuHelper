@@ -17,20 +17,20 @@ def download(url):
     path = datetime.strftime(datetime.now(), "%Y%m%d_%H%M.flv")
     p = requests.get(url, stream=True)
     if p.status_code != 200:
-        appendDownloadStatus("Download [{}] Response 404 ,will stop looping".format(url))
+        appendDownloadStatus("Download with Response 404, maybe broadcaster is not broadcasting")
         return True
     isDownload = True
-    appendDownloadStatus("Starting Download >{}<".format(path))
+    appendDownloadStatus("Download >{}< Start".format(path))
     f = open(path, "wb")
     try:
         for t in p.iter_content(chunk_size=64 * 1024):
             if t:
                 f.write(t)
             _size = os.path.getsize(path)
-            modifyLastDownloadStatus("Download >{}< @ {:.2f}%".format(path, 100.0 * _size/config["p_s"]))
+            modifyLastDownloadStatus("Downloading >{}< @ {:.2f}%".format(path, 100.0 * _size/config["p_s"]))
             if _size > config["p_s"] or forceStopDownload:
                 break
-        modifyLastDownloadStatus("Finished Download >{}<".format(path))
+        modifyLastDownloadStatus("Download >{}< Finished".format(path))
     except Exception as e:
         appendError("Download >{}< With Exception {}".format(path, datetime.strftime(datetime.now(), "%y%m%d %H%M"),
                                                                e.__str__()))
@@ -53,10 +53,10 @@ def encode():
         i = encodeQueue.get()
         if os.path.exists(i):
             isEncode = True
-            appendEncodeStatus("Start Encoding >{}<".format(i))
+            appendEncodeStatus("Encoding >{}< Start".format(i))
             os.system("ffmpeg -i {} -c:v copy -c:a copy -f mp4 {} -y".format(i, i[:13] + ".mp4"))
             uploadQueue.put(i[:13] + ".mp4")
-            modifyLastEncodeStatus("Finished Encoding >{}<".format(i))
+            modifyLastEncodeStatus("Encode >{}< Finished".format(i))
             if config["mv"]:
                 shutil.move(i, config["mtd"])
             elif config["del"]:
@@ -107,10 +107,10 @@ def run(name):
     _count = 0
     _count_error = 0
     while True:
-        if api.isLive:
+        if api.isLive and not forceNotBroadcasting:
             if d is None:
                 d = datetime.strftime(datetime.now(), "%Y_%m_%d")
-            if not t.is_alive():
+            if not t.is_alive() and not forceStopDownload:
                 _count_error += 1
                 _preT = api.playlist
                 t = threading.Thread(target=download, args=(_preT,))

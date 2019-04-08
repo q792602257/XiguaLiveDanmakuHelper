@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh_CN">
+<head>
+    <meta charset="UTF-8">
+    <title>录播</title>
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+    <style type="text/css">
+        td{
+            border: solid 1px lightgrey;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <h1>基本信息</h1>
+    <table>
+        <tr>
+            <td>主播名</td>
+            <td><span id="broadcaster"></span></td>
+        </tr>
+        <tr>
+            <td>是否正在直播</td>
+            <td><span id="isBroadcasting"></span></td>
+        </tr>
+        <tr>
+            <td>直播视频流地址</td>
+            <td><span id="streamUrl"></span></td>
+        </tr>
+        <tr>
+            <td>信息更新时间</td>
+            <td><span id="updateTime"></span></td>
+        </tr>
+    </table>
+    <h1>特殊设置</h1>
+    <table>
+        <tr>
+            <td>是否设置强制认为不直播</td>
+            <td><span id="forceNotBroadcasting"></span></td>
+        </tr>
+        <tr>
+            <td>是否设置强制不下载</td>
+            <td><span id="forceStopDownload"></span></td>
+        </tr>
+    </table>
+    <hr/>
+    <h1>当前状态</h1>
+    <table>
+        <tr>
+            <td>下载日志</td>
+            <td><span id="download"></span></td>
+        </tr>
+        <tr>
+            <td>转码日志</td>
+            <td><span id="encode"></span></td>
+        </tr>
+        <tr>
+            <td>上传日志</td>
+            <td><span id="upload"></span></td>
+        </tr>
+        <tr>
+            <td>错误日志</td>
+            <td><span id="error"></span></td>
+        </tr>
+        <tr>
+            <td>操作日志</td>
+            <td><span id="operation"></span></td>
+        </tr>
+    </table>
+    <hr/>
+</div>
+</body>
+<script src="index.js"></script>
+</html>

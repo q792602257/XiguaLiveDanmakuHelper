@@ -15,6 +15,7 @@ def reloadConfig():
     config = json.load(_config_fp)
     _config_fp.close()
 
+
 dt_format="%Y/%m/%d %H:%M:%S"
 
 broadcaster = ""
@@ -23,6 +24,7 @@ isBroadcasting = False
 updateTime = ""
 
 forceStopDownload = False
+forceNotBroadcasting = False
 
 uploadQueue = queue.Queue()
 encodeQueue = queue.Queue()
@@ -31,6 +33,18 @@ uploadStatus = []
 downloadStatus = []
 encodeStatus = []
 errors = []
+
+
+def parseSize(size):
+    K = size/1024.0
+    if K > 1000:
+        M = K/1024.0
+        if M > 1000:
+            return "{:.2f}GB".format(M / 1024.0)
+        else:
+            return "{:.2f}MB".format(M)
+    else:
+        return "{:.2f}MB".format(K)
 
 
 def appendUploadStatus(obj):
@@ -44,7 +58,7 @@ def appendUploadStatus(obj):
             "datetime": datetime.strftime(datetime.now(), dt_format),
             "message": str(obj)
         })
-    uploadStatus = uploadStatus[-10:]
+    uploadStatus = uploadStatus[-config["l_c"]:]
 
 
 def modifyLastUploadStatus(obj):
@@ -69,7 +83,7 @@ def appendEncodeStatus(obj):
             "datetime": datetime.strftime(datetime.now(), dt_format),
             "message": str(obj)
         })
-    encodeStatus = encodeStatus[-10:]
+    encodeStatus = encodeStatus[-config["l_c"]:]
 
 
 def modifyLastEncodeStatus(obj):
@@ -94,7 +108,7 @@ def appendDownloadStatus(obj):
             "datetime": datetime.strftime(datetime.now(), dt_format),
             "message": str(obj)
         })
-    downloadStatus = downloadStatus[-10:]
+    downloadStatus = downloadStatus[-config["l_c"]:]
 
 
 def modifyLastDownloadStatus(obj):
@@ -119,7 +133,7 @@ def appendError(obj):
             "datetime": datetime.strftime(datetime.now(), dt_format),
             "message": str(obj)
         })
-    errors = errors[-10:]
+    errors = errors[-config["elc"]:]
 
 
 class downloader(XiGuaLiveApi):
@@ -127,7 +141,7 @@ class downloader(XiGuaLiveApi):
     playlist = None
 
     def updRoomInfo(self):
-        global broadcaster, isBroadcasting, updateTime
+        global broadcaster, isBroadcasting, updateTime, forceNotBroadcasting, forceStopDownload
         super(downloader, self).updRoomInfo()
         updateTime = datetime.strftime(datetime.now(), dt_format)
         broadcaster = self.roomLiver
@@ -135,6 +149,9 @@ class downloader(XiGuaLiveApi):
         if self.isLive:
             self.updPlayList()
         else:
+            forceStopDownload = False
+            forceNotBroadcasting = False
+            self.playlist = False
             self.files = []
 
     def updPlayList(self):

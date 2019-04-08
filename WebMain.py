@@ -1,6 +1,8 @@
+import os
+from glob import glob
 from time import sleep
 from flask_cors import CORS
-from flask import Flask, jsonify, request, redirect, url_for
+from flask import Flask, jsonify, request, redirect, render_template, Response
 import Common
 import threading
 from liveDownloader import run as RUN
@@ -58,19 +60,25 @@ def getAllStats():
     return jsonify({"message":"ok","code":200,"status":0,"data":{
         "download":Common.downloadStatus,
         "encode": Common.encodeStatus,
+        "encodeQueueSize": Common.encodeQueue.qsize(),
         "upload": Common.uploadStatus,
+        "uploadQueueSize": Common.uploadQueue.qsize(),
         "error": Common.errors,
         "broadcast": {
             "broadcaster": Common.broadcaster.__str__(),
             "isBroadcasting": Common.isBroadcasting,
             "streamUrl": Common.streamUrl,
             "updateTime": Common.updateTime
+        },
+        "config": {
+            "forceNotBroadcasting": Common.forceNotBroadcasting,
+            "forceStopDownload": Common.forceStopDownload,
         }
     }})
 
 
 @app.route("/stats/broadcast", methods=["GET"])
-def geBroadcastStats():
+def getBroadcastStats():
     return jsonify({"message":"ok","code":200,"status":0,"data":{
         "broadcast": {
             "broadcaster": Common.broadcaster.__str__(),
@@ -81,8 +89,18 @@ def geBroadcastStats():
     }})
 
 
+@app.route("/stats/config", methods=["GET"])
+def getConfigStats():
+    return jsonify({"message":"ok","code":200,"status":0,"data":{
+        "config": {
+            "forceNotBroadcasting": Common.forceNotBroadcasting,
+            "forceStopDownload": Common.forceStopDownload,
+        }
+    }})
+
+
 @app.route("/stats/download", methods=["GET"])
-def geDownloadStats():
+def getDownloadStats():
     return jsonify({"message":"ok","code":200,"status":0,"data":{
         "download":Common.downloadStatus,
     }})
@@ -92,6 +110,7 @@ def geDownloadStats():
 def getEncodeStats():
     return jsonify({"message":"ok","code":200,"status":0,"data":{
         "encode": Common.encodeStatus,
+        "encodeQueueSize": Common.encodeQueue.qsize(),
     }})
 
 
@@ -99,7 +118,28 @@ def getEncodeStats():
 def getUploadStats():
     return jsonify({"message":"ok","code":200,"status":0,"data":{
         "upload": Common.uploadStatus,
+        "uploadQueueSize": Common.uploadQueue.qsize(),
     }})
+
+
+@app.route("/files/", methods=["GET"])
+def fileIndex():
+    a = []
+    for i in (glob("*.mp4") + glob("*.flv")):
+        a.append({
+            "name": i,
+            "size": Common.parseSize(os.path.getsize(i))
+        })
+    return render_template("files.html",files=a)
+
+
+@app.route("/files/download/<path>", methods=["GET"])
+def fileDownload(path):
+    def generate(file):
+        with open(file, "rb") as f:
+            for row in f:
+                yield row
+    return Response(generate(path), mimetype='application/octet-stream')
 
 
 def SubThread():

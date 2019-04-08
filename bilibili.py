@@ -4,6 +4,7 @@ import os
 import re
 import json as JSON
 from datetime import datetime
+from time import sleep
 from Common import appendUploadStatus, modifyLastUploadStatus
 import rsa
 import math
@@ -11,7 +12,7 @@ import base64
 import hashlib
 import requests
 from urllib import parse
-requests.adapters.DEFAULT_RETRIES = 10
+
 
 class VideoPart:
     def __init__(self, path, title='', desc=''):
@@ -25,6 +26,7 @@ class Bilibili:
         self.files = []
         self.videos = []
         self.session = requests.session()
+        self.session.keep_alive = False
         if cookie:
             self.session.headers["cookie"] = cookie
             self.csrf = re.search('bili_jct=(.*?);', cookie).group(1)
@@ -203,6 +205,7 @@ class Bilibili:
             filepath = part.path
             filename = os.path.basename(filepath)
             filesize = os.path.getsize(filepath)
+            appendUploadStatus("Upload >{}< Started".format(filepath))
             self.files.append(part)
             r = self.session.get('https://member.bilibili.com/preupload?'
                                  'os=upos&upcdn=ws&name={name}&size={size}&r=upos&profile=ugcupos%2Fyb&ssl=0'
@@ -237,12 +240,13 @@ class Bilibili:
             # {"upload_id":"72eb747b9650b8c7995fdb0efbdc2bb6","key":"\/i181012ws2wg1tb7tjzswk2voxrwlk1u.mp4","OK":1,"bucket":"ugc"}
             json = r.json()
             upload_id = json['upload_id']
-            appendUploadStatus("Upload >{}< Started".format(filepath))
             with open(filepath, 'rb') as f:
                 chunks_num = math.ceil(filesize / chunk_size)
                 chunks_index = 0
                 chunks_data = f.read(chunk_size)
+                modifyLastUploadStatus("Uploading >{}< @ {:.2f}%".format(filepath, 100.0 * chunks_index / chunks_num))
                 while True:
+                    _d = datetime.now()
                     if not chunks_data:
                         break
                     r = self.session.put('https:{endpoint}/{upos_uri}?'
@@ -265,6 +269,8 @@ class Bilibili:
                     chunks_data = f.read(chunk_size)
                     chunks_index += 1  # start with 0
                     modifyLastUploadStatus("Uploading >{}< @ {:.2f}%".format(filepath, 100.0*chunks_index/chunks_num))
+                    if (datetime.now()-_d).seconds < 2:
+                        sleep(1)
 
                 # NOT DELETE! Refer to https://github.com/comwrg/bilibiliupload/issues/15#issuecomment-424379769
                 self.session.post('https:{endpoint}/{upos_uri}?'
@@ -330,7 +336,7 @@ class Bilibili:
                                   "order_id": 0,
                                   "videos": self.videos}
                               )
-        appendUploadStatus(">{}< Published | Result : {}".format(title, r.text))
+        appendUploadStatus("[{}] Published | Result : {}".format(title, r.text))
 
     def reloadFromPrevious(self):
         if os.path.exists("uploaded.json"):
