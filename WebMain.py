@@ -161,7 +161,10 @@ def fileDownload(path):
         with open(file, "rb") as f:
             for row in f:
                 yield row
-    return Response(generate(path), mimetype='application/octet-stream')
+    if os.path.exists(path):
+        return Response(generate(path), mimetype='application/octet-stream')
+    else:
+        return Response(status=404)
 
 
 def SubThread():
