@@ -45,11 +45,9 @@ def getCurrentStatus():
     _net  = psutil.net_io_counters()
     if 60 > (datetime.now() - network["currentTime"]).seconds > 0:
         _outSpeed = (_net.bytes_sent - network["out"]["currentByte"])/getTimeDelta(datetime.now(),network["currentTime"])
-    else:
-        _outSpeed = 0
-    if 60 > (datetime.now() - network["currentTime"]).seconds > 0:
         _inSpeed = (_net.bytes_recv - network["in"]["currentByte"])/getTimeDelta(datetime.now(),network["currentTime"])
     else:
+        _outSpeed = 0
         _inSpeed = 0
     updateNetwork()
     return {
