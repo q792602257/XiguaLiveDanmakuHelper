@@ -21,4 +21,4 @@ function deviceUpdate(){
 }
 
 deviceUpdate()
-setInterval(deviceUpdate,2000)
+setInterval(deviceUpdate,4000)

@@ -11,6 +11,8 @@ function taskUpdate(){
                 $("#forceNotUpload").text(res.data.config.forceNotUpload)
                 $("#forceNotEncode").text(res.data.config.forceNotEncode)
                 $("#updateTime").text(res.data.broadcast.updateTime)
+                $("#encodeQueueSize").text(res.data.encodeQueueSize)
+                $("#uploadQueueSize").text(res.data.uploadQueueSize)
                 $("#download").html(function(){
                     var ret = ""
                     res.data.download.reverse().forEach(function(obj){
@@ -35,6 +37,13 @@ function taskUpdate(){
                 $("#error").html(function(){
                     var ret = ""
                     res.data.error.reverse().forEach(function(obj){
+                        ret += "<tr><td>" + obj.datetime + "</td><td>" + obj.message + "</td></tr>"
+                    })
+                    return "<table>" + ret + "</table>"
+                })
+                $("#operation").html(function(){
+                    var ret = ""
+                    res.data.operation.reverse().forEach(function(obj){
                         ret += "<tr><td>" + obj.datetime + "</td><td>" + obj.message + "</td></tr>"
                     })
                     return "<table>" + ret + "</table>"

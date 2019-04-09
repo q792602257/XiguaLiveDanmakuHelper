@@ -39,6 +39,7 @@ def writeConfig():
 @app.route("/force/not/upload", methods=["POST"])
 def toggleForceNotUpload():
     Common.forceNotUpload = not Common.forceNotUpload
+    Common.appendOperation("将强制不上传的值改为：{}".format(Common.forceNotUpload))
     return jsonify({"message":"ok","code":200,"status":0,"data":{
         "forceNotUpload": Common.forceNotUpload,
     }})
@@ -47,6 +48,7 @@ def toggleForceNotUpload():
 @app.route("/force/not/encode", methods=["POST"])
 def toggleForceNotEncode():
     Common.forceNotEncode = not Common.forceNotEncode
+    Common.appendOperation("将强制不编码的值改为：{}".format(Common.forceNotEncode))
     return jsonify({"message":"ok","code":200,"status":0,"data":{
         "forceNotEncode": Common.forceNotEncode,
     }})
@@ -55,6 +57,7 @@ def toggleForceNotEncode():
 @app.route("/force/not/download", methods=["POST"])
 def toggleForceNotDownload():
     Common.forceNotDownload = not Common.forceNotDownload
+    Common.appendOperation("将强制不下载的值改为：{}".format(Common.forceNotDownload))
     return jsonify({"message":"ok","code":200,"status":0,"data":{
         "forceNotDownload": Common.forceNotDownload,
     }})
@@ -70,20 +73,23 @@ def toggleForceNotBroadcast():
 
 @app.route("/encode/insert", methods=["POST"])
 def insertEncode():
-    if "filename" in request.form:
+    if "filename" in request.form and os.path.exists(request.form["filename"]):
+        Common.appendOperation("添加编码文件：{}".format(request.form["filename"]))
         Common.encodeQueue.put(request.form["filename"])
         return jsonify({"message":"ok","code":200,"status":0})
 
 
 @app.route("/upload/insert", methods=["POST"])
 def insertUpload():
-    if "filename" in request.form:
+    if "filename" in request.form and os.path.exists(request.form["filename"]):
+        Common.appendOperation("添加上传文件：{}".format(request.form["filename"]))
         Common.uploadQueue.put(request.form["filename"])
         return jsonify({"message":"ok","code":200,"status":0})
 
 
 @app.route("/upload/finish", methods=["POST"])
 def finishUpload():
+    Common.appendOperation("设置当前已完成上传")
     Common.uploadQueue.put(True)
     return jsonify({"message":"ok","code":200,"status":0})
 
@@ -97,6 +103,7 @@ def getAllStats():
         "upload": Common.uploadStatus,
         "uploadQueueSize": Common.uploadQueue.qsize(),
         "error": Common.errors,
+        "operation": Common.operations,
         "broadcast": {
             "broadcaster": Common.broadcaster.__str__(),
             "isBroadcasting": Common.isBroadcasting,
@@ -202,6 +209,6 @@ def SubThread():
             t.start()
 
 
-# p = threading.Thread(target=SubThread)
-# p.setDaemon(True)
-# p.start()
+p = threading.Thread(target=SubThread)
+p.setDaemon(True)
+p.start()

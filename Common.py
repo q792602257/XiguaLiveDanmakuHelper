@@ -1,8 +1,10 @@
+import os
 import queue
 from datetime import datetime
 import psutil
 from api import XiGuaLiveApi
 import json
+from bilibili import Bilibili
 
 _config_fp = open("config.json","r",encoding="utf8")
 config = json.load(_config_fp)
@@ -41,9 +43,11 @@ def getTimeDelta(a, b):
 
 def getCurrentStatus():
     _disk = psutil.disk_usage("/")
+    if _disk.percent > 85:
+        os.system("rm -f `find . -ctime 1 -name '*.flv'`")
     _mem  = psutil.virtual_memory()
     _net  = psutil.net_io_counters()
-    if 60 > (datetime.now() - network["currentTime"]).seconds > 0:
+    if 60 > getTimeDelta(datetime.now(),network["currentTime"]) > 0:
         _outSpeed = (_net.bytes_sent - network["out"]["currentByte"])/getTimeDelta(datetime.now(),network["currentTime"])
         _inSpeed = (_net.bytes_recv - network["in"]["currentByte"])/getTimeDelta(datetime.now(),network["currentTime"])
     else:
@@ -79,8 +83,8 @@ updateTime = ""
 
 forceNotDownload = False
 forceNotBroadcasting = False
-forceNotUpload = True
-forceNotEncode = True
+forceNotUpload = False
+forceNotEncode = False
 
 uploadQueue = queue.Queue()
 encodeQueue = queue.Queue()
@@ -89,6 +93,21 @@ uploadStatus = []
 downloadStatus = []
 encodeStatus = []
 errors = []
+operations = []
+
+
+def appendOperation(obj):
+    global operations
+    if isinstance(obj, dict):
+        if "datetime" not in obj:
+            obj["datetime"] = datetime.strftime(datetime.now(), dt_format)
+        operations.append(obj)
+    else:
+        operations.append({
+            "datetime": datetime.strftime(datetime.now(), dt_format),
+            "message": str(obj)
+        })
+    operations = operations[-config["elc"]:]
 
 
 def parseSize(size):
@@ -251,3 +270,5 @@ class downloader(XiGuaLiveApi):
     def onSubscribe(self, user):
         pass
 
+
+api = downloader(config["l_u"])
