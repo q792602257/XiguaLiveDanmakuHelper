@@ -336,7 +336,7 @@ class Bilibili:
                                   "order_id": 0,
                                   "videos": self.videos}
                               )
-        Common.appendUploadStatus("[{}] Published | Result : {}".format(title, r.text))
+        Common.modifyLastUploadStatus("[{}] Published | Result : {}".format(title, r.text))
 
     def reloadFromPrevious(self):
         if os.path.exists("uploaded.json"):

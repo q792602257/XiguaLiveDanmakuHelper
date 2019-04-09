@@ -37,6 +37,7 @@ def download(url):
     f.close()
     isDownload = False
     if os.path.getsize(path) < 1024 * 1024:
+        Common.modifyLastDownloadStatus("Downloaded File >{}< is too small, will ignore it".format(path))
         os.remove(path)
         return False
     if Common.forceNotDownload:

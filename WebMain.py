@@ -32,6 +32,7 @@ def readConfig():
 @app.route("/config", methods=["POST"])
 def writeConfig():
     # TODO : 完善
+    Common.appendOperation("更新配置")
     Common.reloadConfig()
     return jsonify({"message":"ok","code":200,"status":0,"data":request.form})
 

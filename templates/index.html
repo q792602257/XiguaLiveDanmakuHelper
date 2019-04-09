@@ -50,28 +50,29 @@
     <table>
         <tr>
             <td>下载日志</td>
-            <td><span id="download"></span></td>
+            <td colspan="2"><span id="download"></span></td>
         </tr>
         <tr>
             <td>转码日志</td>
+            <td>转码队列<br><span id="encodeQueueSize"></span></td>
             <td><span id="encode"></span></td>
-            <td>转码队列<span id="encodeQueueSize"></span></td>
         </tr>
         <tr>
             <td>上传日志</td>
+            <td>上传队列<br><span id="uploadQueueSize"></span></td>
             <td><span id="upload"></span></td>
-            <td>上传队列<span id="uploadQueueSize"></span></td>
         </tr>
         <tr>
             <td>错误日志</td>
-            <td><span id="error"></span></td>
+            <td colspan="2"><span id="error"></span></td>
         </tr>
         <tr>
             <td>操作日志</td>
-            <td><span id="operation"></span></td>
+            <td colspan="2"><span id="operation"></span></td>
         </tr>
     </table>
     <hr/>
+    <h3><a href="/files/">所有录播文件</a></h3>
     {% include 'device.html' %}
 </div>
 <script src="../static/index.js"></script>
