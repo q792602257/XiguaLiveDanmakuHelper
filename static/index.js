@@ -7,7 +7,7 @@ function taskUpdate(){
                 $("#isBroadcasting").text(res.data.broadcast.isBroadcasting)
                 $("#streamUrl").text(res.data.broadcast.streamUrl)
                 $("#forceNotBroadcasting").text(res.data.config.forceNotBroadcasting)
-                $("#forceStopDownload").text(res.data.config.forceStopDownload)
+                $("#forceNotDownload").text(res.data.config.forceNotDownload)
                 $("#forceNotUpload").text(res.data.config.forceNotUpload)
                 $("#forceNotEncode").text(res.data.config.forceNotEncode)
                 $("#updateTime").text(res.data.broadcast.updateTime)

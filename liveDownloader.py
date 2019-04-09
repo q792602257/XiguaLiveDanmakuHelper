@@ -13,7 +13,7 @@ isDownload = False
 
 
 def download(url):
-    global isDownload, forceStopDownload
+    global isDownload, forceNotDownload
     path = datetime.strftime(datetime.now(), "%Y%m%d_%H%M.flv")
     p = requests.get(url, stream=True)
     if p.status_code != 200:
@@ -28,7 +28,7 @@ def download(url):
                 f.write(t)
             _size = os.path.getsize(path)
             modifyLastDownloadStatus("Downloading >{}< @ {:.2f}%".format(path, 100.0 * _size/config["p_s"]))
-            if _size > config["p_s"] or forceStopDownload:
+            if _size > config["p_s"] or forceNotDownload:
                 break
         modifyLastDownloadStatus("Download >{}< Finished".format(path))
     except Exception as e:
@@ -36,14 +36,13 @@ def download(url):
                                                                e.__str__()))
     f.close()
     isDownload = False
-    if os.path.getsize(path) == 0:
+    if os.path.getsize(path) < 1024 * 1024:
         os.remove(path)
         return False
-    encodeQueue.put(path)
-    if forceStopDownload:
-        forceStopDownload = False
+    if forceNotDownload:
         return
     else:
+        encodeQueue.put(path)
         download(url)
 
 
@@ -53,7 +52,8 @@ def encode():
     while True:
         i = encodeQueue.get()
         if forceNotEncode:
-            modifyLastEncodeStatus("设置了不编码，所以[{}]不会编码".format(i))
+            appendEncodeStatus("设置了不编码，所以[{}]不会编码".format(i))
+            uploadQueue.put(i)
             continue
         if os.path.exists(i):
             isEncode = True
@@ -73,7 +73,7 @@ def upload(date=datetime.strftime(datetime.now(), "%Y_%m_%d")):
     i = uploadQueue.get()
     while True:
         if forceNotUpload:
-            modifyLastUploadStatus("设置了不上传，所以[{}]不会上传了".format(i))
+            appendUploadStatus("设置了不上传，所以[{}]不会上传了".format(i))
             i = uploadQueue.get()
             continue
         if isinstance(i, bool):
@@ -119,7 +119,7 @@ def run(name):
         if api.isLive and not forceNotBroadcasting:
             if d is None:
                 d = datetime.strftime(datetime.now(), "%Y_%m_%d")
-            if not t.is_alive() and not forceStopDownload:
+            if not t.is_alive() and not forceNotDownload:
                 _count_error += 1
                 _preT = api.playlist
                 t = threading.Thread(target=download, args=(_preT,))

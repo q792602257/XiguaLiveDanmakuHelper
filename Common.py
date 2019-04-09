@@ -23,7 +23,7 @@ streamUrl = ""
 isBroadcasting = False
 updateTime = ""
 
-forceStopDownload = False
+forceNotDownload = False
 forceNotBroadcasting = False
 forceNotUpload = True
 forceNotEncode = True
@@ -143,7 +143,7 @@ class downloader(XiGuaLiveApi):
     playlist = None
 
     def updRoomInfo(self):
-        global broadcaster, isBroadcasting, updateTime, forceNotBroadcasting, forceStopDownload
+        global broadcaster, isBroadcasting, updateTime, forceNotBroadcasting, forceNotDownload
         super(downloader, self).updRoomInfo()
         updateTime = datetime.strftime(datetime.now(), dt_format)
         broadcaster = self.roomLiver
@@ -151,7 +151,7 @@ class downloader(XiGuaLiveApi):
         if self.isLive:
             self.updPlayList()
         else:
-            forceStopDownload = False
+            forceNotDownload = False
             forceNotBroadcasting = False
             self.playlist = False
             self.files = []

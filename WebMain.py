@@ -36,6 +36,38 @@ def writeConfig():
     return jsonify({"message":"ok","code":200,"status":0,"data":request.form})
 
 
+@app.route("/force/not/upload", methods=["POST"])
+def toggleForceNotUpload():
+    Common.forceNotUpload = not Common.forceNotUpload
+    return jsonify({"message":"ok","code":200,"status":0,"data":{
+        "forceNotUpload": Common.forceNotUpload,
+    }})
+
+
+@app.route("/force/not/encode", methods=["POST"])
+def toggleForceNotEncode():
+    Common.forceNotEncode = not Common.forceNotEncode
+    return jsonify({"message":"ok","code":200,"status":0,"data":{
+        "forceNotEncode": Common.forceNotEncode,
+    }})
+
+
+@app.route("/force/not/download", methods=["POST"])
+def toggleForceNotDownload():
+    Common.forceNotDownload = not Common.forceNotDownload
+    return jsonify({"message":"ok","code":200,"status":0,"data":{
+        "forceNotDownload": Common.forceNotDownload,
+    }})
+
+
+@app.route("/force/not/broadcast", methods=["POST"])
+def toggleForceNotBroadcast():
+    Common.forceNotBroadcasting = not Common.forceNotBroadcasting
+    return jsonify({"message":"ok","code":200,"status":0,"data":{
+        "forceNotBroadcasting": Common.forceNotBroadcasting,
+    }})
+
+
 @app.route("/encode/insert", methods=["POST"])
 def insertEncode():
     if "filename" in request.form:
@@ -74,7 +106,7 @@ def getAllStats():
         },
         "config": {
             "forceNotBroadcasting": Common.forceNotBroadcasting,
-            "forceStopDownload": Common.forceStopDownload,
+            "forceNotDownload": Common.forceNotDownload,
             "forceNotUpload": Common.forceNotUpload,
             "forceNotEncode": Common.forceNotEncode,
         },
@@ -115,7 +147,7 @@ def getConfigStats():
     return jsonify({"message":"ok","code":200,"status":0,"data":{
         "config": {
             "forceNotBroadcasting": Common.forceNotBroadcasting,
-            "forceStopDownload": Common.forceStopDownload,
+            "forceNotDownload": Common.forceNotDownload,
             "forceNotUpload": Common.forceNotUpload,
         }
     }})
