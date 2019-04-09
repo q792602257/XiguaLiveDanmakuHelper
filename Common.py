@@ -1,12 +1,68 @@
 import queue
 from datetime import datetime
-
+import psutil
 from api import XiGuaLiveApi
 import json
 
 _config_fp = open("config.json","r",encoding="utf8")
 config = json.load(_config_fp)
 _config_fp.close()
+
+
+network = {
+    "currentTime": datetime.now(),
+    "out":{
+        "currentByte":psutil.net_io_counters().bytes_sent,
+    },
+    "in":{
+        "currentByte": psutil.net_io_counters().bytes_recv,
+    }
+}
+
+
+def updateNetwork():
+    global network
+    network = {
+        "currentTime": datetime.now(),
+        "out":{
+            "currentByte":psutil.net_io_counters().bytes_sent,
+        },
+        "in":{
+            "currentByte": psutil.net_io_counters().bytes_recv,
+        }
+    }
+
+
+def getTimeDelta(a, b):
+    sec = (a - b).seconds
+    ms  = (a - b).microseconds
+    return sec+(ms/100000.0)
+
+
+def getCurrentStatus():
+    _disk = psutil.disk_usage("/")
+    _mem  = psutil.virtual_memory()
+    _net  = psutil.net_io_counters()
+    if 60 > (datetime.now() - network["currentTime"]).seconds > 0:
+        _outSpeed = (_net.bytes_sent - network["out"]["currentByte"])/getTimeDelta(datetime.now(),network["currentTime"])
+    else:
+        _outSpeed = 0
+    if 60 > (datetime.now() - network["currentTime"]).seconds > 0:
+        _inSpeed = (_net.bytes_recv - network["in"]["currentByte"])/getTimeDelta(datetime.now(),network["currentTime"])
+    else:
+        _inSpeed = 0
+    updateNetwork()
+    return {
+        "memTotal": parseSize(_mem.total),
+        "memUsed": parseSize(_mem.used),
+        "memUsage": _mem.percent,
+        "diskTotal": parseSize(_disk.total),
+        "diskUsed": parseSize(_disk.used),
+        "diskUsage": _disk.percent,
+        "cpu": psutil.cpu_percent(),
+        "outSpeed": parseSize(_outSpeed),
+        "inSpeed": parseSize(_inSpeed),
+    }
 
 
 def reloadConfig():
@@ -46,7 +102,7 @@ def parseSize(size):
         else:
             return "{:.2f}MB".format(M)
     else:
-        return "{:.2f}MB".format(K)
+        return "{:.2f}KB".format(K)
 
 
 def appendUploadStatus(obj):
