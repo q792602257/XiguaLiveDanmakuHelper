@@ -198,14 +198,14 @@ def fileDownload(path):
 
 
 def SubThread():
-    t = threading.Thread(target=RUN, args=(Common.config['l_u'],))
+    t = threading.Thread(target=RUN, args=())
     t.setDaemon(True)
     t.start()
     while True:
         if t.is_alive():
             sleep(240)
         else:
-            t = threading.Thread(target=RUN, args=(Common.config['l_u'],))
+            t = threading.Thread(target=RUN, args=())
             t.setDaemon(True)
             t.start()
 

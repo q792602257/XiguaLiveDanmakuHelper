@@ -43,8 +43,6 @@ def getTimeDelta(a, b):
 
 def getCurrentStatus():
     _disk = psutil.disk_usage("/")
-    if _disk.percent > 85:
-        os.system("rm -f `find . -ctime 1 -name '*.flv'`")
     _mem  = psutil.virtual_memory()
     _net  = psutil.net_io_counters()
     _delta= getTimeDelta(datetime.now(),network["currentTime"])
@@ -52,6 +50,8 @@ def getCurrentStatus():
         _inSpeed = (_net.bytes_recv - network["in"]["currentByte"])/_delta
         _outSpeed = (_net.bytes_sent - network["out"]["currentByte"])/_delta
     else:
+        if _disk.percent > 85:
+            os.system(r"find ./ \( -mtime 1 -o -mtime 2 -o -mtime 3 \) -name '*.flv' -delete")
         _outSpeed = 0
         _inSpeed = 0
     updateNetwork()
