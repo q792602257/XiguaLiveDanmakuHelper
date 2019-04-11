@@ -10,6 +10,7 @@ _config_fp = open("config.json","r",encoding="utf8")
 config = json.load(_config_fp)
 _config_fp.close()
 
+_do_move_time = datetime.now()
 
 network = {
     "currentTime": datetime.now(),
@@ -42,16 +43,18 @@ def getTimeDelta(a, b):
 
 
 def getCurrentStatus():
+    global _do_move_time
     _disk = psutil.disk_usage("/")
     _mem  = psutil.virtual_memory()
     _net  = psutil.net_io_counters()
     _delta= getTimeDelta(datetime.now(),network["currentTime"])
+    if _disk.percent > config["max"] and getTimeDelta(datetime.now(), _do_move_time) > 3600:
+        _do_move_time = datetime.now()
+        os.system(config["dow"])
     if 60 > _delta > 0:
         _inSpeed = (_net.bytes_recv - network["in"]["currentByte"])/_delta
         _outSpeed = (_net.bytes_sent - network["out"]["currentByte"])/_delta
     else:
-        if _disk.percent > 85:
-            os.system(r"find ./ \( -mtime 1 -o -mtime 2 -o -mtime 3 \) -name '*.flv' -delete")
         _outSpeed = 0
         _inSpeed = 0
     updateNetwork()
