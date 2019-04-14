@@ -161,9 +161,12 @@ class XiGuaLiveApi:
             if "room" not in d and d["room"] is None:
                 self.apiChangedError("Api发生改变，请及时联系我", d)
                 return False
+            self.roomLiver = User(d)
+            if self.name not in str(self.roomLiver):
+                self.isLive = False
+                return False
             self._rawRoomInfo = d["room"]
             self.isLive = d["room"]["status"] == 2
-            self.roomLiver = User(d)
             self.roomTitle = d["room"]["title"]
             self.roomPopularity = d["room"]["user_count"]
             l = Lottery(d)
