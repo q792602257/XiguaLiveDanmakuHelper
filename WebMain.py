@@ -7,7 +7,7 @@ import Common
 import threading
 from liveDownloader import run as RUN
 
-app = Flask("liveStatus")
+app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
 CORS(app, supports_credentials=True)
 # url_for('static', filename='index.html')
@@ -187,12 +187,28 @@ def fileIndex():
 
 @app.route("/files/download/<path>", methods=["GET"])
 def fileDownload(path):
-    def generate(file):
+    def generate(file, offset=0):
         with open(file, "rb") as f:
+            f.seek(offset)
             for row in f:
                 yield row
     if os.path.exists(path):
-        return Response(generate(path), mimetype='application/octet-stream')
+        if "RANGE" in request.headers:
+            offset = int(request.headers["RANGE"].replace("=","-").split("-")[1].strip())
+            code = 206
+        else:
+            offset = 0
+            code = 200
+        return Response(generate(path, offset),
+                        status=code,
+                        mimetype='application/octet-stream',
+                        headers={
+                            "Content-Length": os.path.getsize(path)-1-offset,
+                            "Content-Range": "bytes {}-{}/{}".format(offset,os.path.getsize(path)-1,os.path.getsize(path)),
+                            "Accept-Ranges": "bytes",
+                            "Range": "bytes",
+                            "Content-Disposition": "attachment; filename={}".format(path),
+                        })
     else:
         return Response(status=404)
 
@@ -210,6 +226,9 @@ def SubThread():
             t.start()
 
 
-p = threading.Thread(target=SubThread)
-p.setDaemon(True)
-p.start()
+# p = threading.Thread(target=SubThread)
+# p.setDaemon(True)
+# p.start()
+
+if __name__ == "__main__":
+    app.run()

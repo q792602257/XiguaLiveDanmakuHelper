@@ -42,15 +42,20 @@ def getTimeDelta(a, b):
     return sec+(ms/100000.0)
 
 
-def getCurrentStatus():
+def doClean():
     global _do_move_time
+    _disk = psutil.disk_usage("/")
+    if _disk.percent > config["max"] and getTimeDelta(datetime.now(), _do_move_time) > 3600:
+        _do_move_time = datetime.now()
+        os.system(config["dow"])
+
+
+
+def getCurrentStatus():
     _disk = psutil.disk_usage("/")
     _mem  = psutil.virtual_memory()
     _net  = psutil.net_io_counters()
     _delta= getTimeDelta(datetime.now(),network["currentTime"])
-    if _disk.percent > config["max"] and getTimeDelta(datetime.now(), _do_move_time) > 3600:
-        _do_move_time = datetime.now()
-        os.system(config["dow"])
     if 60 > _delta > 0:
         _inSpeed = (_net.bytes_recv - network["in"]["currentByte"])/_delta
         _outSpeed = (_net.bytes_sent - network["out"]["currentByte"])/_delta
