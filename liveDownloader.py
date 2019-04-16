@@ -29,18 +29,20 @@ def download(url):
             _size = os.path.getsize(path)
             Common.modifyLastDownloadStatus("Downloading >{}< @ {:.2f}%".format(path, 100.0 * _size/Common.config["p_s"]))
             if _size > Common.config["p_s"] or Common.forceNotDownload:
+                Common.modifyLastDownloadStatus("Download >{}< Exceed MaxSize".format(path))
                 break
-        Common.modifyLastDownloadStatus("Download >{}< Finished".format(path))
     except Exception as e:
         Common.appendError("Download >{}< With Exception {}".format(path, datetime.strftime(datetime.now(), "%y%m%d %H%M"),
                                                                e.__str__()))
     f.close()
     isDownload = False
+    Common.modifyLastDownloadStatus("Download >{}< Finished".format(path))
     if os.path.getsize(path) < 1024 * 1024:
         Common.modifyLastDownloadStatus("Downloaded File >{}< is too small, will ignore it".format(path))
         os.remove(path)
         return False
     if Common.forceNotDownload:
+        Common.modifyLastDownloadStatus("设置了不下载，所以[{}]不会下载".format(path))
         return
     else:
         Common.encodeQueue.put(path)
@@ -119,6 +121,13 @@ def run():
             if d is None:
                 d = datetime.strftime(datetime.now(), "%Y_%m_%d")
             if not t.is_alive() and not Common.forceNotDownload:
+                try:
+                    Common.api.updRoomInfo()
+                    _count = 0
+                    _count_error = 0
+                except Exception as e:
+                    Common.appendError(e.__str__())
+                    continue
                 _count_error += 1
                 _preT = Common.api.playlist
                 t = threading.Thread(target=download, args=(_preT,))
