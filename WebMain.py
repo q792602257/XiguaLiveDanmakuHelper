@@ -203,11 +203,10 @@ def fileDownload(path):
                         status=code,
                         mimetype='application/octet-stream',
                         headers={
-                            "Content-Length": os.path.getsize(path)-1-offset,
+                            "Content-Length": os.path.getsize(path),
                             "Content-Range": "bytes {}-{}/{}".format(offset,os.path.getsize(path)-1,os.path.getsize(path)),
                             "Accept-Ranges": "bytes",
                             "Range": "bytes",
-                            "Content-Disposition": "attachment; filename={}".format(path),
                         })
     else:
         return Response(status=404)

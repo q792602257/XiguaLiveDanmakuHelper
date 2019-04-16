@@ -50,7 +50,6 @@ def doClean():
         os.system(config["dow"])
 
 
-
 def getCurrentStatus():
     _disk = psutil.disk_usage("/")
     _mem  = psutil.virtual_memory()

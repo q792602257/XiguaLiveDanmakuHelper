@@ -94,7 +94,9 @@ def upload(date=datetime.strftime(datetime.now(), "%Y_%m_%d")):
         except Exception as e:
             Common.appendError(e.__str__())
             continue
-        os.remove(i)
+        if not Common.forceNotEncode:
+            os.remove(i)
+        Common.doClean()
         i = Common.uploadQueue.get()
     Common.appendUploadStatus("Upload Daemon Quiting")
 
