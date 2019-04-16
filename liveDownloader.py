@@ -53,6 +53,7 @@ def encode():
     global isEncode
     Common.appendEncodeStatus("Encode Daemon Starting")
     while True:
+        isEncode = False
         i = Common.encodeQueue.get()
         if Common.forceNotEncode:
             Common.appendEncodeStatus("设置了不编码，所以[{}]不会编码".format(i))
@@ -60,6 +61,9 @@ def encode():
             continue
         if os.path.exists(i):
             isEncode = True
+            if os.path.getsize(path) < 8 * 1024 * 1024:
+                Common.appendEncodeStatus("Encoded File >{}< is too small, will ignore it".format(path))
+                continue
             Common.appendEncodeStatus("Encoding >{}< Start".format(i))
             os.system("ffmpeg -i {} -c:v copy -c:a copy -f mp4 {} -y".format(i, i[:13] + ".mp4"))
             Common.uploadQueue.put(i[:13] + ".mp4")
@@ -68,7 +72,6 @@ def encode():
                 shutil.move(i, Common.config["mtd"])
             elif Common.config["del"]:
                 os.remove(i)
-        isEncode = False
 
 
 def upload(date=datetime.strftime(datetime.now(), "%Y_%m_%d")):
