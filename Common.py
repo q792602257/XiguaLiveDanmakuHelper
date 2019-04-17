@@ -5,6 +5,7 @@ import psutil
 from api import XiGuaLiveApi
 import json
 from bilibili import Bilibili
+import threading
 
 _config_fp = open("config.json","r",encoding="utf8")
 config = json.load(_config_fp)
@@ -55,6 +56,10 @@ def getCurrentStatus():
     _mem  = psutil.virtual_memory()
     _net  = psutil.net_io_counters()
     _delta= getTimeDelta(datetime.now(),network["currentTime"])
+    if getTimeDelta(datetime.now(), _do_move_time) > 3600:
+        p = threading.Thread(target=doClean)
+        p.setDaemon(True)
+        p.start()
     if 60 > _delta > 0:
         _inSpeed = (_net.bytes_recv - network["in"]["currentByte"])/_delta
         _outSpeed = (_net.bytes_sent - network["out"]["currentByte"])/_delta
