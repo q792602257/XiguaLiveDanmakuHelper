@@ -225,9 +225,10 @@ def SubThread():
             t.start()
 
 
-# p = threading.Thread(target=SubThread)
-# p.setDaemon(True)
-# p.start()
+if not app.debug:
+    p = threading.Thread(target=SubThread)
+    p.setDaemon(True)
+    p.start()
 
 if __name__ == "__main__":
     app.run()
