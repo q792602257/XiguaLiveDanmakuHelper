@@ -81,7 +81,7 @@ def toggleForceStartEncodeThread():
 
 
 @app.route("/force/start/upload", methods=["POST"])
-def toggleForceStartEncodeThread():
+def toggleForceStartUploadThread():
     Common.forceStartUploadThread = True
     Common.appendOperation("强制运行上传线程")
     return jsonify({"message":"ok","code":200,"status":0,"data":{
