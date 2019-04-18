@@ -78,6 +78,8 @@ def insertEncode():
         Common.appendOperation("添加编码文件：{}".format(request.form["filename"]))
         Common.encodeQueue.put(request.form["filename"])
         return jsonify({"message":"ok","code":200,"status":0})
+    else:
+        return jsonify({"message":"no filename specific","code":400,"status":1})
 
 
 @app.route("/upload/insert", methods=["POST"])
@@ -86,6 +88,8 @@ def insertUpload():
         Common.appendOperation("添加上传文件：{}".format(request.form["filename"]))
         Common.uploadQueue.put(request.form["filename"])
         return jsonify({"message":"ok","code":200,"status":0})
+    else:
+        return jsonify({"message":"no filename specific","code":400,"status":1})
 
 
 @app.route("/upload/finish", methods=["POST"])
