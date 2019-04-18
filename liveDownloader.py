@@ -62,7 +62,7 @@ def encode():
         if os.path.exists(i):
             isEncode = True
             if os.path.getsize(i) < 8 * 1024 * 1024:
-                Common.appendEncodeStatus("Encoded File >{}< is too small, will ignore it".format(path))
+                Common.appendEncodeStatus("Encoded File >{}< is too small, will ignore it".format(i))
                 continue
             Common.appendEncodeStatus("Encoding >{}< Start".format(i))
             os.system("ffmpeg -i {} -c:v copy -c:a copy -f mp4 {} -y".format(i, i[:13] + ".mp4"))
