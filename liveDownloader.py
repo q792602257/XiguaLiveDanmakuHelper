@@ -186,4 +186,4 @@ def run():
                     ut = threading.Thread(target=upload, args=(d,))
                     ut.setDaemon(True)
                     ut.start()
-                Common.forceStartEncodeThread = False
+                Common.forceStartUploadThread = False
