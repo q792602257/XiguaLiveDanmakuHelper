@@ -72,6 +72,22 @@ def toggleForceNotBroadcast():
     }})
 
 
+@app.route("/force/start/encode", methods=["POST"])
+def toggleForceStartEncodeThread():
+    Common.forceStartEncodeThread = True
+    Common.appendOperation("强制运行编码线程")
+    return jsonify({"message":"ok","code":200,"status":0,"data":{
+    }})
+
+
+@app.route("/force/start/upload", methods=["POST"])
+def toggleForceStartEncodeThread():
+    Common.forceStartUploadThread = True
+    Common.appendOperation("强制运行上传线程")
+    return jsonify({"message":"ok","code":200,"status":0,"data":{
+    }})
+
+
 @app.route("/encode/insert", methods=["POST"])
 def insertEncode():
     if "filename" in request.form and os.path.exists(request.form["filename"]):

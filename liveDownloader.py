@@ -174,3 +174,16 @@ def run():
                 _count_error = 0
             except Exception as e:
                 Common.appendError(e.__str__())
+            if Common.forceStartEncodeThread:
+                if not et.is_alive():
+                    et = threading.Thread(target=encode, args=())
+                    et.setDaemon(True)
+                    et.start()
+                Common.forceStartEncodeThread = False
+            if Common.forceStartUploadThread:
+                if not ut.is_alive():
+                    d = datetime.strftime(datetime.now(), "%Y_%m_%d")
+                    ut = threading.Thread(target=upload, args=(d,))
+                    ut.setDaemon(True)
+                    ut.start()
+                Common.forceStartEncodeThread = False

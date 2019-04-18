@@ -98,6 +98,8 @@ forceNotDownload = False
 forceNotBroadcasting = False
 forceNotUpload = False
 forceNotEncode = False
+forceStartEncodeThread = False
+forceStartUploadThread = False
 
 uploadQueue = queue.Queue()
 encodeQueue = queue.Queue()
