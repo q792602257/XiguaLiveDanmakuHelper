@@ -61,7 +61,7 @@ def encode():
             continue
         if os.path.exists(i):
             isEncode = True
-            if os.path.getsize(path) < 8 * 1024 * 1024:
+            if os.path.getsize(i) < 8 * 1024 * 1024:
                 Common.appendEncodeStatus("Encoded File >{}< is too small, will ignore it".format(path))
                 continue
             Common.appendEncodeStatus("Encoding >{}< Start".format(i))
