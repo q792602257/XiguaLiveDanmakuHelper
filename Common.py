@@ -54,18 +54,18 @@ def doClean():
 def getCurrentStatus():
     _disk = psutil.disk_usage("/")
     _mem  = psutil.virtual_memory()
-    _net  = psutil.net_io_counters()
     _delta= getTimeDelta(datetime.now(),network["currentTime"])
-    if getTimeDelta(datetime.now(), _do_move_time) > 3600:
-        p = threading.Thread(target=doClean)
-        p.setDaemon(True)
-        p.start()
+    _net  = psutil.net_io_counters()
     if 60 > _delta > 0:
         _inSpeed = (_net.bytes_recv - network["in"]["currentByte"])/_delta
         _outSpeed = (_net.bytes_sent - network["out"]["currentByte"])/_delta
     else:
         _outSpeed = 0
         _inSpeed = 0
+    if getTimeDelta(datetime.now(), _do_move_time) > 3600:
+        p = threading.Thread(target=doClean)
+        p.setDaemon(True)
+        p.start()
     updateNetwork()
     return {
         "memTotal": parseSize(_mem.total),

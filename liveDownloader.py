@@ -32,8 +32,7 @@ def download(url):
                 Common.modifyLastDownloadStatus("Download >{}< Exceed MaxSize".format(path))
                 break
     except Exception as e:
-        Common.appendError("Download >{}< With Exception {}".format(path, datetime.strftime(datetime.now(), "%y%m%d %H%M"),
-                                                               e.__str__()))
+        Common.appendError("Download >{}< With Exception {}".format(path, e.__str__()))
     f.close()
     isDownload = False
     Common.modifyLastDownloadStatus("Download >{}< Finished".format(path))
