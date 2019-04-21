@@ -60,8 +60,8 @@ def encode():
             continue
         if os.path.exists(i):
             isEncode = True
-            if os.path.getsize(path) < 8 * 1024 * 1024:
-                Common.appendEncodeStatus("Encoded File >{}< is too small, will ignore it".format(path))
+            if os.path.getsize(i) < 8 * 1024 * 1024:
+                Common.appendEncodeStatus("Encoded File >{}< is too small, will ignore it".format(i))
                 continue
             Common.appendEncodeStatus("Encoding >{}< Start".format(i))
             os.system("ffmpeg -i {} -c:v copy -c:a copy -f mp4 {} -y".format(i, i[:13] + ".mp4"))
@@ -173,3 +173,16 @@ def run():
                 _count_error = 0
             except Exception as e:
                 Common.appendError(e.__str__())
+            if Common.forceStartEncodeThread:
+                if not et.is_alive():
+                    et = threading.Thread(target=encode, args=())
+                    et.setDaemon(True)
+                    et.start()
+                Common.forceStartEncodeThread = False
+            if Common.forceStartUploadThread:
+                if not ut.is_alive():
+                    d = datetime.strftime(datetime.now(), "%Y_%m_%d")
+                    ut = threading.Thread(target=upload, args=(d,))
+                    ut.setDaemon(True)
+                    ut.start()
+                Common.forceStartUploadThread = False
