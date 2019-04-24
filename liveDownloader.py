@@ -77,6 +77,7 @@ def upload(date=datetime.strftime(datetime.now(), "%Y_%m_%d")):
     Common.appendUploadStatus("Upload Daemon Starting")
     i = Common.uploadQueue.get()
     while True:
+        Common.doClean()
         if Common.forceNotUpload:
             Common.appendUploadStatus("设置了不上传，所以[{}]不会上传了".format(i))
             i = Common.uploadQueue.get()
@@ -98,7 +99,6 @@ def upload(date=datetime.strftime(datetime.now(), "%Y_%m_%d")):
             continue
         if not Common.forceNotEncode:
             os.remove(i)
-        Common.doClean()
         i = Common.uploadQueue.get()
     Common.appendUploadStatus("Upload Daemon Quiting")
 
