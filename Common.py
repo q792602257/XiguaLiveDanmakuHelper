@@ -62,11 +62,11 @@ def getCurrentStatus():
     else:
         _outSpeed = 0
         _inSpeed = 0
+    updateNetwork()
     if getTimeDelta(datetime.now(), _do_move_time) > 3600:
         p = threading.Thread(target=doClean)
         p.setDaemon(True)
         p.start()
-    updateNetwork()
     return {
         "memTotal": parseSize(_mem.total),
         "memUsed": parseSize(_mem.used),
