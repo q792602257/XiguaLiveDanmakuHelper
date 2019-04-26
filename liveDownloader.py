@@ -134,6 +134,9 @@ def run():
                     continue
                 _count_error += 1
                 _preT = Common.api.playlist
+                if not _preT:
+                    Common.api.updRoomInfo()
+                    continue
                 t = threading.Thread(target=download, args=(_preT,))
                 t.setDaemon(True)
                 t.start()
