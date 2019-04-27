@@ -43,12 +43,18 @@ def getTimeDelta(a, b):
     return sec+(ms/100000.0)
 
 
-def doClean():
+def _doClean():
     global _do_move_time
     _disk = psutil.disk_usage(".")
     if _disk.percent > config["max"] and getTimeDelta(datetime.now(), _do_move_time) > 3600:
         _do_move_time = datetime.now()
         os.system(config["dow"])
+
+
+def doClean():
+    p = threading.Thread(target=_doClean)
+    p.setDaemon(True)
+    p.start()
 
 
 def getCurrentStatus():
@@ -64,9 +70,7 @@ def getCurrentStatus():
         _inSpeed = 0
     updateNetwork()
     if getTimeDelta(datetime.now(), _do_move_time) > 3600:
-        p = threading.Thread(target=doClean)
-        p.setDaemon(True)
-        p.start()
+        doClean()
     return {
         "memTotal": parseSize(_mem.total),
         "memUsed": parseSize(_mem.used),
