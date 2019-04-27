@@ -45,7 +45,7 @@ def getTimeDelta(a, b):
 
 def doClean():
     global _do_move_time
-    _disk = psutil.disk_usage("/")
+    _disk = psutil.disk_usage(".")
     if _disk.percent > config["max"] and getTimeDelta(datetime.now(), _do_move_time) > 3600:
         _do_move_time = datetime.now()
         os.system(config["dow"])
