@@ -58,7 +58,7 @@ def doClean():
 
 
 def getCurrentStatus():
-    _disk = psutil.disk_usage("/")
+    _disk = psutil.disk_usage(".")
     _mem  = psutil.virtual_memory()
     _delta= getTimeDelta(datetime.now(),network["currentTime"])
     _net  = psutil.net_io_counters()
