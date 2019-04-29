@@ -87,7 +87,7 @@ def toggleForceStartUploadThread():
 
 
 @app.route("/force/start/clean", methods=["POST"])
-def toggleForceStartUploadThread():
+def startForceCleanDisk():
     Common.doClean(True)
     Common.appendOperation("强制执行清理程序")
     return jsonify({"message":"ok","code":200,"status":0,"data":{
