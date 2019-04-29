@@ -15,6 +15,7 @@ config = json.load(_config_fp)
 _config_fp.close()
 bypy = ByPy()
 doCleanTime = datetime.now()
+_clean_flag = None
 
 network = {
     "currentTime": datetime.now(),
@@ -47,7 +48,7 @@ def getTimeDelta(a, b):
 
 
 def _doClean(_force=False):
-    global doCleanTime
+    global doCleanTime, _clean_flag
     _disk = psutil.disk_usage(".")
     if (_disk.percent > config["max"] and getTimeDelta(datetime.now(), doCleanTime) > 7200) or _force:
         doCleanTime = datetime.now()
@@ -57,6 +58,7 @@ def _doClean(_force=False):
                 break
             doCleanTime = datetime.now()
             if (datetime.now() - datetime.utcfromtimestamp(os.path.getmtime(_i))).days > config["exp"]:
+                _clean_flag = True
                 if config["dow"] == "bypy":
                     _res = bypy.upload(_i)
                     if _res == 0:
@@ -66,9 +68,13 @@ def _doClean(_force=False):
             else:
                 break
             doCleanTime = datetime.now()
+    _clean_flag = False
 
 
 def doClean(_force=False):
+    if _clean_flag:
+        appendError("doClean request on cleaning, will ignore it")
+        return
     p = threading.Thread(target=_doClean, args=(_force,))
     p.setDaemon(True)
     p.start()
