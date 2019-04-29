@@ -98,7 +98,7 @@ def getCurrentStatus():
         "cpu": psutil.cpu_percent(),
         "outSpeed": parseSize(_outSpeed),
         "inSpeed": parseSize(_inSpeed),
-        "doCleanTime": doCleanTime,
+        "doCleanTime": datetime.strftime(doCleanTime, dt_format),
         "fileExpire": config["exp"],
     }
 
