@@ -23,8 +23,6 @@ def index():
 def readConfig():
     config = Common.config.copy()
     config.pop("b_p")
-    config.pop("mtd")
-    config.pop("del")
     config.pop("mv")
     return jsonify(config)
 
@@ -84,6 +82,14 @@ def toggleForceStartEncodeThread():
 def toggleForceStartUploadThread():
     Common.forceStartUploadThread = True
     Common.appendOperation("强制运行上传线程")
+    return jsonify({"message":"ok","code":200,"status":0,"data":{
+    }})
+
+
+@app.route("/force/start/clean", methods=["POST"])
+def toggleForceStartUploadThread():
+    Common.doClean(True)
+    Common.appendOperation("强制执行清理程序")
     return jsonify({"message":"ok","code":200,"status":0,"data":{
     }})
 

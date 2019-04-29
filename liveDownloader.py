@@ -67,10 +67,6 @@ def encode():
             os.system("ffmpeg -i {} -c:v copy -c:a copy -f mp4 {} -y".format(i, i[:13] + ".mp4"))
             Common.uploadQueue.put(i[:13] + ".mp4")
             Common.modifyLastEncodeStatus("Encode >{}< Finished".format(i))
-            if Common.config["mv"]:
-                shutil.move(i, Common.config["mtd"])
-            elif Common.config["del"]:
-                os.remove(i)
 
 
 def upload(date=datetime.strftime(datetime.now(), "%Y_%m_%d")):

@@ -15,6 +15,8 @@ function deviceUpdate(){
                 $("#cpuP").val(res.data.status.cpu)
                 $("#inSpeed").text(res.data.status.inSpeed)
                 $("#outSpeed").text(res.data.status.outSpeed)
+                $("#doCleanTime").text(res.data.status.doCleanTime)
+                $("#fileExpire").text(res.data.status.fileExpire)
             }
         }
     )

@@ -1,24 +1,27 @@
 import os
 import queue
 from datetime import datetime
+from glob import glob
+
 import psutil
 from api import XiGuaLiveApi
 import json
 from bilibili import Bilibili
 import threading
+from bypy import ByPy
 
-_config_fp = open("config.json","r",encoding="utf8")
+_config_fp = open("config.json", "r", encoding="utf8")
 config = json.load(_config_fp)
 _config_fp.close()
-
-_do_move_time = datetime.now()
+bypy = ByPy()
+doCleanTime = datetime.now()
 
 network = {
     "currentTime": datetime.now(),
-    "out":{
-        "currentByte":psutil.net_io_counters().bytes_sent,
+    "out": {
+        "currentByte": psutil.net_io_counters().bytes_sent,
     },
-    "in":{
+    "in": {
         "currentByte": psutil.net_io_counters().bytes_recv,
     }
 }
@@ -28,10 +31,10 @@ def updateNetwork():
     global network
     network = {
         "currentTime": datetime.now(),
-        "out":{
-            "currentByte":psutil.net_io_counters().bytes_sent,
+        "out": {
+            "currentByte": psutil.net_io_counters().bytes_sent,
         },
-        "in":{
+        "in": {
             "currentByte": psutil.net_io_counters().bytes_recv,
         }
     }
@@ -43,16 +46,30 @@ def getTimeDelta(a, b):
     return sec+(ms/100000.0)
 
 
-def _doClean():
-    global _do_move_time
+def _doClean(_force=False):
+    global doCleanTime
     _disk = psutil.disk_usage(".")
-    if _disk.percent > config["max"] and getTimeDelta(datetime.now(), _do_move_time) > 7200:
-        _do_move_time = datetime.now()
-        os.system(config["dow"])
+    if (_disk.percent > config["max"] and getTimeDelta(datetime.now(), doCleanTime) > 7200) or _force:
+        doCleanTime = datetime.now()
+        _list = sorted(glob("*.flv"), key=lambda x: datetime.utcfromtimestamp(os.path.getmtime(x)))
+        for _i in _list:
+            if not os.path.exists(_i):
+                break
+            doCleanTime = datetime.now()
+            if (datetime.now() - datetime.utcfromtimestamp(os.path.getmtime(_i))).days > config["exp"]:
+                if config["dow"] == "bypy":
+                    _res = bypy.upload(_i)
+                    if _res == 0:
+                        os.remove(_i)
+                else:
+                    os.system(config["dow"])
+            else:
+                break
+            doCleanTime = datetime.now()
 
 
-def doClean():
-    p = threading.Thread(target=_doClean)
+def doClean(_force=False):
+    p = threading.Thread(target=_doClean, args=(_force,))
     p.setDaemon(True)
     p.start()
 
@@ -63,13 +80,13 @@ def getCurrentStatus():
     _delta= getTimeDelta(datetime.now(),network["currentTime"])
     _net  = psutil.net_io_counters()
     if 60 > _delta > 0:
-        _inSpeed = (_net.bytes_recv - network["in"]["currentByte"])/_delta
-        _outSpeed = (_net.bytes_sent - network["out"]["currentByte"])/_delta
+        _inSpeed = (_net.bytes_recv - network["in"]["currentByte"]) / _delta
+        _outSpeed = (_net.bytes_sent - network["out"]["currentByte"]) / _delta
     else:
         _outSpeed = 0
         _inSpeed = 0
     updateNetwork()
-    if getTimeDelta(datetime.now(), _do_move_time) > 3600:
+    if getTimeDelta(datetime.now(), doCleanTime) > 3600:
         doClean()
     return {
         "memTotal": parseSize(_mem.total),
@@ -81,6 +98,8 @@ def getCurrentStatus():
         "cpu": psutil.cpu_percent(),
         "outSpeed": parseSize(_outSpeed),
         "inSpeed": parseSize(_inSpeed),
+        "doCleanTime": doCleanTime,
+        "fileExpire": config["exp"],
     }
 
 
@@ -91,7 +110,7 @@ def reloadConfig():
     _config_fp.close()
 
 
-dt_format="%Y/%m/%d %H:%M:%S"
+dt_format = "%Y/%m/%d %H:%M:%S"
 
 broadcaster = ""
 streamUrl = ""
@@ -130,9 +149,9 @@ def appendOperation(obj):
 
 
 def parseSize(size):
-    K = size/1024.0
+    K = size / 1024.0
     if K > 1000:
-        M = K/1024.0
+        M = K / 1024.0
         if M > 1000:
             return "{:.2f}GB".format(M / 1024.0)
         else:
