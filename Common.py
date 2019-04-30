@@ -6,7 +6,6 @@ from glob import glob
 import psutil
 from api import XiGuaLiveApi
 import json
-from bilibili import Bilibili
 import threading
 from bypy import ByPy
 
@@ -57,7 +56,7 @@ def _doClean(_force=False):
             if not os.path.exists(_i):
                 break
             doCleanTime = datetime.now()
-            if (datetime.now() - datetime.utcfromtimestamp(os.path.getmtime(_i))).days > config["exp"]:
+            if (datetime.now() - datetime.utcfromtimestamp(os.path.getmtime(_i))).days >= config["exp"]:
                 _clean_flag = True
                 if config["dow"] == "bypy":
                     _res = bypy.upload(_i)
