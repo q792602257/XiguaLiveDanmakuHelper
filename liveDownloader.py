@@ -26,6 +26,8 @@ def download(url):
         for t in p.iter_content(chunk_size=64 * 1024):
             if t:
                 f.write(t)
+            else:
+                raise Exception("`t` is not valid")
             _size = os.path.getsize(path)
             Common.modifyLastDownloadStatus("Downloading >{}< @ {:.2f}%".format(path, 100.0 * _size/Common.config["p_s"]))
             if _size > Common.config["p_s"] or Common.forceNotDownload:
