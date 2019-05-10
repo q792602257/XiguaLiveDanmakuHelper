@@ -77,6 +77,9 @@ def upload(date=datetime.strftime(datetime.now(), "%Y_%m_%d")):
     while True:
         Common.doClean()
         if Common.forceNotUpload:
+            if isinstance(i, bool):
+                Common.appendUploadStatus("设置了不上传，不会发布了")
+                return
             Common.appendUploadStatus("设置了不上传，所以[{}]不会上传了".format(i))
             i = Common.uploadQueue.get()
             continue
