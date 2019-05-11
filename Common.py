@@ -315,3 +315,8 @@ class downloader(XiGuaLiveApi):
 
 
 api = downloader(config["l_u"])
+
+
+def refreshDownloader():
+    global api
+    api = downloader(config["l_u"])
