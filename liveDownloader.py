@@ -107,14 +107,16 @@ def upload(date=datetime.strftime(datetime.now(), "%Y_%m_%d")):
 b = Bilibili()
 b.login(Common.config["b_u"], Common.config["b_p"])
 
+et = threading.Thread(target=encode, args=())
+et.setDaemon(True)
+et.start()
+
 
 def run():
     global isEncode, isDownload
-    et = threading.Thread(target=encode, args=())
-    et.setDaemon(True)
-    et.start()
+    Common.refreshDownloader()
     if not Common.api.isValidRoom:
-        Common.appendError("[{}]房间不存在".format(Common.config["l_u"]))
+        Common.appendError("[{}]房间未找到".format(Common.config["l_u"]))
         return
     d = None
     t = threading.Thread(target=download)

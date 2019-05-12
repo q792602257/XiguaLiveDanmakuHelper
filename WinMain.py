@@ -185,10 +185,14 @@ if __name__ == "__main__":
     else:
         name = readInput("请输入主播用户名，默认为", name, 3)
     api = WinMain(name)
-    print("进入", api.roomLiver, "的直播间")
-    if not api.isValidRoom:
-        input("房间不存在")
+    while not api.isValidRoom:
+        set_cmd_text_color(FOREGROUND_RED)
+        print("未找到对应房间或未开播，等待1分钟后重试")
+        resetColor()
+        time.sleep(60)
+        api.updRoomInfo()
         sys.exit()
+    print("进入", api.roomLiver, "的直播间")
     os.system("title {}".format(api.getTitle()))
     print("=" * 30)
     while True:
