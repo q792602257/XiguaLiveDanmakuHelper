@@ -113,7 +113,7 @@ et.start()
 
 
 def run():
-    global isEncode, isDownload
+    global isEncode, isDownload, et
     Common.refreshDownloader()
     if not Common.api.isValidRoom:
         Common.appendError("[{}]房间未找到".format(Common.config["l_u"]))
