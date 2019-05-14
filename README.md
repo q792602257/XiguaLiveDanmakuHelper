@@ -1,7 +1,9 @@
 # XiguaLiveDanmakuHelper
-### 西瓜直播弹幕助手--控制台```api.py```
+### 西瓜直播弹幕助手--控制台版
 
 界面版：[q792602257/XiguaDanmakuHelperGUI](https://github.com/q792602257/XiguaDanmakuHelperGUI "C# ver")
+
+### 西瓜直播弹幕接口```api.py```
 
 ### 西瓜直播弹幕助手--录播端```WebMain.py```
 
