@@ -12,21 +12,21 @@ import time
 
 s = requests.Session()
 
-DEBUG: bool = False
+DEBUG = False
 
 
 class XiGuaLiveApi:
-    isLive: bool = False
-    isValidRoom: bool = False
+    isLive = False
+    isValidRoom = False
     _rawRoomInfo = {}
-    name: str = ""
-    roomID: int = 0
-    roomTitle: str = ""
-    roomLiver: User = None
-    roomPopularity: int = 0
-    _cursor:str = "0"
-    _updRoomCount:int = 0
-    lottery:Lottery = None
+    name = ""
+    roomID = 0
+    roomTitle = ""
+    roomLiver = None
+    roomPopularity = 0
+    _cursor = "0"
+    _updRoomCount = 0
+    lottery = None
 
     def __init__(self, name: str = "永恒de草薙"):
         self.name = name
@@ -161,9 +161,12 @@ class XiGuaLiveApi:
             if "room" not in d and d["room"] is None:
                 self.apiChangedError("Api发生改变，请及时联系我", d)
                 return False
+            self.roomLiver = User(d)
+            if self.name not in str(self.roomLiver):
+                self.isLive = False
+                return False
             self._rawRoomInfo = d["room"]
             self.isLive = d["room"]["status"] == 2
-            self.roomLiver = User(d)
             self.roomTitle = d["room"]["title"]
             self.roomPopularity = d["room"]["user_count"]
             l = Lottery(d)

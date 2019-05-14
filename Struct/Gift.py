@@ -3,12 +3,12 @@ from .User import User
 
 
 class Gift:
-    ID:int = 0
-    count:int = 0
-    roomID:int = 0
-    giftList:dict = {}
-    amount:int = 0
-    user:User = None
+    ID = 0
+    count = 0
+    roomID = 0
+    giftList = {}
+    amount = 0
+    user = None
 
     def __init__(self, json=None):
         if json:

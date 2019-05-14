@@ -5,14 +5,14 @@ from .LuckyUser import LuckyUser
 
 
 class Lottery:
-    ID: int = 0
+    ID = 0
     isActive = False
     content = ""
     isFinished = False
     luckyUsers = []
     joinedUserCount = 0
     prizeName = ""
-    finish:int = 0
+    finish = 0
 
     def __init__(self, json=None):
         if json:

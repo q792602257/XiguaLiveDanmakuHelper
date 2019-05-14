@@ -4,7 +4,8 @@ import os
 import re
 import json as JSON
 from datetime import datetime
-
+from time import sleep
+import Common
 import rsa
 import math
 import base64
@@ -25,6 +26,7 @@ class Bilibili:
         self.files = []
         self.videos = []
         self.session = requests.session()
+        self.session.keep_alive = False
         if cookie:
             self.session.headers["cookie"] = cookie
             self.csrf = re.search('bili_jct=(.*?);', cookie).group(1)
@@ -188,14 +190,13 @@ class Bilibili:
         """
         self.preUpload(parts)
         self.finishUpload(title, tid, tag, desc, source, cover, no_reprint)
-        self.clean()
+        self.clear()
 
     def preUpload(self, parts):
         """
         :param parts: e.g. VideoPart('part path', 'part title', 'part desc'), or [VideoPart(...), VideoPart(...)]
         :type parts: VideoPart or list<VideoPart>
         """
-
         self.session.headers['Content-Type'] = 'application/json; charset=utf-8'
         if not isinstance(parts, list):
             parts = [parts]
@@ -204,6 +205,7 @@ class Bilibili:
             filepath = part.path
             filename = os.path.basename(filepath)
             filesize = os.path.getsize(filepath)
+            Common.appendUploadStatus("Upload >{}< Started".format(filepath))
             self.files.append(part)
             r = self.session.get('https://member.bilibili.com/preupload?'
                                  'os=upos&upcdn=ws&name={name}&size={size}&r=upos&profile=ugcupos%2Fyb&ssl=0'
@@ -238,12 +240,13 @@ class Bilibili:
             # {"upload_id":"72eb747b9650b8c7995fdb0efbdc2bb6","key":"\/i181012ws2wg1tb7tjzswk2voxrwlk1u.mp4","OK":1,"bucket":"ugc"}
             json = r.json()
             upload_id = json['upload_id']
-
             with open(filepath, 'rb') as f:
                 chunks_num = math.ceil(filesize / chunk_size)
                 chunks_index = 0
                 chunks_data = f.read(chunk_size)
+                Common.modifyLastUploadStatus("Uploading >{}< @ {:.2f}%".format(filepath, 100.0 * chunks_index / chunks_num))
                 while True:
+                    _d = datetime.now()
                     if not chunks_data:
                         break
                     r = self.session.put('https:{endpoint}/{upos_uri}?'
@@ -263,10 +266,11 @@ class Bilibili:
                                          )
                     if r.status_code != 200:
                         continue
-                    print('{} : UPLOAD {}/{}'.format(datetime.strftime(datetime.now(), "%y%m%d %H%M"), chunks_index,
-                                                     chunks_num), r.text)
                     chunks_data = f.read(chunk_size)
                     chunks_index += 1  # start with 0
+                    Common.modifyLastUploadStatus("Uploading >{}< @ {:.2f}%".format(filepath, 100.0*chunks_index/chunks_num))
+                    if (datetime.now()-_d).seconds < 2:
+                        sleep(1)
 
                 # NOT DELETE! Refer to https://github.com/comwrg/bilibiliupload/issues/15#issuecomment-424379769
                 self.session.post('https:{endpoint}/{upos_uri}?'
@@ -282,6 +286,7 @@ class Bilibili:
             self.videos.append({'filename': upos_uri.replace('upos://ugc/', '').split('.')[0],
                                 'title': part.title,
                                 'desc': part.desc})
+            Common.modifyLastUploadStatus("Upload >{}< Finished".format(filepath))
             __f = open("uploaded.json","w")
             JSON.dump(self.videos, __f)
 
@@ -314,6 +319,7 @@ class Bilibili:
         """
         if len(self.videos) == 0:
             return
+        Common.appendUploadStatus("[{}]投稿中，请稍后".format(title))
         self.session.headers['Content-Type'] = 'application/json; charset=utf-8'
         copyright = 2 if source else 1
         r = self.session.post('https://member.bilibili.com/x/vu/web/add?csrf=' + self.csrf,
@@ -330,21 +336,21 @@ class Bilibili:
                                   "order_id": 0,
                                   "videos": self.videos}
                               )
-        print(r.text)
+        Common.modifyLastUploadStatus("[{}] Published | Result : {}".format(title, r.text))
 
     def reloadFromPrevious(self):
         if os.path.exists("uploaded.json"):
             __f = open("uploaded.json", "r")
             try:
                 self.videos = JSON.load(__f)
-                print("RELOAD Success")
+                Common.appendUploadStatus("RELOAD SUCCESS")
             except:
-                print("RELOAD Failed")
+                Common.appendUploadStatus("RELOAD Failed")
                 self.videos = []
             __f.close()
             os.remove("uploaded.json")
         else:
-            print("RELOAD Failed")
+            Common.appendUploadStatus("RELOAD Failed")
             self.videos = []
 
     def clear(self):
