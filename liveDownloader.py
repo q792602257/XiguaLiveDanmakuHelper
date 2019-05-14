@@ -179,9 +179,9 @@ def run():
                 _count_error = 0
             except Exception as e:
                 Common.appendError(e.__str__())
-                _count_error += 1
+                Common.refreshDownloader()
             if not Common.api.roomLiver:
-                _count_error += 1
+                Common.refreshDownloader()
             if Common.forceStartEncodeThread:
                 if not et.is_alive():
                     et = threading.Thread(target=encode, args=())
@@ -195,5 +195,3 @@ def run():
                     ut.setDaemon(True)
                     ut.start()
                 Common.forceStartUploadThread = False
-            if _count_error>10:
-                Common.refreshDownloader()
