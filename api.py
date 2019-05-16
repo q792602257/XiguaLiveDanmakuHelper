@@ -32,11 +32,11 @@ class XiGuaLiveApi:
         self.name = name
         self.updRoomInfo()
 
-    def _updateRoomInfo(self, json):
+    def _updateRoomPopularity(self, json):
         """
         更新房间人气的方法
         Update Room Popularity
-        :param json: Recived Message
+        :param json: Received Message
         """
         if "extra" in json:
             if "member_count" in json["extra"] and json["extra"]["member_count"] > 0:
@@ -60,7 +60,7 @@ class XiGuaLiveApi:
         """
         礼物连击中的消息
         Message On Sending Presents
-        :param gift: Struct of Gift Messsage
+        :param gift: Struct of Gift Message
         """
         print("礼物连击 :", gift)
 
@@ -68,14 +68,14 @@ class XiGuaLiveApi:
         """
         礼物送完了的提示信息
         Message On Finished Send Present
-        :param gift: Struct of Gift Messsage
+        :param gift: Struct of Gift Message
         """
         print("感谢", gift)
 
     def onAd(self, i):
         """
         全局广播
-        All Channel Boardcasting Message( Just An Ad )
+        All Channel Broadcasting Message( Just An Ad )
         :param i: JSON DATA if you wanna using it
         """
         # print(i)
@@ -85,7 +85,7 @@ class XiGuaLiveApi:
         """
         聊天信息
         On Chatting
-        :param chat: Struct of Chat Messsage
+        :param chat: Struct of Chat Message
         """
         if not chat.isFiltered:
             print(chat)
@@ -94,7 +94,7 @@ class XiGuaLiveApi:
         """
         进入房间消息
         On Entering Room
-        :param msg: Struct of Member Messsage
+        :param msg: Struct of Member Message
         """
         print("提示 :", msg)
 
@@ -102,7 +102,7 @@ class XiGuaLiveApi:
         """
         关注主播时的消息
         On Subscribe
-        :param user: Struct of User Messsage
+        :param user: Struct of User Message
         """
         print("消息 :", user, "关注了主播")
 
@@ -131,80 +131,93 @@ class XiGuaLiveApi:
         """
         print("中奖消息 :", i)
 
+    def _checkUsernameIsMatched(self):
+        """
+        验证主播名字是自己想要的那个
+        :return: bool: 是否匹配
+        """
+        if self.name is None or self.roomLiver is None:
+            return False
+        #验证主播名字是自己想要的那个
+        return True
+
+    def _forceSearchUser(self):
+        """
+        搜索主播名
+        :return:
+        """
+        try:
+            p = s.get("https://security.snssdk.com/video/app/search/live/?version_code=730&device_platform=android"
+                      "&format=json&keyword={}".format(self.name))
+            d = p.json()
+        except json.decoder.JSONDecodeError as e:
+            self.apiChangedError("搜索接口错误", e.__str__())
+            return
+        if "data" in d and d["data"] is not None:
+            for i in d["data"]:
+                if i["block_type"] != 0:
+                    continue
+                if "cells" not in i or len(i["cells"]) == 0:
+                    return
+                self.isValidRoom = True
+                if "is_living" in i["cells"][0]["anchor"]["user_info"]:
+                    self.isLive = i["cells"][0]["anchor"]["user_info"]["is_living"]
+                else:
+                    self.isLive = False
+                if "room_id" in i["cells"][0]["anchor"]:
+                    self.roomID = int(i["cells"][0]["anchor"]["room_id"])
+                else:
+                    self.isLive = False
+                self.roomLiver = User(i["cells"][0])
+        if self.isLive:
+            return self.updRoomInfo()
+        else:
+            return False
+
+    def _updateRoomOnly(self):
+        """
+        仅更新房间，不重新获取信息
+        :return:
+        """
+        try:
+            p = s.post("https://i.snssdk.com/videolive/room/enter?version_code=730"
+                       "&device_platform=android",
+                       data="room_id={roomID}&version_code=730"
+                            "&device_platform=android".format(roomID=self.roomID),
+                       headers={"Content-Type": "application/x-www-form-urlencoded"})
+            d = p.json()
+        except Exception as e:
+            self.apiChangedError("更新房间接口错误", e.__str__())
+            return False
+        self.isValidRoom = d["base_resp"]["status_code"] == 0
+        if d["base_resp"]["status_code"] != 0:
+            self.apiChangedError("更新房间信息接口返回非0状态值", d)
+            return False
+        if "room" not in d and d["room"] is None:
+            self.apiChangedError("Api发生改变，请及时联系我", d)
+            return False
+        self.roomLiver = User(d)
+        if not self._checkUsernameIsMatched():
+            self.isLive = False
+            return False
+        self._rawRoomInfo = d["room"]
+        self.isLive = d["room"]["status"] == 2
+        self.roomTitle = d["room"]["title"]
+        self.roomPopularity = d["room"]["user_count"]
+        l = Lottery(d)
+        if l.isActive:
+            self.lottery = l
+        return True
+
     def updRoomInfo(self):
         """
         更新房间信息（可能写的很垃圾）
         :return:
         """
         if self.isLive:
-            try:
-                p = s.post("https://i.snssdk.com/videolive/room/enter?version_code=730"
-                           "&device_platform=android",
-                           data="room_id={roomID}&version_code=730"
-                           "&device_platform=android".format(roomID=self.roomID),
-                           headers={"Content-Type":"application/x-www-form-urlencoded"})
-                d = p.json()
-            except Exception as e:
-                if DEBUG:
-                    print("ReqError@UpdRoomInfo")
-                    print(e.__str__())
-                    if p:
-                        print(p.status_code)
-                        print(p.text)
-                return False
-            self.isValidRoom = d["base_resp"]["status_code"] == 0
-            if d["base_resp"]["status_code"] != 0:
-                if DEBUG:
-                    print("CodeIsnot0@UpdRoomInfo")
-                    print(d)
-                return False
-            if "room" not in d and d["room"] is None:
-                self.apiChangedError("Api发生改变，请及时联系我", d)
-                return False
-            self.roomLiver = User(d)
-            if self.name not in str(self.roomLiver):
-                self.isLive = False
-                return False
-            self._rawRoomInfo = d["room"]
-            self.isLive = d["room"]["status"] == 2
-            self.roomTitle = d["room"]["title"]
-            self.roomPopularity = d["room"]["user_count"]
-            l = Lottery(d)
-            if l.isActive:
-                self.lottery = l
-            return True
+            return self._updateRoomOnly()
         else:
-            try:
-                p = s.get("https://security.snssdk.com/video/app/search/live/?version_code=730&device_platform=android"
-                          "&format=json&keyword={}".format(self.name))
-                d = p.json()
-            except json.decoder.JSONDecodeError as e:
-                if DEBUG:
-                    print(e.__str__())
-                    if p:
-                        print(p.status_code)
-                        print(p.text)
-                return
-            if "data" in d and d["data"] is not None:
-                for i in d["data"]:
-                    if i["block_type"] != 0:
-                        continue
-                    if "cells" not in i or len(i["cells"]) == 0:
-                        return
-                    self.isValidRoom = True
-                    if "is_living" in i["cells"][0]["anchor"]["user_info"]:
-                        self.isLive = i["cells"][0]["anchor"]["user_info"]["is_living"]
-                    else:
-                        self.isLive = False
-                    if "room_id" in i["cells"][0]["anchor"]:
-                        self.roomID = int(i["cells"][0]["anchor"]["room_id"])
-                    else:
-                        self.isLive = False
-                    self.roomLiver = User(i["cells"][0])
-            if self.isLive:
-                return self.updRoomInfo()
-            else:
-                return False
+            return self._forceSearchUser()
 
     @staticmethod
     def findRoomByUserId(userId:int):
@@ -281,8 +294,8 @@ class XiGuaLiveApi:
             elif i["common"]['method'] == "VideoLiveChatMessage":
                 self.onChat(Chat(i, self.lottery))
             elif i["common"]['method'] == "VideoLiveMemberMessage":
-                self._updateRoomInfo(i)
                 self.onEnter(MemberMsg(i))
+                self._updateRoomPopularity(i)
             elif i["common"]['method'] == "VideoLiveSocialMessage":
                 self.onSubscribe(User(i))
             elif i["common"]['method'] == "VideoLiveJoinDiscipulusMessage":

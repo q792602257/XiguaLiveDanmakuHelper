@@ -12,42 +12,43 @@ isEncode = False
 isDownload = False
 
 
-def download(url):
+def download():
     global isDownload
-    path = datetime.strftime(datetime.now(), "%Y%m%d_%H%M.flv")
-    p = requests.get(url, stream=True)
-    if p.status_code != 200:
-        Common.appendDownloadStatus("Download with Response 404, maybe broadcaster is not broadcasting")
-        return True
-    isDownload = True
-    Common.appendDownloadStatus("Download >{}< Start".format(path))
-    f = open(path, "wb")
-    try:
-        for t in p.iter_content(chunk_size=64 * 1024):
-            if t:
+    while Common.api.isLive and not Common.forceNotDownload:
+        if not Common.streamUrl:
+            Common.appendError("Download with No StreamUrl Specific")
+            break
+        path = datetime.strftime(datetime.now(), "%Y%m%d_%H%M.flv")
+        p = requests.get(Common.streamUrl, stream=True)
+        if p.status_code != 200:
+            Common.appendDownloadStatus("Download with Response {}".format(p.status_code))
+            break
+        isDownload = True
+        Common.appendDownloadStatus("Download >{}< Start".format(path))
+        f = open(path, "wb")
+        try:
+            _size = 0
+            for t in p.iter_content(chunk_size=64 * 1024):
+                if Common.forceNotDownload:
+                    Common.modifyLastDownloadStatus("Force Stop Download".format(path))
+                    return
                 f.write(t)
-            else:
-                raise Exception("`t` is not valid")
-            _size = os.path.getsize(path)
-            Common.modifyLastDownloadStatus("Downloading >{}< @ {:.2f}%".format(path, 100.0 * _size/Common.config["p_s"]))
-            if _size > Common.config["p_s"] or Common.forceNotDownload:
-                Common.modifyLastDownloadStatus("Download >{}< Exceed MaxSize".format(path))
-                break
-    except Exception as e:
-        Common.appendError("Download >{}< With Exception {}".format(path, e.__str__()))
-    f.close()
-    isDownload = False
-    Common.modifyLastDownloadStatus("Download >{}< Finished".format(path))
-    if os.path.getsize(path) < 1024 * 1024:
-        Common.modifyLastDownloadStatus("Downloaded File >{}< is too small, will ignore it".format(path))
-        os.remove(path)
-        return False
-    if Common.forceNotDownload:
-        Common.modifyLastDownloadStatus("设置了不下载，所以[{}]不会下载".format(path))
-        return
-    else:
+                _size += len(t)
+                Common.modifyLastDownloadStatus("Downloading >{}< @ {:.2f}%".format(path, 100.0 * _size/Common.config["p_s"]))
+                if _size > Common.config["p_s"]:
+                    Common.modifyLastDownloadStatus("Download >{}< Exceed MaxSize".format(path))
+                    break
+            Common.modifyLastDownloadStatus("Download >{}< Finished".format(path))
+        except Exception as e:
+            Common.appendError("Download >{}< With Exception {}".format(path, e.__str__()))
+        f.close()
+        isDownload = False
+        if os.path.getsize(path) < 1024 * 1024:
+            Common.modifyLastDownloadStatus("Downloaded File >{}< is too small, will ignore it".format(path))
+            os.remove(path)
+            return False
         Common.encodeQueue.put(path)
-        download(url)
+        Common.api.updRoomInfo()
 
 
 def encode():
@@ -106,52 +107,58 @@ def upload(date=datetime.strftime(datetime.now(), "%Y_%m_%d")):
 
 b = Bilibili()
 b.login(Common.config["b_u"], Common.config["b_p"])
-
+t = threading.Thread(target=download, args=())
+ut = threading.Thread(target=upload, args=())
 et = threading.Thread(target=encode, args=())
-et.setDaemon(True)
-et.start()
+
+
+def awakeEncode():
+    global et
+    if et.is_alive():
+        return True
+    et = threading.Thread(target=encode, args=())
+    et.setDaemon(True)
+    et.start()
+    return False
+
+
+def awakeDownload():
+    global t
+    if t.is_alive():
+        return True
+    t = threading.Thread(target=download, args=())
+    t.setDaemon(True)
+    t.start()
+    return False
+
+
+def awakeUpload():
+    global ut
+    if ut.is_alive():
+        return True
+    ut = threading.Thread(target=upload, args=())
+    ut.setDaemon(True)
+    ut.start()
+    return False
 
 
 def run():
-    global isEncode, isDownload, et
+    global isEncode, isDownload, et, t, ut
     Common.refreshDownloader()
     if not Common.api.isValidRoom:
         Common.appendError("[{}]房间未找到".format(Common.config["l_u"]))
         return
-    d = None
-    t = threading.Thread(target=download)
-    ut = threading.Thread(target=upload, args=(d,))
+    awakeEncode()
     _count = 0
-    _count_error = 0
     while True:
         if Common.api.isLive and not Common.forceNotBroadcasting:
-            if d is None:
-                d = datetime.strftime(datetime.now(), "%Y_%m_%d")
             if not t.is_alive() and not Common.forceNotDownload:
-                try:
-                    Common.api.updRoomInfo()
-                    _count = 0
-                    _count_error = 0
-                except Exception as e:
-                    Common.appendError(e.__str__())
-                    continue
-                _count_error += 1
-                _preT = Common.api.playlist
-                if not _preT:
-                    Common.api.updRoomInfo()
-                    continue
-                t = threading.Thread(target=download, args=(_preT,))
-                t.setDaemon(True)
-                t.start()
+                awakeDownload()
             if not ut.is_alive():
-                ut = threading.Thread(target=upload, args=(d,))
-                ut.setDaemon(True)
-                ut.start()
+                awakeUpload()
             if not et.is_alive():
-                et = threading.Thread(target=encode, args=())
-                et.setDaemon(True)
-                et.start()
-            if _count % 15 == 0:
+                awakeEncode()
+            if _count % 15 == 14:
                 try:
                     Common.api.updRoomInfo()
                     _count = 0
@@ -159,24 +166,16 @@ def run():
                 except Exception as e:
                     Common.appendError(e.__str__())
                     time.sleep(20)
-                    _count_error += 1
                     continue
-            if _count_error > 15:
-                Common.api.isLive = False
-            _count += 1
             time.sleep(20)
         else:
-            if d is not None:
-                d = None
             if not isEncode and not isDownload:
                 Common.uploadQueue.put(True)
                 isEncode = True
                 isDownload = True
-                # print("主播未开播，等待1分钟后重试")
             time.sleep(60)
             try:
                 Common.api.updRoomInfo()
-                _count_error = 0
             except Exception as e:
                 Common.appendError(e.__str__())
                 Common.refreshDownloader()
