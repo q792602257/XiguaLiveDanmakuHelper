@@ -29,28 +29,34 @@ class XiGuaLiveApi:
     lottery = None
 
     def __init__(self, name: str = "永恒de草薙"):
+        """
+        Api类
+        Init Function
+        :param name: 主播名
+        """
         self.name = name
         self.updRoomInfo()
 
-    def _updateRoomPopularity(self, json):
+    def _updateRoomPopularity(self, _data):
         """
         更新房间人气的方法
         Update Room Popularity
-        :param json: Received Message
+        :param _data: Received Message
         """
-        if "extra" in json:
-            if "member_count" in json["extra"] and json["extra"]["member_count"] > 0:
-                self.roomPopularity = json["extra"]["member_count"]
-        elif "data" in json:
-            if "popularity" in json["data"]:
-                self.roomPopularity = json["data"]["popularity"]
+        if "extra" in _data:
+            if "member_count" in _data["extra"] and _data["extra"]["member_count"] > 0:
+                self.roomPopularity = _data["extra"]["member_count"]
+        elif "data" in _data:
+            if "popularity" in _data["data"]:
+                self.roomPopularity = _data["data"]["popularity"]
 
-    def apiChangedError(self, msg: str, *args):
+    @staticmethod
+    def apiChangedError(msg: str, *args):
         """
         API发生更改时的提示
         Warning while Detected Api has Changed
-        :param msg:
-        :param args:
+        :param msg: 提示信息
+        :param args: DEBUG模式下，显示更多信息
         """
         print(msg)
         if DEBUG:
@@ -134,12 +140,13 @@ class XiGuaLiveApi:
     def _checkUsernameIsMatched(self):
         """
         验证主播名字是自己想要的那个
+        Check name matched
         :return: bool: 是否匹配
         """
         if self.name is None or self.roomLiver is None:
             return False
-        #验证主播名字是自己想要的那个
-        return True
+        if self.name in self.roomLiver:
+            return True
 
     def _forceSearchUser(self):
         """
@@ -170,7 +177,7 @@ class XiGuaLiveApi:
                     self.isLive = False
                 self.roomLiver = User(i["cells"][0])
         if self.isLive:
-            return self.updRoomInfo()
+            return self._updateRoomOnly()
         else:
             return False
 
@@ -211,7 +218,7 @@ class XiGuaLiveApi:
 
     def updRoomInfo(self):
         """
-        更新房间信息（可能写的很垃圾）
+        更新房间信息
         :return:
         """
         if self.isLive:
@@ -231,7 +238,7 @@ class XiGuaLiveApi:
             print(p.text)
         d = p.json()
         if "data" not in d or "title" not in d["data"] or "id" not in d["data"]:
-            XiGuaLiveApi.apiChangedError("无法获取RoomID，请与我联系")
+            XiGuaLiveApi.apiChangedError("网页接口已更改，除非你是开发者，请不要用这个方法", d)
             return XiGuaLiveApi()
         return XiGuaLiveApi(d["data"]["id"])
 
@@ -240,7 +247,7 @@ class XiGuaLiveApi:
         """
         通过关键词搜索主播
         :param keyword: 关键词
-        :return:
+        :return: array: 搜索结果
         """
         ret = []
         p = s.get("https://security.snssdk.com/video/app/search/live/?version_code=730&device_platform=android"
@@ -248,10 +255,9 @@ class XiGuaLiveApi:
         d = p.json()
         if "data" in d:
             for i in d["data"]:
-                if i["block_type"] != 0:
-                    continue
-                for _i in i["cells"]:
-                    ret.append(_i["room"])
+                if i["block_type"] == 0:
+                    for _i in i["cells"]:
+                        ret.append(_i["room"])
         return ret
 
     def getDanmaku(self):
@@ -268,18 +274,14 @@ class XiGuaLiveApi:
                   ))
         d = p.json()
         if "data" not in d or "extra" not in d or "cursor" not in d["extra"]:
-            if DEBUG:
-                print(d)
-            if "base_resp" in d:
-                if d["base_resp"]["status_code"] != 10038:
-                    print(d["base_resp"]["status_message"])
-            else:
-                self.apiChangedError("数据结构改变，请与我联系")
+            if "base_resp" in d and d["base_resp"]["status_code"] != 10038:
+                print(d["base_resp"]["status_message"])
+                self.apiChangedError("接口数据返回错误", d)
             return
         else:
             self._cursor = d["extra"]["cursor"]
             if DEBUG:
-                print("Cursor", self._cursor)
+                print("Cursor:\t", self._cursor)
         for i in d['data']:
             if DEBUG:
                 print(i)
@@ -333,7 +335,6 @@ if __name__ == "__main__":
     print("西瓜直播弹幕助手 by JerryYan")
     api = XiGuaLiveApi(name)
     if not api.isValidRoom:
-        print(api.roomID)
         input("房间不存在")
         sys.exit()
     print("进入", api.roomLiver, "的直播间")

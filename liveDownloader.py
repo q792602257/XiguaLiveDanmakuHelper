@@ -34,7 +34,8 @@ def download():
                     return
                 f.write(t)
                 _size += len(t)
-                Common.modifyLastDownloadStatus("Downloading >{}< @ {:.2f}%".format(path, 100.0 * _size/Common.config["p_s"]))
+                Common.modifyLastDownloadStatus(
+                    "Downloading >{}< @ {:.2f}%".format(path, 100.0 * _size / Common.config["p_s"]))
                 if _size > Common.config["p_s"]:
                     Common.modifyLastDownloadStatus("Download >{}< Exceed MaxSize".format(path))
                     break
@@ -59,17 +60,20 @@ def encode():
         i = Common.encodeQueue.get()
         if Common.forceNotEncode:
             Common.appendEncodeStatus("设置了不编码，所以[{}]不会编码".format(i))
-            Common.uploadQueue.put(i)
-            continue
-        if os.path.exists(i):
+        elif os.path.exists(i):
             isEncode = True
             if os.path.getsize(i) < 8 * 1024 * 1024:
                 Common.appendEncodeStatus("Encoded File >{}< is too small, will ignore it".format(i))
-                continue
-            Common.appendEncodeStatus("Encoding >{}< Start".format(i))
-            os.system("ffmpeg -i {} -c:v copy -c:a copy -f mp4 {} -y".format(i, i[:13] + ".mp4"))
-            Common.uploadQueue.put(i[:13] + ".mp4")
-            Common.modifyLastEncodeStatus("Encode >{}< Finished".format(i))
+            else:
+                Common.appendEncodeStatus("Encoding >{}< Start".format(i))
+                _code = os.system("ffmpeg -i {} -c:v copy -c:a copy -f mp4 {} -y".format(i, i[:13] + ".mp4"))
+                if _code != 0:
+                    Common.appendError("Encode {} with Non-Zero Return.".format(i))
+                    continue
+                else:
+                    Common.modifyLastEncodeStatus("Encode >{}< Finished".format(i))
+                    i = i[:13] + ".mp4"
+        Common.uploadQueue.put(i)
 
 
 def upload(date=datetime.strftime(datetime.now(), "%Y_%m_%d")):
@@ -80,27 +84,26 @@ def upload(date=datetime.strftime(datetime.now(), "%Y_%m_%d")):
         if Common.forceNotUpload:
             if isinstance(i, bool):
                 Common.appendUploadStatus("设置了不上传，不会发布了")
-                return
-            Common.appendUploadStatus("设置了不上传，所以[{}]不会上传了".format(i))
-            i = Common.uploadQueue.get()
-            continue
-        if isinstance(i, bool):
-            if i is True:
-                b.finishUpload(Common.config["t_t"].format(date), 17, Common.config["tag"], Common.config["des"],
-                               source=Common.config["src"], no_reprint=0)
-                b.clear()
-            break
-        if not os.path.exists(i):
-            Common.appendError("Upload File Not Exist {}".format(i))
-            i = Common.uploadQueue.get()
-            continue
-        try:
-            b.preUpload(VideoPart(i, os.path.basename(i)))
-        except Exception as e:
-            Common.appendError(e.__str__())
-            continue
-        if not Common.forceNotEncode:
-            os.remove(i)
+                break
+            else:
+                Common.appendUploadStatus("设置了不上传，所以[{}]不会上传了".format(i))
+        else:
+            if isinstance(i, bool):
+                if i is True:
+                    b.finishUpload(Common.config["t_t"].format(date), 17, Common.config["tag"], Common.config["des"],
+                                   source=Common.config["src"], no_reprint=0)
+                    b.clear()
+                break
+            if not os.path.exists(i):
+                Common.appendError("Upload File Not Exist {}".format(i))
+            else:
+                try:
+                    b.preUpload(VideoPart(i, os.path.basename(i)))
+                except Exception as e:
+                    Common.appendError(e.__str__())
+                    continue
+            if not Common.forceNotEncode:
+                os.remove(i)
         i = Common.uploadQueue.get()
     Common.appendUploadStatus("Upload Daemon Quiting")
 
@@ -143,7 +146,7 @@ def awakeUpload():
 
 
 def run():
-    global isEncode, isDownload, et, t, ut
+    global isEncode, isDownload
     Common.refreshDownloader()
     if not Common.api.isValidRoom:
         Common.appendError("[{}]房间未找到".format(Common.config["l_u"]))
@@ -152,12 +155,10 @@ def run():
     _count = 0
     while True:
         if Common.api.isLive and not Common.forceNotBroadcasting:
-            if not t.is_alive() and not Common.forceNotDownload:
+            if not Common.forceNotDownload:
                 awakeDownload()
-            if not ut.is_alive():
-                awakeUpload()
-            if not et.is_alive():
-                awakeEncode()
+            awakeUpload()
+            awakeEncode()
             if _count % 15 == 14:
                 try:
                     Common.api.updRoomInfo()
@@ -182,15 +183,8 @@ def run():
             if not Common.api.roomLiver:
                 Common.refreshDownloader()
             if Common.forceStartEncodeThread:
-                if not et.is_alive():
-                    et = threading.Thread(target=encode, args=())
-                    et.setDaemon(True)
-                    et.start()
+                awakeEncode()
                 Common.forceStartEncodeThread = False
             if Common.forceStartUploadThread:
-                if not ut.is_alive():
-                    d = datetime.strftime(datetime.now(), "%Y_%m_%d")
-                    ut = threading.Thread(target=upload, args=(d,))
-                    ut.setDaemon(True)
-                    ut.start()
+                awakeUpload()
                 Common.forceStartUploadThread = False
