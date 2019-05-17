@@ -26,8 +26,8 @@ def download():
         isDownload = True
         Common.appendDownloadStatus("Download >{}< Start".format(path))
         f = open(path, "wb")
+        _size = 0
         try:
-            _size = 0
             for t in p.iter_content(chunk_size=64 * 1024):
                 if Common.forceNotDownload:
                     Common.modifyLastDownloadStatus("Force Stop Download".format(path))

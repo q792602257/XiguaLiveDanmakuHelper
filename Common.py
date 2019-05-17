@@ -258,7 +258,7 @@ class downloader(XiGuaLiveApi):
     playlist = None
 
     def _updateRoomOnly(self):
-        global broadcaster, isBroadcasting, updateTime, forceNotBroadcasting, forceNotDownload
+        global broadcaster, isBroadcasting, updateTime
         super(downloader, self)._updateRoomOnly()
         updateTime = datetime.strftime(datetime.now(), dt_format)
         broadcaster = self.roomLiver
@@ -266,21 +266,14 @@ class downloader(XiGuaLiveApi):
         if self.isLive:
             self.updPlayList()
         else:
-            forceNotDownload = False
-            forceNotBroadcasting = False
             self.playlist = False
 
     def updPlayList(self):
         global streamUrl
-        if self.isLive:
-            if "stream_url" in self._rawRoomInfo:
-                if self.playlist is None:
-                    self.playlist = None
-                    streamUrl = None
-                else:
-                    self.playlist = self._rawRoomInfo["stream_url"]["flv_pull_url"]
-                    self.playlist = self.playlist.replace("_uhd", "").replace("_sd", "").replace("_ld", "")
-                    streamUrl = self.playlist
+        if self.isLive and "stream_url" in self._rawRoomInfo:
+            self.playlist = self._rawRoomInfo["stream_url"]["flv_pull_url"]
+            self.playlist = self.playlist.replace("_uhd", "").replace("_sd", "").replace("_ld", "")
+            streamUrl = self.playlist
         else:
             streamUrl = None
             self.playlist = None
