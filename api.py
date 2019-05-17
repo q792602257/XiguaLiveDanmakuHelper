@@ -145,8 +145,7 @@ class XiGuaLiveApi:
         """
         if self.name is None or self.roomLiver is None:
             return False
-        if self.name in self.roomLiver:
-            return True
+        return True
 
     def _forceSearchUser(self):
         """
