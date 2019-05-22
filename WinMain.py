@@ -191,7 +191,6 @@ if __name__ == "__main__":
         resetColor()
         time.sleep(60)
         api.updRoomInfo()
-        sys.exit()
     print("进入", api.roomLiver, "的直播间")
     os.system("title {}".format(api.getTitle()))
     print("=" * 30)

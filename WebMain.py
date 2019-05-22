@@ -10,8 +10,6 @@ from liveDownloader import run as RUN
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
 CORS(app, supports_credentials=True)
-# url_for('static', filename='index.html')
-# url_for('static', filename='index.js')
 
 
 @app.route("/")

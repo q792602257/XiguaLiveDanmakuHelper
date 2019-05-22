@@ -257,29 +257,23 @@ def appendError(obj):
 class downloader(XiGuaLiveApi):
     playlist = None
 
-    def updRoomInfo(self):
-        global broadcaster, isBroadcasting, updateTime, forceNotBroadcasting, forceNotDownload
-        super(downloader, self).updRoomInfo()
+    def _updateRoomOnly(self):
+        global broadcaster, isBroadcasting, updateTime
+        super(downloader, self)._updateRoomOnly()
         updateTime = datetime.strftime(datetime.now(), dt_format)
         broadcaster = self.roomLiver
         isBroadcasting = self.isLive
         if self.isLive:
             self.updPlayList()
         else:
-            forceNotDownload = False
-            forceNotBroadcasting = False
             self.playlist = False
 
     def updPlayList(self):
         global streamUrl
-        if self.isLive:
-            if "stream_url" in self._rawRoomInfo:
-                if self.playlist is None:
-                    self.playlist = None
-                else:
-                    self.playlist = self._rawRoomInfo["stream_url"]["flv_pull_url"]
-                    self.playlist = self.playlist.replace("_uhd", "").replace("_sd", "").replace("_ld", "")
-                    streamUrl = self.playlist
+        if self.isLive and "stream_url" in self._rawRoomInfo:
+            self.playlist = self._rawRoomInfo["stream_url"]["flv_pull_url"]
+            self.playlist = self.playlist.replace("_uhd", "").replace("_sd", "").replace("_ld", "")
+            streamUrl = self.playlist
         else:
             streamUrl = None
             self.playlist = None
