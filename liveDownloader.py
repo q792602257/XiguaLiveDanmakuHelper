@@ -76,7 +76,8 @@ def encode():
         Common.uploadQueue.put(i)
 
 
-def upload(date=datetime.strftime(datetime.now(), "%Y_%m_%d")):
+def upload():
+    date=datetime.strftime(datetime.now(), "%Y_%m_%d")
     Common.appendUploadStatus("Upload Daemon Starting")
     i = Common.uploadQueue.get()
     while True:
@@ -132,6 +133,7 @@ def awakeDownload():
     t = threading.Thread(target=download, args=())
     t.setDaemon(True)
     t.start()
+    Common.api.updRoomInfo()
     return False
 
 
