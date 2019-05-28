@@ -236,6 +236,20 @@ def fileDownload(path):
         return Response(status=404)
 
 
+@app.route("/images/rrd/<filename>")
+def rrdGraphGet(filename):
+    OMV_RRD_PATH = "/var/lib/openmediavault/rrd"
+    def generate(file):
+        with open(file, "rb") as f:
+            for row in f:
+                yield row
+    if os.path.isdir(OMV_RRD_PATH):
+        if os.path.exists(os.path.join(OMV_RRD_PATH, filename)):
+            return Response(generate(os.path.join(OMV_RRD_PATH, filename)),
+                            mimetype='application/octet-stream')
+    return Response(status=404)
+
+
 def SubThread():
     t = threading.Thread(target=RUN, args=())
     t.setDaemon(True)
