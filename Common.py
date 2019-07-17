@@ -16,7 +16,7 @@ bypy = ByPy()
 doCleanTime = datetime.now()
 _clean_flag = None
 
-network = {
+network = [{
     "currentTime": datetime.now(),
     "out": {
         "currentByte": psutil.net_io_counters().bytes_sent,
@@ -24,12 +24,12 @@ network = {
     "in": {
         "currentByte": psutil.net_io_counters().bytes_recv,
     }
-}
+}]
 
 
 def updateNetwork():
     global network
-    network = {
+    network.append({
         "currentTime": datetime.now(),
         "out": {
             "currentByte": psutil.net_io_counters().bytes_sent,
@@ -37,7 +37,8 @@ def updateNetwork():
         "in": {
             "currentByte": psutil.net_io_counters().bytes_recv,
         }
-    }
+    })
+    network = network[-2:]
 
 
 def getTimeDelta(a, b):
@@ -83,11 +84,11 @@ def getCurrentStatus():
     _disk = psutil.disk_usage(".")
     _mem  = psutil.virtual_memory()
     _net  = psutil.net_io_counters()
-    _delta= getTimeDelta(datetime.now(),network["currentTime"])
+    _delta= getTimeDelta(datetime.now(),network[0]["currentTime"])
     if 60 > _delta > 0:
-        _delta = getTimeDelta(datetime.now(), network["currentTime"])
-        _inSpeed = (_net.bytes_recv - network["in"]["currentByte"]) / _delta
-        _outSpeed = (_net.bytes_sent - network["out"]["currentByte"]) / _delta
+        _delta = getTimeDelta(network[-1]["currentTime"], network[0]["currentTime"])
+        _inSpeed = (network[-1]["in"]["currentByte"] - network[0]["in"]["currentByte"]) / _delta
+        _outSpeed = (network[-1]["out"]["currentByte"] - network[0]["out"]["currentByte"]) / _delta
     else:
         _outSpeed = 0
         _inSpeed = 0
