@@ -85,12 +85,12 @@ def getCurrentStatus():
     _mem  = psutil.virtual_memory()
     _net  = psutil.net_io_counters()
     _delta= getTimeDelta(network[-1]["currentTime"], network[0]["currentTime"])
-    if 60 > _delta > 0:
+    if 60 > _delta > 1:
         _inSpeed = (network[-1]["in"]["currentByte"] - network[0]["in"]["currentByte"]) / _delta
         _outSpeed = (network[-1]["out"]["currentByte"] - network[0]["out"]["currentByte"]) / _delta
     else:
-        _outSpeed = 0
-        _inSpeed = 0
+        _outSpeed = (network[-1]["in"]["currentByte"] - network[0]["in"]["currentByte"])
+        _inSpeed = (network[-1]["out"]["currentByte"] - network[0]["out"]["currentByte"])
     updateNetwork()
     if getTimeDelta(datetime.now(), doCleanTime) > 3600:
         doClean()
