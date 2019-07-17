@@ -84,9 +84,8 @@ def getCurrentStatus():
     _disk = psutil.disk_usage(".")
     _mem  = psutil.virtual_memory()
     _net  = psutil.net_io_counters()
-    _delta= getTimeDelta(datetime.now(),network[0]["currentTime"])
+    _delta= getTimeDelta(network[-1]["currentTime"], network[0]["currentTime"])
     if 60 > _delta > 0:
-        _delta = getTimeDelta(network[-1]["currentTime"], network[0]["currentTime"])
         _inSpeed = (network[-1]["in"]["currentByte"] - network[0]["in"]["currentByte"]) / _delta
         _outSpeed = (network[-1]["out"]["currentByte"] - network[0]["out"]["currentByte"]) / _delta
     else:
