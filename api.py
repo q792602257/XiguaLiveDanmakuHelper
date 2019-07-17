@@ -10,7 +10,6 @@ from Struct.Lottery import Lottery
 import requests
 import time
 
-s = requests.Session()
 
 DEBUG = False
 
@@ -27,6 +26,7 @@ class XiGuaLiveApi:
     _cursor = "0"
     _updRoomCount = 0
     lottery = None
+    s = requests.session()
 
     def __init__(self, name: str = "永恒de草薙"):
         """
@@ -153,7 +153,7 @@ class XiGuaLiveApi:
         :return:
         """
         try:
-            p = s.get("https://security.snssdk.com/video/app/search/live/?version_code=730&device_platform=android"
+            p = self.s.get("https://security.snssdk.com/video/app/search/live/?version_code=730&device_platform=android"
                       "&format=json&keyword={}".format(self.name))
             d = p.json()
         except json.decoder.JSONDecodeError as e:
@@ -186,7 +186,7 @@ class XiGuaLiveApi:
         :return:
         """
         try:
-            p = s.post("https://i.snssdk.com/videolive/room/enter?version_code=730"
+            p = self.s.post("https://i.snssdk.com/videolive/room/enter?version_code=730"
                        "&device_platform=android",
                        data="room_id={roomID}&version_code=730"
                             "&device_platform=android".format(roomID=self.roomID),
@@ -232,7 +232,7 @@ class XiGuaLiveApi:
         :param userId: 用户ID
         :return: XiGuaLiveApi
         """
-        p = s.get("https://live.ixigua.com/api/room?anchorId={room}".format(room=userId))
+        p = requests.get("https://live.ixigua.com/api/room?anchorId={room}".format(room=userId))
         if DEBUG:
             print(p.text)
         d = p.json()
@@ -249,7 +249,7 @@ class XiGuaLiveApi:
         :return: array: 搜索结果
         """
         ret = []
-        p = s.get("https://security.snssdk.com/video/app/search/live/?version_code=730&device_platform=android"
+        p = requests.get("https://security.snssdk.com/video/app/search/live/?version_code=730&device_platform=android"
                   "&format=json&keyword={}".format(keyword))
         d = p.json()
         if "data" in d:
@@ -266,7 +266,7 @@ class XiGuaLiveApi:
         if not self.isValidRoom:
             self.updRoomInfo()
             return
-        p = s.get("https://i.snssdk.com/videolive/im/get_msg?cursor={cursor}&room_id={roomID}"
+        p = self.s.get("https://i.snssdk.com/videolive/im/get_msg?cursor={cursor}&room_id={roomID}"
                   "&version_code=730&device_platform=android".format(
                       roomID=self.roomID,
                       cursor=self._cursor

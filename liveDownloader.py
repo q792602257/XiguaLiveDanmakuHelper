@@ -15,11 +15,12 @@ isDownload = False
 def download():
     global isDownload
     while Common.api.isLive and not Common.forceNotDownload:
+        session = requests.session()
         if not Common.streamUrl:
             Common.appendError("Download with No StreamUrl Specific")
             break
         path = datetime.strftime(datetime.now(), "%Y%m%d_%H%M.flv")
-        p = requests.get(Common.streamUrl, stream=True)
+        p = session.get(Common.streamUrl, stream=True, timeout=10)
         if p.status_code != 200:
             Common.appendDownloadStatus("Download with Response {}".format(p.status_code))
             break
