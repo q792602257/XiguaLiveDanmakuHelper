@@ -82,9 +82,10 @@ def doClean(_force=False):
 def getCurrentStatus():
     _disk = psutil.disk_usage(".")
     _mem  = psutil.virtual_memory()
-    _delta= getTimeDelta(datetime.now(),network["currentTime"])
     _net  = psutil.net_io_counters()
+    _delta= getTimeDelta(datetime.now(),network["currentTime"])
     if 60 > _delta > 0:
+        _delta = getTimeDelta(datetime.now(), network["currentTime"])
         _inSpeed = (_net.bytes_recv - network["in"]["currentByte"]) / _delta
         _outSpeed = (_net.bytes_sent - network["out"]["currentByte"]) / _delta
     else:
