@@ -38,7 +38,7 @@ def updateNetwork():
             "currentByte": psutil.net_io_counters().bytes_recv,
         }
     })
-    network = network[-2:]
+    network = network[-3:]
 
 
 def getTimeDelta(a, b):
