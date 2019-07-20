@@ -65,6 +65,7 @@ def encode():
             isEncode = True
             if os.path.getsize(i) < 8 * 1024 * 1024:
                 Common.appendEncodeStatus("Encoded File >{}< is too small, will ignore it".format(i))
+                continue
             else:
                 Common.appendEncodeStatus("Encoding >{}< Start".format(i))
                 _code = os.system("ffmpeg -i {} -c:v copy -c:a copy -f mp4 {} -y".format(i, i[:13] + ".mp4"))
@@ -106,6 +107,7 @@ def upload():
                     continue
             if not Common.forceNotEncode:
                 os.remove(i)
+        sleep(1800)  # 防抖，避免主播因特殊情况下播导致直接投递了
         i = Common.uploadQueue.get()
     Common.appendUploadStatus("Upload Daemon Quiting")
 
