@@ -171,9 +171,9 @@ def run():
                     _count_error = 0
                 except Exception as e:
                     Common.appendError(e.__str__())
-                    time.sleep(20)
+                    time.sleep(5)
                     continue
-            time.sleep(20)
+            time.sleep(5)
         else:
             if not isEncode and not isDownload:
                 Common.uploadQueue.put(True)
