@@ -15,6 +15,7 @@ import ctypes
 
 SHOW_ALL = False
 
+
 def readInput(caption, default, timeout: int = 5):
     start_time = time.time()
     print('{}({})\r\n>'.format(caption, default), end="")
@@ -76,8 +77,9 @@ FOREGROUND_YELLOW = 0x0e  # yellow.
 FOREGROUND_WHITE = 0x0f  # white.
 
 # Windows CMD命令行 背景颜色定义 background colors
-BACKGROUND_BLUE = 0x10  # dark blue.
-BACKGROUND_GREEN = 0x20  # dark green.
+BACKGROUND_BLACK = 0x00  # dark blue.
+BACKGROUND_DARKBLUE = 0x10  # dark blue.
+BACKGROUND_DARKGREEN = 0x20  # dark green.
 BACKGROUND_DARKSKYBLUE = 0x30  # dark skyblue.
 BACKGROUND_DARKRED = 0x40  # dark red.
 BACKGROUND_DARKPINK = 0x50  # dark pink.
@@ -99,7 +101,7 @@ def set_cmd_text_color(color, handle=std_out_handle):
 
 
 def resetColor():
-    set_cmd_text_color(FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE)
+    set_cmd_text_color(BACKGROUND_BLACK | FOREGROUND_WHITE)
 
 
 class WinMain(Api):
@@ -109,7 +111,7 @@ class WinMain(Api):
         self._tmp += 1
         if self._tmp > 10:
             self._tmp = 0
-        if self._tmp < 5 :
+        if self._tmp < 5:
             return "{} 的直播间 --弹幕助手 by JerryYan".format(self.roomLiver)
         else:
             if self.roomPopularity == 0:
@@ -119,7 +121,7 @@ class WinMain(Api):
                 return "人气:{} --弹幕助手 by JerryYan".format(self.roomPopularity)
 
     def onMessage(self, msg: str):
-        set_cmd_text_color(FOREGROUND_DARKGRAY)
+        set_cmd_text_color(BACKGROUND_BLACK | FOREGROUND_DARKGRAY)
         print("消息 : ", msg)
         resetColor()
 
@@ -130,21 +132,22 @@ class WinMain(Api):
 
     def onSubscribe(self, user: User):
         if SHOW_ALL:
-            set_cmd_text_color(FOREGROUND_DARKGRAY)
+            set_cmd_text_color(BACKGROUND_BLACK | FOREGROUND_DARKGRAY)
             print("用户", user, "关注了主播")
             resetColor()
 
     def onEnter(self, msg:MemberMsg):
         if SHOW_ALL:
-            set_cmd_text_color(FOREGROUND_DARKGRAY)
+            set_cmd_text_color(BACKGROUND_BLACK | FOREGROUND_DARKGRAY)
             print("提示 :", msg)
             resetColor()
 
     def onChat(self, chat: Chat):
         if SHOW_ALL:
-            resetColor()
+            set_cmd_text_color(BACKGROUND_BLACK | FOREGROUND_WHITE)
             if not chat.isFiltered:
                 print(chat)
+            resetColor()
 
     def onLottery(self, i:Lottery):
         set_cmd_text_color(FOREGROUND_WHITE | BACKGROUND_DARKGRAY)
@@ -153,7 +156,7 @@ class WinMain(Api):
 
     def onPresent(self, gift: Gift):
         if SHOW_ALL:
-            set_cmd_text_color(FOREGROUND_DARKGRAY)
+            set_cmd_text_color(BACKGROUND_BLACK | FOREGROUND_DARKGRAY)
             print("连击 :", gift)
             resetColor()
 
@@ -164,7 +167,7 @@ class WinMain(Api):
 
     def onLike(self, user: User):
         if SHOW_ALL:
-            set_cmd_text_color(FOREGROUND_DARKGRAY)
+            set_cmd_text_color(BACKGROUND_BLACK | FOREGROUND_DARKGRAY)
             print("用户", user, "点了喜欢")
             resetColor()
 
@@ -182,6 +185,8 @@ if __name__ == "__main__":
     print("西瓜直播弹幕助手 by JerryYan")
     if len(sys.argv) > 1:
         name = sys.argv[1]
+        if len(sys.argv) > 2:
+            SHOW_ALL = sys.argv[2] == "a"
     else:
         name = readInput("请输入主播用户名，默认为", name, 3)
     api = WinMain(name)
