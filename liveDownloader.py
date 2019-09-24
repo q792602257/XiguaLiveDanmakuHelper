@@ -14,8 +14,8 @@ isDownload = False
 
 def download():
     global isDownload
+    session = requests.session()
     while Common.api.isLive and not Common.forceNotDownload:
-        session = requests.session()
         if not Common.streamUrl:
             Common.appendError("Download with No StreamUrl Specific")
             break
