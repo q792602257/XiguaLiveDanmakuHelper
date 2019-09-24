@@ -107,7 +107,6 @@ def upload():
                     continue
             if not Common.forceNotEncode:
                 os.remove(i)
-        sleep(1800)  # 防抖，避免主播因特殊情况下播导致直接投递了
         i = Common.uploadQueue.get()
     Common.appendUploadStatus("Upload Daemon Quiting")
 
@@ -158,8 +157,10 @@ def run():
         return
     awakeEncode()
     _count = 0
+    _firstDown = False
     while True:
         if Common.api.isLive and not Common.forceNotBroadcasting:
+            _firstDown = True
             if not Common.forceNotDownload:
                 awakeDownload()
             awakeUpload()
@@ -175,8 +176,13 @@ def run():
                     continue
             time.sleep(5)
         else:
+            if _firstDown:
+                sleep(1800) # 防抖，避免主播因特殊情况下播导致直接投递了
+                _firstDown = False
+                continue
             if not isEncode and not isDownload:
                 Common.uploadQueue.put(True)
+                _firstDown = False
                 isEncode = True
                 isDownload = True
             time.sleep(60)
