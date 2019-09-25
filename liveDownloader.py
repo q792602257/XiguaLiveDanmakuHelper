@@ -176,11 +176,12 @@ def run():
                     continue
             time.sleep(5)
         else:
-            if _firstDown:
-                sleep(1800) # 防抖，避免主播因特殊情况下播导致直接投递了
-                _firstDown = False
-                continue
             if not isEncode and not isDownload:
+                if _firstDown:
+                    sleep(1800)  # 防抖，避免主播因特殊情况下播导致直接投递了
+                    Common.api.updRoomInfo()
+                    _firstDown = False
+                    continue
                 Common.uploadQueue.put(True)
                 _firstDown = False
                 isEncode = True
