@@ -157,10 +157,10 @@ def run():
         return
     awakeEncode()
     _count = 0
-    _firstDown = False
+    _firstDown = 0
     while True:
         if Common.api.isLive and not Common.forceNotBroadcasting:
-            _firstDown = True
+            _firstDown = 0
             if not Common.forceNotDownload:
                 awakeDownload()
             awakeUpload()
@@ -176,17 +176,6 @@ def run():
                     continue
             time.sleep(5)
         else:
-            if not isEncode and not isDownload:
-                if _firstDown:
-                    sleep(1800)  # 防抖，避免主播因特殊情况下播导致直接投递了
-                    Common.api.updRoomInfo()
-                    _firstDown = False
-                    continue
-                Common.uploadQueue.put(True)
-                _firstDown = False
-                isEncode = True
-                isDownload = True
-            time.sleep(60)
             try:
                 Common.api.updRoomInfo()
             except Exception as e:
@@ -200,3 +189,14 @@ def run():
             if Common.forceStartUploadThread:
                 awakeUpload()
                 Common.forceStartUploadThread = False
+            if not isEncode and not isDownload:
+                    # 防抖，避免主播因特殊情况下播导致直接投递了
+                if _firstDown < 30:
+                    _firstDown += 1
+                    sleep(60)
+                    continue
+                Common.uploadQueue.put(True)
+                _firstDown = 0
+                isEncode = True
+                isDownload = True
+            time.sleep(60)
