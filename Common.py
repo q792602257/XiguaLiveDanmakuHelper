@@ -36,11 +36,6 @@ network = [{
 }]
 
 
-def loginBilibili():
-    res = b.login(config["b_u"], config["b_p"])
-    appendOperation("登陆账号，结果为：["+res+"]")
-
-
 def updateNetwork():
     global network
     network.append({
@@ -147,7 +142,6 @@ downloadStatus = []
 encodeStatus = []
 errors = []
 operations = []
-loginBilibili()
 
 
 def appendOperation(obj):
@@ -263,6 +257,11 @@ def appendError(obj):
             "message": str(obj)
         })
     errors = errors[-config["elc"]:]
+
+
+def loginBilibili():
+    res = b.login(config["b_u"], config["b_p"])
+    appendOperation("登陆账号，结果为：["+res+"]")
 
 
 class downloader(XiGuaLiveApi):
