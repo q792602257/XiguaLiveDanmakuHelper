@@ -86,7 +86,7 @@ def getTimeDelta(a, b):
 def _doClean(_force=False):
     global doCleanTime, _clean_flag
     _disk = psutil.disk_usage(".")
-    if _disk.percent > 95 or _disk.percent > config["max"] or getTimeDelta(datetime.now(), doCleanTime) > config["exp"]*86400 or _force:
+    if _disk.percent > config["max"] or getTimeDelta(datetime.now(), doCleanTime) > config["exp"]*86400 or _force:
         _clean_flag = True
         doCleanTime = datetime.now()
         appendOperation("执行配置的清理命令")
