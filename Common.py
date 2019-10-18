@@ -9,9 +9,36 @@ import json
 import threading
 from bilibili import *
 
+# 默认设置
+config = {
+    # 录像的主播名
+    "l_u": "永恒de草薙",
+    "b_u": "自己的B站账号",
+    "b_p": "自己的B站密码",
+    # 标题及预留时间位置
+    "t_t": "【永恒de草薙直播录播】直播于 {}",
+    # 标签
+    "tag": ["永恒de草薙", "三国", "三国战记", "直播录像", "录播", "怀旧", "街机"],
+    # 描述
+    "des": "西瓜直播 https://live.ixigua.com/userlive/97621754276 \n自动投递\n原主播：永恒de草薙\n直播时间：晚上6点多到凌晨4点左右",
+    # 来源， 空则为自制
+    "src": "",
+    # Log条数
+    "l_c": 5,
+    # 错误Log条数
+    "elc": 10,
+    "p_s": 2141000000,
+    "max": 75,
+    "exp": 1,
+    "dow": "echo 'clean'",
+    # 仅下载
+    "dlO": True
+}
+
 _config_fp = open("config.json", "r", encoding="utf8")
-config = json.load(_config_fp)
+_config = json.load(_config_fp)
 _config_fp.close()
+del _config_fp
 doCleanTime = datetime.now()
 _clean_flag = None
 
@@ -59,19 +86,11 @@ def getTimeDelta(a, b):
 def _doClean(_force=False):
     global doCleanTime, _clean_flag
     _disk = psutil.disk_usage(".")
-    if (_disk.percent > config["max"] and getTimeDelta(datetime.now(), doCleanTime) > 7200) or _force:
+    if (_disk.percent > config["max"] and getTimeDelta(datetime.now(), doCleanTime) > config["exp"]*86400) or _force:
+        _clean_flag = True
         doCleanTime = datetime.now()
-        _list = sorted(glob("*.flv"), key=lambda x: datetime.utcfromtimestamp(os.path.getmtime(x)))
-        for _i in _list:
-            if not os.path.exists(_i):
-                break
-            doCleanTime = datetime.now()
-            if (datetime.now() - datetime.utcfromtimestamp(os.path.getmtime(_i))).days >= config["exp"]:
-                _clean_flag = True
-                os.system(config["dow"])
-            else:
-                break
-            doCleanTime = datetime.now()
+        os.system(config["dow"])
+        doCleanTime = datetime.now()
     _clean_flag = False
 
 
@@ -114,9 +133,10 @@ def getCurrentStatus():
 
 
 def reloadConfig():
-    global config, _config_fp
+    global config
     _config_fp = open("config.json", "r", encoding="utf8")
-    config = json.load(_config_fp)
+    _config = json.load(_config_fp)
+    config.update(_config)
     _config_fp.close()
 
 
@@ -131,6 +151,9 @@ forceNotDownload = False
 forceNotBroadcasting = False
 forceNotUpload = False
 forceNotEncode = False
+if config["dlO"] is True:
+    forceNotUpload = True
+    forceNotEncode = True
 forceStartEncodeThread = False
 forceStartUploadThread = False
 
@@ -260,8 +283,9 @@ def appendError(obj):
 
 
 def loginBilibili():
-    res = b.login(config["b_u"], config["b_p"])
-    appendOperation("登陆账号，结果为：[{}]".format(res))
+    if "dlO" not in config or config["dlO"] is False or forceNotUpload is False:
+        res = b.login(config["b_u"], config["b_p"])
+        appendOperation("登陆账号，结果为：[{}]".format(res))
 
 
 class downloader(XiGuaLiveApi):
@@ -328,10 +352,17 @@ def refreshDownloader():
 
 
 def uploadVideo(name):
-    b.preUpload(VideoPart(name, os.path.basename(name)))
-
+    if forceNotUpload is False:
+        b.preUpload(VideoPart(name, os.path.basename(name)))
+    else:
+        appendUploadStatus("设置了不上传，所以[{}]不会上传了".format(name))
+    if not Common.forceNotEncode:
+        os.remove(name)
 
 def publishVideo(date):
-    b.finishUpload(config["t_t"].format(date), 17, config["tag"], config["des"],
-                          source=config["src"], no_reprint=0)
-    b.clear()
+    if forceNotUpload is False:
+        b.finishUpload(config["t_t"].format(date), 17, config["tag"], config["des"],
+                              source=config["src"], no_reprint=0)
+        b.clear()
+    else:
+        appendUploadStatus("设置了不上传，所以[{}]的录播不会上传了".format(date))

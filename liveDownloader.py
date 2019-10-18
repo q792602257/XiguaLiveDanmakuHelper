@@ -84,27 +84,19 @@ def upload():
     i = Common.uploadQueue.get()
     while True:
         Common.doClean()
-        if Common.forceNotUpload:
-            if isinstance(i, bool):
-                Common.appendUploadStatus("设置了不上传，不会发布了")
-                break
-            else:
-                Common.appendUploadStatus("设置了不上传，所以[{}]不会上传了".format(i))
+        if isinstance(i, bool):
+            if i is True:
+                Common.publishVideo(date)
+            break
+        if not os.path.exists(i):
+            Common.appendError("Upload File Not Exist {}".format(i))
         else:
-            if isinstance(i, bool):
-                if i is True:
-                    Common.publishVideo(date)
-                break
-            if not os.path.exists(i):
-                Common.appendError("Upload File Not Exist {}".format(i))
-            else:
-                try:
-                    Common.uploadVideo(i)
-                except Exception as e:
-                    Common.appendError(e.__str__())
-                    continue
-            if not Common.forceNotEncode:
-                os.remove(i)
+            try:
+                Common.uploadVideo(i)
+            except Exception as e:
+                Common.appendError(e.__str__())
+                continue
+
         i = Common.uploadQueue.get()
     Common.appendUploadStatus("Upload Daemon Quiting")
 
