@@ -7,14 +7,15 @@ import psutil
 from api import XiGuaLiveApi
 import json
 import threading
-from bypy import ByPy
+from bilibili import *
 
 _config_fp = open("config.json", "r", encoding="utf8")
 config = json.load(_config_fp)
 _config_fp.close()
-bypy = ByPy()
 doCleanTime = datetime.now()
 _clean_flag = None
+
+b = Bilibili()
 
 network = [{
     "currentTime": datetime.now(),
@@ -33,6 +34,11 @@ network = [{
         "currentByte": psutil.net_io_counters().bytes_recv,
     }
 }]
+
+
+def loginBilibili():
+    res = b.login(config["b_u"], config["b_p"])
+    appendOperation("登陆账号，结果为：["+res+"]")
 
 
 def updateNetwork():
@@ -67,12 +73,7 @@ def _doClean(_force=False):
             doCleanTime = datetime.now()
             if (datetime.now() - datetime.utcfromtimestamp(os.path.getmtime(_i))).days >= config["exp"]:
                 _clean_flag = True
-                if config["dow"] == "bypy":
-                    _res = bypy.upload(_i)
-                    if _res == 0:
-                        os.remove(_i)
-                else:
-                    os.system(config["dow"])
+                os.system(config["dow"])
             else:
                 break
             doCleanTime = datetime.now()
@@ -146,6 +147,7 @@ downloadStatus = []
 encodeStatus = []
 errors = []
 operations = []
+loginBilibili()
 
 
 def appendOperation(obj):
@@ -324,3 +326,13 @@ api = downloader(config["l_u"])
 def refreshDownloader():
     global api
     api = downloader(config["l_u"])
+
+
+def uploadVideo(name):
+    b.preUpload(VideoPart(name, os.path.basename(name)))
+
+
+def publishVideo(date):
+    b.finishUpload(config["t_t"].format(date), 17, config["tag"], config["des"],
+                          source=config["src"], no_reprint=0)
+    b.clear()

@@ -3,7 +3,6 @@ import sys
 import time
 from datetime import datetime
 import threading
-from bilibili import *
 import Common
 import os
 import requests
@@ -93,15 +92,13 @@ def upload():
         else:
             if isinstance(i, bool):
                 if i is True:
-                    b.finishUpload(Common.config["t_t"].format(date), 17, Common.config["tag"], Common.config["des"],
-                                   source=Common.config["src"], no_reprint=0)
-                    b.clear()
+                    Common.publishVideo(date)
                 break
             if not os.path.exists(i):
                 Common.appendError("Upload File Not Exist {}".format(i))
             else:
                 try:
-                    b.preUpload(VideoPart(i, os.path.basename(i)))
+                    Common.uploadVideo(i)
                 except Exception as e:
                     Common.appendError(e.__str__())
                     continue
@@ -111,8 +108,6 @@ def upload():
     Common.appendUploadStatus("Upload Daemon Quiting")
 
 
-b = Bilibili()
-b.login(Common.config["b_u"], Common.config["b_p"])
 t = threading.Thread(target=download, args=())
 ut = threading.Thread(target=upload, args=())
 et = threading.Thread(target=encode, args=())

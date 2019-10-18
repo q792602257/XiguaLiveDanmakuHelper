@@ -198,6 +198,12 @@ def getUploadStats():
     }})
 
 
+@app.route("/account/reLogin", methods=["GET"])
+def accountRelogin():
+    Common.loginBilibili()
+    return jsonify({"message":"ok","code":200,"status":0,"data":{}})
+
+
 @app.route("/files/", methods=["GET"])
 def fileIndex():
     a = []
