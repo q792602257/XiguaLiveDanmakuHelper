@@ -86,17 +86,18 @@ def getTimeDelta(a, b):
 def _doClean(_force=False):
     global doCleanTime, _clean_flag
     _disk = psutil.disk_usage(".")
-    if (_disk.percent > config["max"] and getTimeDelta(datetime.now(), doCleanTime) > config["exp"]*86400) or _force:
+    if _disk.percent > 95 or _disk.percent > config["max"] or getTimeDelta(datetime.now(), doCleanTime) > config["exp"]*86400 or _force:
         _clean_flag = True
         doCleanTime = datetime.now()
+        appendOperation("执行配置的清理命令")
         os.system(config["dow"])
+        appendOperation("执行配置的清理命令完毕")
         doCleanTime = datetime.now()
     _clean_flag = False
 
 
 def doClean(_force=False):
     if _clean_flag:
-        appendError("doClean request on cleaning, will ignore it")
         return
     p = threading.Thread(target=_doClean, args=(_force,))
     p.setDaemon(True)
@@ -115,8 +116,6 @@ def getCurrentStatus():
         _outSpeed = (network[-1]["in"]["currentByte"] - network[-2]["in"]["currentByte"])
         _inSpeed = (network[-1]["out"]["currentByte"] - network[-2]["out"]["currentByte"])
     updateNetwork()
-    if getTimeDelta(datetime.now(), doCleanTime) > 3600:
-        doClean()
     return {
         "memTotal": parseSize(_mem.total),
         "memUsed": parseSize(_mem.used),
@@ -290,6 +289,11 @@ def loginBilibili():
 
 class downloader(XiGuaLiveApi):
     playlist = None
+
+
+    def updRoomInfo(self):
+        doClean()
+        super(downloader, self).updRoomInfo()
 
     def _updateRoomOnly(self):
         global broadcaster, isBroadcasting, updateTime
