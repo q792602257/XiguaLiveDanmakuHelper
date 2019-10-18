@@ -261,7 +261,7 @@ def appendError(obj):
 
 def loginBilibili():
     res = b.login(config["b_u"], config["b_p"])
-    appendOperation("登陆账号，结果为：["+res+"]")
+    appendOperation("登陆账号，结果为：[{}]".format(res))
 
 
 class downloader(XiGuaLiveApi):
