@@ -62,7 +62,7 @@ network = [{
 
 def reloadConfig():
     global config
-    if(os.path.exists(config.json)):
+    if(os.path.exists('config.json')):
         _config_fp = open("config.json", "r", encoding="utf8")
         _config = json.load(_config_fp)
         config.update(_config)
