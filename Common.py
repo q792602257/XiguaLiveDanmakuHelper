@@ -36,11 +36,6 @@ config = {
     # 下播延迟投稿
     "dly": 30
 }
-
-_config_fp = open("config.json", "r", encoding="utf8")
-_config = json.load(_config_fp)
-_config_fp.close()
-del _config_fp
 doCleanTime = datetime.now()
 _clean_flag = None
 delay = 30
@@ -63,6 +58,15 @@ network = [{
         "currentByte": psutil.net_io_counters().bytes_recv,
     }
 }]
+
+
+def reloadConfig():
+    global config
+    if(os.path.exists(config.json)):
+        _config_fp = open("config.json", "r", encoding="utf8")
+        _config = json.load(_config_fp)
+        config.update(_config)
+        _config_fp.close()
 
 
 def resetDelay():
@@ -147,16 +151,8 @@ def getCurrentStatus():
     }
 
 
-def reloadConfig():
-    global config
-    _config_fp = open("config.json", "r", encoding="utf8")
-    _config = json.load(_config_fp)
-    config.update(_config)
-    _config_fp.close()
-
-
 dt_format = "%Y/%m/%d %H:%M:%S"
-
+reloadConfig()
 broadcaster = ""
 streamUrl = ""
 isBroadcasting = False
