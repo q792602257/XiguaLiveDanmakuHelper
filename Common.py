@@ -32,7 +32,9 @@ config = {
     "exp": 1,
     "dow": "echo 'clean'",
     # 仅下载
-    "dlO": True
+    "dlO": True,
+    # 下播延迟投稿
+    "dly": 30
 }
 
 _config_fp = open("config.json", "r", encoding="utf8")
@@ -41,7 +43,7 @@ _config_fp.close()
 del _config_fp
 doCleanTime = datetime.now()
 _clean_flag = None
-
+delay = 30
 b = Bilibili()
 
 network = [{
@@ -61,6 +63,20 @@ network = [{
         "currentByte": psutil.net_io_counters().bytes_recv,
     }
 }]
+
+
+def resetDelay():
+    global delay
+    delay = config['dly']
+
+
+def doDelay():
+    global delay
+    if delay < 0:
+        resetDelay()
+    sleep(60)
+    delay -= 1
+    return delay < 0
 
 
 def updateNetwork():
@@ -356,6 +372,8 @@ def refreshDownloader():
 
 
 def uploadVideo(name):
+    if not os.path.exists(name):
+        Common.appendError("Upload File Not Exist {}".format(name))
     if forceNotUpload is False:
         b.preUpload(VideoPart(name, os.path.basename(name)))
     else:

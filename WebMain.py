@@ -133,13 +133,15 @@ def getAllStats():
             "broadcaster": Common.broadcaster.__str__(),
             "isBroadcasting": Common.isBroadcasting,
             "streamUrl": Common.streamUrl,
-            "updateTime": Common.updateTime
+            "updateTime": Common.updateTime,
+            "delayTime": Common.delay
         },
         "config": {
             "forceNotBroadcasting": Common.forceNotBroadcasting,
             "forceNotDownload": Common.forceNotDownload,
             "forceNotUpload": Common.forceNotUpload,
             "forceNotEncode": Common.forceNotEncode,
+            "downloadOnly": Common.config['dlO'],
         },
     }})
 
@@ -158,7 +160,8 @@ def getBroadcastStats():
             "broadcaster": Common.broadcaster.__str__(),
             "isBroadcasting": Common.isBroadcasting,
             "streamUrl": Common.streamUrl,
-            "updateTime": Common.updateTime
+            "updateTime": Common.updateTime,
+            "delayTime": Common.delay
         }
     }})
 
@@ -171,6 +174,7 @@ def getConfigStats():
             "forceNotDownload": Common.forceNotDownload,
             "forceNotUpload": Common.forceNotUpload,
             "forceNotEncode": Common.forceNotEncode,
+            "downloadOnly": Common.config['dlO'],
         }
     }})
 

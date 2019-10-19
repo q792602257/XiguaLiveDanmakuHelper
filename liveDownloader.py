@@ -61,12 +61,12 @@ def encode():
         if Common.forceNotEncode:
             Common.appendEncodeStatus("设置了不编码，所以[{}]不会编码".format(i))
         elif os.path.exists(i):
-            isEncode = True
             if os.path.getsize(i) < 8 * 1024 * 1024:
                 Common.appendEncodeStatus("Encoded File >{}< is too small, will ignore it".format(i))
                 continue
             else:
                 Common.appendEncodeStatus("Encoding >{}< Start".format(i))
+                isEncode = True
                 _code = os.system("ffmpeg -i {} -c:v copy -c:a copy -f mp4 {} -y".format(i, i[:13] + ".mp4"))
                 if _code != 0:
                     Common.appendError("Encode {} with Non-Zero Return.".format(i))
@@ -88,15 +88,11 @@ def upload():
             if i is True:
                 Common.publishVideo(date)
             break
-        if not os.path.exists(i):
-            Common.appendError("Upload File Not Exist {}".format(i))
-        else:
-            try:
-                Common.uploadVideo(i)
-            except Exception as e:
-                Common.appendError(e.__str__())
-                continue
-
+        try:
+            Common.uploadVideo(i)
+        except Exception as e:
+            Common.appendError(e.__str__())
+            continue
         i = Common.uploadQueue.get()
     Common.appendUploadStatus("Upload Daemon Quiting")
 
@@ -143,16 +139,15 @@ def run():
     if not Common.api.isValidRoom:
         Common.appendError("[{}]房间未找到".format(Common.config["l_u"]))
         return
-    awakeEncode()
     _count = 0
-    _firstDown = 0
     while True:
         if Common.api.isLive and not Common.forceNotBroadcasting:
-            _firstDown = 0
             if not Common.forceNotDownload:
                 awakeDownload()
-            awakeUpload()
-            awakeEncode()
+            if not Common.forceNotUpload:
+                awakeUpload()
+            if not Common.forceNotEncode:
+                awakeEncode()
             if _count % 15 == 14:
                 try:
                     Common.api.updRoomInfo()
@@ -177,14 +172,8 @@ def run():
             if Common.forceStartUploadThread:
                 awakeUpload()
                 Common.forceStartUploadThread = False
-            if not isEncode and not isDownload:
-                    # 防抖，避免主播因特殊情况下播导致直接投递了
-                if _firstDown < 30:
-                    _firstDown += 1
-                    sleep(60)
-                    continue
+            if not isEncode and not isDownload and Common.doDelay():
                 Common.uploadQueue.put(True)
-                _firstDown = 0
                 isEncode = True
                 isDownload = True
             time.sleep(60)

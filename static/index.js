@@ -6,10 +6,12 @@ function taskUpdate(){
                 $("#broadcaster").text(res.data.broadcast.broadcaster)
                 $("#isBroadcasting").text(res.data.broadcast.isBroadcasting)
                 $("#streamUrl").text(res.data.broadcast.streamUrl)
+                $("#delayTime").text(res.data.broadcast.delayTime)
                 $("#forceNotBroadcasting").text(res.data.config.forceNotBroadcasting)
                 $("#forceNotDownload").text(res.data.config.forceNotDownload)
                 $("#forceNotUpload").text(res.data.config.forceNotUpload)
                 $("#forceNotEncode").text(res.data.config.forceNotEncode)
+                $("#downloadOnly").text(res.data.config.downloadOnly)
                 $("#updateTime").text(res.data.broadcast.updateTime)
                 $("#encodeQueueSize").text(res.data.encodeQueueSize)
                 $("#uploadQueueSize").text(res.data.uploadQueueSize)
@@ -54,4 +56,4 @@ function taskUpdate(){
 }
 
 taskUpdate()
-setInterval(taskUpdate,10000)
+setInterval(taskUpdate,8000)
