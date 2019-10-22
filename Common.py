@@ -38,7 +38,7 @@ config = {
     "enc": "ffmpeg -i {f} -c:v copy -c:a copy -f mp4 {t} -y"
 }
 doCleanTime = datetime.now()
-loginTime = datetime.now() - timedelta(days=3)
+loginTime = datetime.now() - timedelta(days=7)
 _clean_flag = None
 delay = 30
 b = Bilibili()
@@ -303,10 +303,11 @@ def loginBilibili(force=False):
     if config["dlO"] is False or forceNotUpload is False:
         global loginTime
         if not force and getTimeDelta(datetime.now(), loginTime) < 86400 * 3:
-            return True
+            return False
         res = b.login(config["b_u"], config["b_p"])
         loginTime = datetime.now()
         appendOperation("登陆账号，结果为：[{}]".format(res))
+        return res
 
 
 class downloader(XiGuaLiveApi):

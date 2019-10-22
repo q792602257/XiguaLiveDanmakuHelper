@@ -204,8 +204,8 @@ def getUploadStats():
 
 @app.route("/account/reLogin", methods=["POST"])
 def accountRelogin():
-    Common.loginBilibili(True)
-    return jsonify({"message":"ok","code":200,"status":0,"data":{}})
+    res = Common.loginBilibili(True)
+    return jsonify({"message":"ok","code":200,"status":0,"data":{"result":res}})
 
 
 @app.route("/files/", methods=["GET"])
