@@ -57,10 +57,8 @@ def encode():
 def upload():
     date=datetime.strftime(datetime.now(), "%Y_%m_%d")
     Common.appendUploadStatus("Upload Daemon Starting")
-    Common.loginBilibili()
     i = Common.uploadQueue.get()
     while True:
-        Common.doClean()
         if i is True:
             Common.publishVideo(date)
             break

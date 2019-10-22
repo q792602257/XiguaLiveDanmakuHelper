@@ -1,6 +1,6 @@
 import os
 import queue
-from datetime import datetime
+from datetime import datetime, timedelta
 from glob import glob
 
 import psutil
@@ -38,7 +38,7 @@ config = {
     "enc": "ffmpeg -i {f} -c:v copy -c:a copy -f mp4 {t} -y"
 }
 doCleanTime = datetime.now()
-loginTime = datetime.now()
+loginTime = datetime.now() - timedelta(days=3)
 _clean_flag = None
 delay = 30
 b = Bilibili()
@@ -299,8 +299,8 @@ def appendError(obj):
     errors = errors[-config["elc"]:]
 
 
-def loginBilibili():
-    if "dlO" not in config or config["dlO"] is False or forceNotUpload is False:
+def loginBilibili(force=False):
+    if force or config["dlO"] is False or forceNotUpload is False:
         global loginTime
         if getTimeDelta(datetime.now(), loginTime) < 86400 * 3:
             return True
@@ -381,6 +381,8 @@ def uploadVideo(name):
     global isUpload
     if not os.path.exists(name):
         Common.appendError("Upload File Not Exist {}".format(name))
+    loginBilibili()
+    doClean()
     if forceNotUpload is False:
         isUpload = True
         b.preUpload(VideoPart(name, os.path.basename(name)))
