@@ -202,7 +202,7 @@ def getUploadStats():
     }})
 
 
-@app.route("/account/reLogin", methods=["GET"])
+@app.route("/account/reLogin", methods=["POST"])
 def accountRelogin():
     Common.loginBilibili()
     return jsonify({"message":"ok","code":200,"status":0,"data":{}})
