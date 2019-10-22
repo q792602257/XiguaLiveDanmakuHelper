@@ -7,12 +7,9 @@ import Common
 import os
 import requests
 
-isEncode = False
-isDownload = False
 
 
 def download():
-    global isDownload
     session = requests.session()
     while Common.api.isLive and not Common.forceNotDownload:
         if not Common.streamUrl:
@@ -23,7 +20,6 @@ def download():
         if p.status_code != 200:
             Common.appendDownloadStatus("Download with Response {}".format(p.status_code))
             break
-        isDownload = True
         Common.appendDownloadStatus("Download >{}< Start".format(path))
         f = open(path, "wb")
         _size = 0
@@ -43,7 +39,6 @@ def download():
         except Exception as e:
             Common.appendError("Download >{}< With Exception {}".format(path, e.__str__()))
         f.close()
-        isDownload = False
         if os.path.getsize(path) < 1024 * 1024:
             Common.modifyLastDownloadStatus("Downloaded File >{}< is too small, will ignore it".format(path))
             os.remove(path)
@@ -53,28 +48,10 @@ def download():
 
 
 def encode():
-    global isEncode
     Common.appendEncodeStatus("Encode Daemon Starting")
     while True:
-        isEncode = False
         i = Common.encodeQueue.get()
-        if Common.forceNotEncode:
-            Common.appendEncodeStatus("设置了不编码，所以[{}]不会编码".format(i))
-        elif os.path.exists(i):
-            if os.path.getsize(i) < 8 * 1024 * 1024:
-                Common.appendEncodeStatus("Encoded File >{}< is too small, will ignore it".format(i))
-                continue
-            else:
-                Common.appendEncodeStatus("Encoding >{}< Start".format(i))
-                isEncode = True
-                _code = os.system("ffmpeg -i {} -c:v copy -c:a copy -f mp4 {} -y".format(i, i[:13] + ".mp4"))
-                if _code != 0:
-                    Common.appendError("Encode {} with Non-Zero Return.".format(i))
-                    continue
-                else:
-                    Common.modifyLastEncodeStatus("Encode >{}< Finished".format(i))
-                    i = i[:13] + ".mp4"
-        Common.uploadQueue.put(i)
+        Common.encodeVideo(i)
 
 
 def upload():
@@ -84,14 +61,14 @@ def upload():
     i = Common.uploadQueue.get()
     while True:
         Common.doClean()
-        if isinstance(i, bool):
-            if i is True:
-                Common.publishVideo(date)
+        if i is True:
+            Common.publishVideo(date)
             break
         try:
             Common.uploadVideo(i)
         except Exception as e:
             Common.appendError(e.__str__())
+            time.sleep(120)
             continue
         i = Common.uploadQueue.get()
     Common.appendUploadStatus("Upload Daemon Quiting")
@@ -134,7 +111,6 @@ def awakeUpload():
 
 
 def run():
-    global isEncode, isDownload
     Common.refreshDownloader()
     if not Common.api.isValidRoom:
         Common.appendError("[{}]房间未找到".format(Common.config["l_u"]))
@@ -172,8 +148,6 @@ def run():
             if Common.forceStartUploadThread:
                 awakeUpload()
                 Common.forceStartUploadThread = False
-            if not isEncode and not isDownload and Common.doDelay():
+            if Common.doDelay():
                 Common.uploadQueue.put(True)
-                isEncode = True
-                isDownload = True
             time.sleep(60)

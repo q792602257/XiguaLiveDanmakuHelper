@@ -34,9 +34,11 @@ config = {
     # 仅下载
     "dlO": True,
     # 下播延迟投稿
-    "dly": 30
+    "dly": 30,
+    "enc": "ffmpeg -i {f} -c:v copy -c:a copy -f mp4 {t} -y"
 }
 doCleanTime = datetime.now()
+loginTime = datetime.now()
 _clean_flag = None
 delay = 30
 b = Bilibili()
@@ -75,10 +77,12 @@ def resetDelay():
 
 
 def doDelay():
-    global delay
+    global delay, isBroadcasting, isEncode, isUpload
+    if isBroadcasting or isEncode or isUpload:
+        resetDelay()
+        return False
     if delay < 0:
         resetDelay()
-    sleep(60)
     delay -= 1
     return delay < 0
 
@@ -167,6 +171,8 @@ if config["dlO"] is True:
     forceNotEncode = True
 forceStartEncodeThread = False
 forceStartUploadThread = False
+isEncode = False
+isUpload = False
 
 uploadQueue = queue.Queue()
 encodeQueue = queue.Queue()
@@ -295,7 +301,11 @@ def appendError(obj):
 
 def loginBilibili():
     if "dlO" not in config or config["dlO"] is False or forceNotUpload is False:
+        global loginTime
+        if getTimeDelta(datetime.now(), loginTime) < 86400 * 3:
+            return True
         res = b.login(config["b_u"], config["b_p"])
+        loginTime = datetime.now()
         appendOperation("登陆账号，结果为：[{}]".format(res))
 
 
@@ -368,14 +378,18 @@ def refreshDownloader():
 
 
 def uploadVideo(name):
+    global isUpload
     if not os.path.exists(name):
         Common.appendError("Upload File Not Exist {}".format(name))
     if forceNotUpload is False:
+        isUpload = True
         b.preUpload(VideoPart(name, os.path.basename(name)))
+        isUpload = False
     else:
         appendUploadStatus("设置了不上传，所以[{}]不会上传了".format(name))
     if not Common.forceNotEncode:
         os.remove(name)
+
 
 def publishVideo(date):
     if forceNotUpload is False:
@@ -384,3 +398,26 @@ def publishVideo(date):
         b.clear()
     else:
         appendUploadStatus("设置了不上传，所以[{}]的录播不会上传了".format(date))
+
+
+def encodeVideo(name):
+    if forceNotEncode:
+        appendEncodeStatus("设置了不编码，所以[{}]不会编码".format(name))
+        return False
+    if not os.path.exists(name):
+        appendEncodeStatus("文件[{}]不存在".format(name))
+        return False
+    if os.path.getsize(name) < 8 * 1024 * 1024:
+        appendEncodeStatus("Encoded File >{}< is too small, will ignore it".format(name))
+        return False
+    appendEncodeStatus("Encoding >{}< Start".format(name))
+    global isEncode
+    isEncode=True
+    _new_name = os.path.splitext(name)[0]+".mp4"
+    _code = os.system(config["enc"].format(f=name, t=_new_name))
+    isEncode=False
+    if _code != 0:
+        Common.appendError("Encode {} with Non-Zero Return.".format(name))
+        return False
+    Common.modifyLastEncodeStatus("Encode >{}< Finished".format(name))
+    uploadQueue.put(_new_name)
