@@ -82,7 +82,7 @@ def doDelay():
         resetDelay()
         return False
     if delay < 0:
-        resetDelay()
+        return False
     delay -= 1
     return delay < 0
 
@@ -171,8 +171,8 @@ if config["dlO"] is True:
     forceNotEncode = True
 forceStartEncodeThread = False
 forceStartUploadThread = False
-isEncode = False
-isUpload = False
+isEncode = True
+isUpload = True
 
 uploadQueue = queue.Queue()
 encodeQueue = queue.Queue()
