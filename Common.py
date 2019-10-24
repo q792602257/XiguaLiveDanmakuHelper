@@ -38,7 +38,7 @@ config = {
     "enc": "ffmpeg -i {f} -c:v copy -c:a copy -f mp4 {t} -y"
 }
 doCleanTime = datetime.now()
-loginTime = datetime.now() - timedelta(days=7)
+loginTime = datetime.now()
 _clean_flag = None
 delay = 30
 b = Bilibili()
@@ -308,6 +308,8 @@ def loginBilibili(force=False):
         loginTime = datetime.now()
         appendOperation("登陆账号，结果为：[{}]".format(res))
         return res
+    else:
+        appendOperation("设置了不上传，所以不会登陆")
 
 
 class downloader(XiGuaLiveApi):
@@ -424,3 +426,6 @@ def encodeVideo(name):
         return False
     Common.modifyLastEncodeStatus("Encode >{}< Finished".format(name))
     uploadQueue.put(_new_name)
+
+
+loginBilibili(True)
