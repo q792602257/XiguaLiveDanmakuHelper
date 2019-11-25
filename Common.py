@@ -316,9 +316,9 @@ class downloader(XiGuaLiveApi):
     playlist = None
 
 
-    def updRoomInfo(self):
+    def updRoomInfo(self, force=False):
         doClean()
-        super(downloader, self).updRoomInfo()
+        super(downloader, self).updRoomInfo(force)
 
     def _updateRoomOnly(self):
         global broadcaster, isBroadcasting, updateTime
