@@ -9,6 +9,7 @@ from Struct.Chat import Chat
 from Struct.Lottery import Lottery
 import requests
 import time
+from datetime import datetime, timedelta
 
 
 DEBUG = False
@@ -24,7 +25,6 @@ class XiGuaLiveApi:
     roomLiver = None
     roomPopularity = 0
     _cursor = "0"
-    _updRoomCount = 0
     lottery = None
     s = requests.session()
 
@@ -35,7 +35,8 @@ class XiGuaLiveApi:
         :param name: 主播名
         """
         self.name = name
-        self.updRoomInfo()
+        self._updRoomAt = datetime.now()
+        self.updRoomInfo(True)
 
     def _updateRoomPopularity(self, _data):
         """
@@ -215,11 +216,14 @@ class XiGuaLiveApi:
             self.lottery = l
         return True
 
-    def updRoomInfo(self):
+    def updRoomInfo(self, force=False):
         """
         更新房间信息
         :return:
         """
+        if not force and self._updRoomAt > (datetime.now() - timedelta(minutes=2)):
+            return self.isLive
+        self._updRoomAt = datetime.now()
         if self.isLive:
             return self._updateRoomOnly()
         else:
@@ -304,14 +308,13 @@ class XiGuaLiveApi:
             elif i["common"]['method'] == "VideoLiveControlMessage":
                 print("消息：", "主播离开一小会")
                 # 这个消息代表主播下播了，直接更新房间信息
-                self.updRoomInfo()
+                self.updRoomInfo(True)
             elif i["common"]['method'] == "VideoLiveDiggMessage":
                 self.onLike(User(i))
             else:
                 pass
             if self.lottery is None or self.lottery.ID == 0:
                 self.lottery = Lottery(i)
-        self._updRoomCount += 1
         # 更新抽奖信息
         if self.lottery is not None and self.lottery.ID != 0:
             self.lottery.update()
@@ -319,10 +322,7 @@ class XiGuaLiveApi:
                 self.onLottery(self.lottery)
                 self.lottery = None
         # 2分钟自动更新下房间信息
-        if self._updRoomCount > 120 or len(d['data']) == 0:
-            self.updRoomInfo()
-            self._updRoomCount = 0
-            return
+        self.updRoomInfo(len(d['data']) == 0)
 
 
 if __name__ == "__main__":
@@ -347,8 +347,6 @@ if __name__ == "__main__":
                 time.sleep(5)
             except Exception as e:
                 print(e)
-            time.sleep(1)
         else:
-            print("主播未开播，等待1分钟后重试")
-            time.sleep(60)
+            print("主播未开播，等待2分钟后重试")
             api.updRoomInfo()

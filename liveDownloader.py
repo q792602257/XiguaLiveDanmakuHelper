@@ -113,7 +113,6 @@ def run():
     if not Common.api.isValidRoom:
         Common.appendError("[{}]房间未找到".format(Common.config["l_u"]))
         return
-    _count = 0
     while True:
         if Common.api.isLive and not Common.forceNotBroadcasting:
             if not Common.forceNotDownload:
@@ -122,15 +121,12 @@ def run():
                 awakeUpload()
             if not Common.forceNotEncode:
                 awakeEncode()
-            if _count % 15 == 14:
-                try:
-                    Common.api.updRoomInfo()
-                    _count = 0
-                    _count_error = 0
-                except Exception as e:
-                    Common.appendError(e.__str__())
-                    time.sleep(5)
-                    continue
+            try:
+                Common.api.updRoomInfo()
+            except Exception as e:
+                Common.appendError(e.__str__())
+                time.sleep(5)
+                continue
             time.sleep(5)
         else:
             try:
@@ -148,4 +144,4 @@ def run():
                 Common.forceStartUploadThread = False
             if Common.doDelay():
                 Common.uploadQueue.put(True)
-            time.sleep(60)
+            time.sleep(15)
