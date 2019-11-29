@@ -114,12 +114,25 @@ class XiGuaLiveApi:
         print("消息 :", user, "关注了主播")
 
     def onJoin(self, user: User):
+        """
+        加入粉丝团消息
+        :param user:
+        """
         print("欢迎", user, "加入了粉丝团")
 
     def onMessage(self, msg: str):
+        """
+        系统消息
+        :param msg:
+        """
         print("消息 :", msg)
 
     def onLike(self, user: User):
+        """
+        点击喜欢的消息
+        On Like
+        :param user:
+        """
         print("用户", user, "点了喜欢")
 
     def onLeave(self, json: any):
@@ -211,8 +224,10 @@ class XiGuaLiveApi:
         self.isLive = d["room"]["status"] == 2
         self.roomTitle = d["room"]["title"]
         self.roomPopularity = d["room"]["user_count"]
+        # 处理抽奖事件
         l = Lottery(d)
         if l.isActive:
+            # 因为现在每个房间只能同时开启一个抽奖，所以放一个就行了
             self.lottery = l
         return True
 

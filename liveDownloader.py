@@ -127,7 +127,7 @@ def run():
                 Common.appendError(e.__str__())
                 time.sleep(5)
                 continue
-            time.sleep(5)
+            time.sleep(1)
         else:
             try:
                 Common.api.updRoomInfo()
@@ -144,4 +144,4 @@ def run():
                 Common.forceStartUploadThread = False
             if Common.doDelay():
                 Common.uploadQueue.put(True)
-            time.sleep(15)
+            time.sleep(5)

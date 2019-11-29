@@ -40,7 +40,7 @@ config = {
 doCleanTime = datetime.now()
 loginTime = datetime.now()
 _clean_flag = None
-delay = 30
+delay = datetime.now()
 b = Bilibili()
 
 network = [{
@@ -73,7 +73,7 @@ def reloadConfig():
 
 def resetDelay():
     global delay
-    delay = config['dly']
+    delay = datetime.now() + timedelta(minutes=int(config['dly']))
 
 
 def doDelay():
@@ -81,10 +81,7 @@ def doDelay():
     if isBroadcasting or isEncode or isUpload:
         resetDelay()
         return False
-    if delay < 0:
-        return False
-    delay -= 1
-    return delay < 0
+    return getTimeDelta(datetime.now(), delay) < 0
 
 
 def updateNetwork():
