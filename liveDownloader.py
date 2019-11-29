@@ -19,6 +19,7 @@ def download():
         p = session.get(Common.streamUrl, stream=True, timeout=10)
         if p.status_code != 200:
             Common.appendDownloadStatus("Download with Response {}".format(p.status_code))
+            Common.api.updRoomInfo(True)
             break
         Common.appendDownloadStatus("Download >{}< Start".format(path))
         f = open(path, "wb")
