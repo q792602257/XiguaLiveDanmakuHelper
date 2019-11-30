@@ -81,7 +81,7 @@ def doDelay():
     if isBroadcasting or isEncode or isUpload:
         resetDelay()
         return False
-    return getTimeDelta(datetime.now(), delay) < 0
+    return datetime.now() > delay
 
 
 def updateNetwork():
