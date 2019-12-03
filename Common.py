@@ -383,23 +383,25 @@ def uploadVideo(name):
         Common.appendError("Upload File Not Exist {}".format(name))
     loginBilibili()
     doClean()
+    isUpload = True
     if forceNotUpload is False:
-        isUpload = True
         b.preUpload(VideoPart(name, os.path.basename(name)))
-        isUpload = False
     else:
         appendUploadStatus("设置了不上传，所以[{}]不会上传了".format(name))
+    isUpload = False
     if not Common.forceNotEncode:
         os.remove(name)
 
 
 def publishVideo(date):
+    global isUpload
     if forceNotUpload is False:
         b.finishUpload(config["t_t"].format(date), 17, config["tag"], config["des"],
                               source=config["src"], no_reprint=0)
         b.clear()
     else:
         appendUploadStatus("设置了不上传，所以[{}]的录播不会上传了".format(date))
+    isUpload = False
 
 
 def encodeVideo(name):
@@ -417,12 +419,12 @@ def encodeVideo(name):
     isEncode=True
     _new_name = os.path.splitext(name)[0]+".mp4"
     _code = os.system(config["enc"].format(f=name, t=_new_name))
-    isEncode=False
     if _code != 0:
         Common.appendError("Encode {} with Non-Zero Return.".format(name))
         return False
     Common.modifyLastEncodeStatus("Encode >{}< Finished".format(name))
     uploadQueue.put(_new_name)
+    isEncode=False
 
 
 loginBilibili(True)
