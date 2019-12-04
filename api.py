@@ -236,7 +236,7 @@ class XiGuaLiveApi:
         更新房间信息
         :return:
         """
-        if not force and self._updRoomAt > (datetime.now() - timedelta(minutes=2)):
+        if not force and self._updRoomAt > (datetime.now() - timedelta(minutes=3)):
             return self.isLive
         self._updRoomAt = datetime.now()
         if self.isLive:

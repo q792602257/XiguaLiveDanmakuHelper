@@ -8,7 +8,6 @@ import os
 import requests
 
 
-
 def download():
     session = requests.session()
     while Common.api.isLive and not Common.forceNotDownload:
@@ -56,7 +55,7 @@ def encode():
 
 
 def upload():
-    date=datetime.strftime(datetime.now(), "%Y_%m_%d")
+    date = datetime.strftime(datetime.now(), "%Y_%m_%d")
     Common.appendUploadStatus("Upload Daemon Starting")
     i = Common.uploadQueue.get()
     while True:
@@ -126,9 +125,9 @@ def run():
                 Common.api.updRoomInfo()
             except Exception as e:
                 Common.appendError(e.__str__())
-                time.sleep(5)
+                time.sleep(2)
                 continue
-            time.sleep(1)
+            time.sleep(0.5)
         else:
             try:
                 Common.api.updRoomInfo()
@@ -145,4 +144,6 @@ def run():
                 Common.forceStartUploadThread = False
             if Common.doDelay():
                 Common.uploadQueue.put(True)
+                isEncode = True
+                isUpload = True
             time.sleep(5)
