@@ -144,6 +144,6 @@ def run():
                 Common.forceStartUploadThread = False
             if Common.doDelay():
                 Common.uploadQueue.put(True)
-                isEncode = True
-                isUpload = True
+                Common.isEncode = True
+                Common.isUpload = True
             time.sleep(5)
