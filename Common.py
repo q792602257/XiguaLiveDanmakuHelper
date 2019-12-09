@@ -299,7 +299,7 @@ def appendError(obj):
 def loginBilibili(force=False):
     if config["dlO"] is False or forceNotUpload is False:
         global loginTime
-        if not force and getTimeDelta(datetime.now(), loginTime) < 86400 * 3:
+        if not force or getTimeDelta(datetime.now(), loginTime) < 86400 * 5:
             return False
         res = b.login(config["b_u"], config["b_p"])
         loginTime = datetime.now()
@@ -326,6 +326,7 @@ class downloader(XiGuaLiveApi):
         if self.isLive:
             self.updPlayList()
         else:
+            resetDelay()
             self.playlist = False
 
     def updPlayList(self):
@@ -381,9 +382,9 @@ def uploadVideo(name):
     global isUpload
     if not os.path.exists(name):
         Common.appendError("Upload File Not Exist {}".format(name))
+    isUpload = True
     loginBilibili()
     doClean()
-    isUpload = True
     if forceNotUpload is False:
         b.preUpload(VideoPart(name, os.path.basename(name)))
     else:
@@ -414,9 +415,9 @@ def encodeVideo(name):
     if os.path.getsize(name) < 8 * 1024 * 1024:
         appendEncodeStatus("Encoded File >{}< is too small, will ignore it".format(name))
         return False
-    appendEncodeStatus("Encoding >{}< Start".format(name))
     global isEncode
     isEncode=True
+    appendEncodeStatus("Encoding >{}< Start".format(name))
     _new_name = os.path.splitext(name)[0]+".mp4"
     _code = os.system(config["enc"].format(f=name, t=_new_name))
     if _code != 0:
