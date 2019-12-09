@@ -299,7 +299,7 @@ def appendError(obj):
 def loginBilibili(force=False):
     if config["dlO"] is False or forceNotUpload is False:
         global loginTime
-        if not force or getTimeDelta(datetime.now(), loginTime) < 86400 * 5:
+        if not force and getTimeDelta(datetime.now(), loginTime) < 86400 * 5:
             return False
         res = b.login(config["b_u"], config["b_p"])
         loginTime = datetime.now()
