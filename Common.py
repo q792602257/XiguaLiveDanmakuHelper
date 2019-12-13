@@ -382,6 +382,7 @@ def uploadVideo(name):
     global isUpload
     if not os.path.exists(name):
         Common.appendError("Upload File Not Exist {}".format(name))
+        return
     isUpload = True
     loginBilibili()
     doClean()
