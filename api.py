@@ -1,6 +1,7 @@
 # coding=utf-8
 import json
 import sys
+import random
 
 from Struct.MemberMsg import MemberMsg
 from Struct.User import User
@@ -168,8 +169,9 @@ class XiGuaLiveApi:
         """
         try:
             p = self.s.get("https://security.snssdk.com/video/app/search/live/?version_code=730&device_platform=android"
-                      "&format=json&keyword={}".format(self.name))
+                      "&format=json&iid={}&keyword={}".format(random.randint(1000,10000000),self.name))
             d = p.json()
+            print(d)
         except json.decoder.JSONDecodeError as e:
             self.apiChangedError("搜索接口错误", e.__str__())
             return
