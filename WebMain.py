@@ -211,16 +211,12 @@ def accountRelogin():
 @app.route("/files/", methods=["GET"])
 def fileIndex():
     a = []
-    if not os.path.isdir("/var/lib/openmediavault/rrd"):
-        OMV_RRD_PATH = False
-    else:
-        OMV_RRD_PATH = True
     for i in (glob("*.mp4") + glob("*.flv")):
         a.append({
             "name": i,
             "size": Common.parseSize(os.path.getsize(i))
         })
-    return render_template("files.html",files=a, show=OMV_RRD_PATH)
+    return render_template("files.html",files=a)
 
 
 @app.route("/files/download/<path>", methods=["GET"])
@@ -248,20 +244,6 @@ def fileDownload(path):
                         })
     else:
         return Response(status=404)
-
-
-@app.route("/images/rrd/<filename>")
-def rrdGraphGet(filename):
-    OMV_RRD_PATH = "/var/lib/openmediavault/rrd"
-    def generate(file):
-        with open(file, "rb") as f:
-            for row in f:
-                yield row
-    if os.path.isdir(OMV_RRD_PATH):
-        if os.path.exists(os.path.join(OMV_RRD_PATH, filename)):
-            return Response(generate(os.path.join(OMV_RRD_PATH, filename)),
-                            mimetype='application/octet-stream')
-    return Response(status=404)
 
 
 def SubThread():
