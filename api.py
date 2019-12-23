@@ -358,6 +358,7 @@ if __name__ == "__main__":
         if api.isLive:
             try:
                 api.getDanmaku()
+                time.sleep(1)
             except requests.exceptions.BaseHTTPError:
                 print("网络错误，请确认网络")
                 time.sleep(5)
@@ -365,4 +366,5 @@ if __name__ == "__main__":
                 print(e)
         else:
             print("主播未开播，等待2分钟后重试")
+            time.sleep(60)
             api.updRoomInfo()
