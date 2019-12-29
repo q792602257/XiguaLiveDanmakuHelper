@@ -168,7 +168,7 @@ class XiGuaLiveApi:
         :return:
         """
         try:
-            p = self.s.get("https://security.snssdk.com/video/app/search/live/?format=json&iid=96159232731&device_id=55714661188&aid=32&app_name=video_article&version_code=812&version_name=8.1.2&ab_version=668852,668856,668853,1186421,668851,668859,1355657,999124,668855,941090,785218,668858,1046292,1073579,830454,956074,929436,797199,1135476,1179370,994679,900042,1113833,668854,1193963,901277,1043330,1038721,994822,1002058,1230687,1189797,1143356,1143441,1143501,1143698,1143713,1371009,1243997,1362810,1387132&language=zh&openudid=70d6668d41512c39&update_version_code=81206&cdid=8585903a-ec03-4a8e-812e-c60281ec5990&oaid=a625f466e0975d42&search_sug=0&forum=1&m_tab=live&is_native_req=0&offset=0&from=live&en_qc=1&pd=xigua_live&ssmix=a"
+            p = self.s.get("https://security.snssdk.com/video/app/search/live/?format=json&iid=96159232730&device_id=55714661187&aid=32&app_name=video_article&version_code=812&version_name=8.1.2&ab_version=668852,668856,668853,1186421,668851,668859,1355657,999124,668855,941090,785218,668858,1046292,1073579,830454,956074,929436,797199,1135476,1179370,994679,900042,1113833,668854,1193963,901277,1043330,1038721,994822,1002058,1230687,1189797,1143356,1143441,1143501,1143698,1143713,1371009,1243997,1362810,1387132&language=zh&openudid=70d6668d41512c38&update_version_code=81206&cdid=8585903a-ec03-4a8e-812e-c60281ec5990&oaid=a625f466e0975d41&search_sug=0&forum=1&m_tab=live&is_native_req=0&offset=0&from=live&en_qc=1&pd=xigua_live&ssmix=a"
                       "&keyword={}".format(self.name))
             d = p.json()
         except json.decoder.JSONDecodeError as e:
