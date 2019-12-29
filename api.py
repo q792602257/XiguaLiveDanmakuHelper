@@ -168,8 +168,8 @@ class XiGuaLiveApi:
         :return:
         """
         try:
-            p = self.s.get("https://security.snssdk.com/video/app/search/live/?version_code=730&device_platform=android"
-                      "&format=json&iid={}&keyword={}".format(random.randint(1000,10000000),self.name))
+            p = self.s.get("https://security.snssdk.com/video/app/search/live/?format=json&iid=96159232731&device_id=55714661188&aid=32&app_name=video_article&version_code=812&version_name=8.1.2&ab_version=668852,668856,668853,1186421,668851,668859,1355657,999124,668855,941090,785218,668858,1046292,1073579,830454,956074,929436,797199,1135476,1179370,994679,900042,1113833,668854,1193963,901277,1043330,1038721,994822,1002058,1230687,1189797,1143356,1143441,1143501,1143698,1143713,1371009,1243997,1362810,1387132&language=zh&openudid=70d6668d41512c39&update_version_code=81206&cdid=8585903a-ec03-4a8e-812e-c60281ec5990&oaid=a625f466e0975d42&search_sug=0&forum=1&m_tab=live&is_native_req=0&offset=0&from=live&en_qc=1&pd=xigua_live&ssmix=a"
+                      "&keyword={}".format(self.name))
             d = p.json()
         except json.decoder.JSONDecodeError as e:
             self.apiChangedError("搜索接口错误", e.__str__())
@@ -360,11 +360,4 @@ if __name__ == "__main__":
                 api.getDanmaku()
                 time.sleep(1)
             except requests.exceptions.BaseHTTPError:
-                print("网络错误，请确认网络")
-                time.sleep(5)
-            except Exception as e:
-                print(e)
-        else:
-            print("主播未开播，等待2分钟后重试")
-            time.sleep(60)
-            api.updRoomInfo()
+                pri
