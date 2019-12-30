@@ -14,6 +14,17 @@ from datetime import datetime, timedelta
 
 
 DEBUG = False
+COMMON_GET_PARAM = (
+    "&iid=96159232732&device_id=55714661189&channel=xiaomi&aid=32&app_name=video_article&version_code=812"
+    "&version_name=8.1.2&device_platform=android"
+    "&ab_version=941090,785218,668858,1046292,1073579,830454,956074,929436,797199,1135476,1179370,994679,"
+    "959010,900042,1113833,668854,1193963,901277,1043330,1038721,994822,1002058,1230687,1189797,1143356,1143441,"
+    "1143501,1143698,1143713,1371009,1243997,1392586,1395695,1395486,1398858,668852,668856,668853,1186421,668851,"
+    "668859,999124,668855,1039075"
+    "&device_type=MI+8+SE&device_brand=Xiaomi&language=zh&os_api=28&os_version=9&openudid=70d6668d41512c39"
+    "&manifest_version_code=412&update_version_code=81206&_rticket=1577627203917"
+    "&_rticket=1577627935921&cdid_ts=1577625556989&fp=a_fake_fp&tma_jssdk_version=1290000"
+    "&cdid=ed4295e8-5d9a-4cb9-b2a2-04009a3baa2d&oaid=a625f466e0975d42")
 
 
 class XiGuaLiveApi:
@@ -168,8 +179,9 @@ class XiGuaLiveApi:
         :return:
         """
         try:
-            p = self.s.get("https://security.snssdk.com/video/app/search/live/?format=json&iid=96159232730&device_id=55714661187&aid=32&app_name=video_article&version_code=812&version_name=8.1.2&ab_version=668852,668856,668853,1186421,668851,668859,1355657,999124,668855,941090,785218,668858,1046292,1073579,830454,956074,929436,797199,1135476,1179370,994679,900042,1113833,668854,1193963,901277,1043330,1038721,994822,1002058,1230687,1189797,1143356,1143441,1143501,1143698,1143713,1371009,1243997,1362810,1387132&language=zh&openudid=70d6668d41512c38&update_version_code=81206&cdid=8585903a-ec03-4a8e-812e-c60281ec5990&oaid=a625f466e0975d41&search_sug=0&forum=1&m_tab=live&is_native_req=0&offset=0&from=live&en_qc=1&pd=xigua_live&ssmix=a"
-                      "&keyword={}".format(self.name))
+            p = self.s.get("https://security.snssdk.com/video/app/search/live/?format=json&search_sug=0&forum=0"
+                           "&m_tab=live&is_native_req=0&offset=0&from=live&en_qc=1&pd=xigua_live&ssmix=a"
+                           "&keyword={}{}".format(self.name, COMMON_GET_PARAM))
             d = p.json()
         except json.decoder.JSONDecodeError as e:
             self.apiChangedError("搜索接口错误", e.__str__())
