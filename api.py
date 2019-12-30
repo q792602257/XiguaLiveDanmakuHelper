@@ -12,7 +12,6 @@ import requests
 import time
 from datetime import datetime, timedelta
 
-
 DEBUG = False
 COMMON_GET_PARAM = (
     "&iid=96159232732&device_id=55714661189&channel=xiaomi&aid=32&app_name=video_article&version_code=812"
@@ -25,6 +24,10 @@ COMMON_GET_PARAM = (
     "&manifest_version_code=412&update_version_code=81206&_rticket=1577627203917"
     "&_rticket=1577627935921&cdid_ts=1577625556989&fp=a_fake_fp&tma_jssdk_version=1290000"
     "&cdid=ed4295e8-5d9a-4cb9-b2a2-04009a3baa2d&oaid=a625f466e0975d42")
+SEARCH_USER_API = (
+    "https://security.snssdk.com/video/app/search/live/?format=json&search_sug=0&forum=0"
+    "&m_tab=live&is_native_req=0&offset=0&from=live&en_qc=1&pd=xigua_live&ssmix=a"
+    "{COMMON}&keyword={keyword}")
 
 
 class XiGuaLiveApi:
@@ -156,7 +159,7 @@ class XiGuaLiveApi:
         print("消息 :", "主播离开了")
         self.updRoomInfo()
 
-    def onLottery(self, i:Lottery):
+    def onLottery(self, i: Lottery):
         """
         中奖的内容
         :param i:
@@ -179,9 +182,7 @@ class XiGuaLiveApi:
         :return:
         """
         try:
-            p = self.s.get("https://security.snssdk.com/video/app/search/live/?format=json&search_sug=0&forum=0"
-                           "&m_tab=live&is_native_req=0&offset=0&from=live&en_qc=1&pd=xigua_live&ssmix=a"
-                           "&keyword={}{}".format(self.name, COMMON_GET_PARAM))
+            p = self.s.get(SEARCH_USER_API.format(COMMON=COMMON_GET_PARAM, keyword=self.name))
             d = p.json()
         except json.decoder.JSONDecodeError as e:
             self.apiChangedError("搜索接口错误", e.__str__())
@@ -214,10 +215,10 @@ class XiGuaLiveApi:
         """
         try:
             p = self.s.post("https://i.snssdk.com/videolive/room/enter?version_code=730"
-                       "&device_platform=android",
-                       data="room_id={roomID}&version_code=730"
-                            "&device_platform=android".format(roomID=self.roomID),
-                       headers={"Content-Type": "application/x-www-form-urlencoded"})
+                            "&device_platform=android",
+                            data="room_id={roomID}&version_code=730"
+                                 "&device_platform=android".format(roomID=self.roomID),
+                            headers={"Content-Type": "application/x-www-form-urlencoded"})
             d = p.json()
         except Exception as e:
             self.apiChangedError("更新房间接口错误", e.__str__())
@@ -258,7 +259,7 @@ class XiGuaLiveApi:
             return self._forceSearchUser()
 
     @staticmethod
-    def findRoomByUserId(userId:int):
+    def findRoomByUserId(userId: int):
         """
         通过UserId查找用户的房间号(已弃用)
         :param userId: 用户ID
@@ -282,7 +283,7 @@ class XiGuaLiveApi:
         """
         ret = []
         p = requests.get("https://security.snssdk.com/video/app/search/live/?version_code=730&device_platform=android"
-                  "&format=json&keyword={}".format(keyword))
+                         "&format=json&keyword={}".format(keyword))
         d = p.json()
         if "data" in d:
             for i in d["data"]:
@@ -299,10 +300,10 @@ class XiGuaLiveApi:
             self.updRoomInfo()
             return
         p = self.s.get("https://i.snssdk.com/videolive/im/get_msg?cursor={cursor}&room_id={roomID}"
-                  "&version_code=730&device_platform=android".format(
-                      roomID=self.roomID,
-                      cursor=self._cursor
-                  ))
+                       "&version_code=730&device_platform=android".format(
+            roomID=self.roomID,
+            cursor=self._cursor
+        ))
         d = p.json()
         if "data" not in d or "extra" not in d or "cursor" not in d["extra"]:
             if "base_resp" in d and d["base_resp"]["status_code"] != 10038:

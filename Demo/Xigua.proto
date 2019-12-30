@@ -1,0 +1,91 @@
+syntax = "proto2";
+// 用户信息
+message User {
+	// 头像
+	message Avatar {
+		optional string url = 1;
+	}
+	// 头衔
+	message Prefix {
+		message FanClubText {
+			required string text = 1;
+			optional string color = 2;
+			required int32 level = 3;
+		}
+		repeated string url = 1;
+		optional string localUrl = 2;
+		optional string clickTo = 7;
+		optional FanClubText fanClub = 8;
+	}
+	// 花钱等级
+	message PayGrade {
+		required int32 level = 6;
+		optional string unknownThing = 13;
+		optional Prefix prefix = 19;
+	}
+	// 荣誉等级
+	message HonorLevel {
+		required Prefix rpefix = 19;
+	}
+	required int32 id = 1;
+	required string nickname = 3;
+	optional Avatar avatar = 9;
+	repeated Prefix prefix = 21;
+	required PayGrade payGrade = 23;
+}
+// 样式
+message Style {
+	optional string color = 1;
+	optional int32 fontWeight = 4;
+}
+// 礼物
+message Gift {
+	message Detail {
+		required string gift_id = 1;
+		required string gift_name = 2;
+	}
+	required int32 id = 1;
+	required Detail gift = 2;
+}
+
+
+message XiguaLiveRoom {
+	message Data {
+		message Message {
+			// 通用定义
+			message Common {
+				// 自定义显示信息
+				message CustomDisplay {
+					// 参数
+					message Params {
+						required int32 type = 1;
+						optional Style style = 2;
+						optional string string = 11;
+						optional User user = 21;
+						optional Gift gift = 22;
+					}
+					required string method = 1;
+					required string format = 2;
+					optional Style bgStyle = 3;
+					optional Params params = 4;
+				}
+				optional string method = 1;
+				optional int32 msg_id = 2;
+				optional int32 room_id = 3;
+				optional int32 create_time = 4;
+				optional CustomDisplay customDisplay = 8;
+			}
+			required Common common = 1;
+			optional string content = 3;
+		}
+		// WebcastChatMessage 聊天
+		// WebcastGiftMessage 礼物
+		required string method = 1;
+		required Message message = 2;
+	}
+	repeated Data data = 1;
+	required string cursor = 2;
+	optional int32 fetch_interval = 3;
+	optional int32 now = 4;
+	required string internal_ext = 5;
+}
