@@ -377,7 +377,7 @@ if __name__ == "__main__":
                 time.sleep(5)
             except Exception as e:
                 print(e)
-            else:
-                print("主播未开播，等待2分钟后重试")
-                time.sleep(60)
-                api.updRoomInfo()
+        else:
+            print("主播未开播，等待1分钟后重试")
+            time.sleep(60)
+            api.updRoomInfo()
