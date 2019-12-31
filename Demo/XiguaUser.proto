@@ -1,0 +1,68 @@
+syntax = "proto2";
+// 用户信息
+message User {
+	// 头像
+	message Avatar {
+		required string url = 1;
+		optional string id = 2;
+	}
+	// 头衔
+	message Badge {
+		message FanClubText {
+			required string text = 1;
+			optional string color = 2;
+			required int32 level = 3;
+		}
+		repeated string url = 1;
+		optional string localUrl = 2;
+		optional int32 height = 3;
+		optional int32 width = 4;
+		// 3 房管
+		// 6 贵族
+		// 7 粉丝团
+		optional int32 type = 6;
+		optional string clickTo = 7;
+		optional FanClubText fanClubText = 8;
+	}
+	// 粉丝和粉
+	message Follow {
+		optional int32 following = 1 [default = 0];
+		optional int32 follower = 2 [default = 0];
+	}
+	// 花钱等级
+	message PayGrade {
+		required int32 current = 1;
+		required int32 level = 6;
+		optional int32 currentLevelNeed = 10;
+		optional int32 nextLevelNeed = 11;
+		optional string content = 13;
+		required Badge badge = 19;
+		optional int32 toNextLevelNeed = 21;
+	}
+	// 荣誉等级
+	message HonorLevel {
+		required Badge badge = 19;
+	}
+	// 贵族
+	message Noble {
+		message NobleBoarder {
+			repeated string urlList = 1;
+			required string uri = 2;
+			optional int32 height = 3;
+			optional int32 width = 4;
+		}
+		required string content = 4;
+		optional NobleBoarder boarder = 8;
+	}
+	required int32 id = 1;
+	required string nickname = 3;
+	required int32 gender = 4;
+	// 这个顺序可能有点迷，不是很清楚
+	required Avatar avatarThumb = 9;
+	optional Avatar avatarMedium = 10;
+	optional Avatar avatarLarge = 11;
+	repeated Badge badge = 21;
+	optional Follow follow = 22;
+	required PayGrade payGrade = 23;
+	required int32 totalPaid = 34;
+}
