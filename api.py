@@ -34,16 +34,11 @@ COMMON_HEADERS = {
 
 
 class XiGuaLiveApi:
-    isLive = False
-    isValidRoom = False
-    _rawRoomInfo = {}
-    name = ""
-    roomID = 0
-    roomLiver = None
-    roomPopularity = 0
-    _cursor = "0"
-    lottery = None
-    s = requests.session()
+    lottery: Lottery or None
+    isValidRoom: bool
+    isLive: bool
+    roomLiver: User or None
+    roomID: int
 
     def __init__(self, name=None):
         """
@@ -58,6 +53,15 @@ class XiGuaLiveApi:
             self.name = name.name
         else:
             self.name = str(name)
+        self.isLive = False
+        self.isValidRoom = False
+        self._rawRoomInfo = {}
+        self.roomID = 0
+        self.roomLiver = None
+        self.roomPopularity = 0
+        self._cursor = "0"
+        self.lottery = None
+        self.s = requests.session()
         self.s.headers.update(COMMON_HEADERS)
         self._updRoomAt = datetime.now()
         self.updRoomInfo(True)
@@ -321,27 +325,25 @@ class XiGuaLiveApi:
                 print(i)
             if "common" not in i and "method" not in i["common"]:
                 continue
-            if i["common"]['method'] == "VideoLivePresentMessage":
-                self.onPresent(Gift(i))
-            elif i["common"]['method'] == "VideoLivePresentEndTipMessage":
+            if i["common"]['method'] == "VideoLivePresentEndTipMessage":
                 self.onPresentEnd(Gift(i))
-            elif i["common"]['method'] == "VideoLiveRoomAdMessage":
-                self.onAd(i)
-            elif i["common"]['method'] == "VideoLiveChatMessage":
-                self.onChat(Chat(i, self.lottery))
-            elif i["common"]['method'] == "VideoLiveMemberMessage":
-                self.onEnter(MemberMsg(i))
-                self._updateRoomPopularity(i)
-            elif i["common"]['method'] == "VideoLiveSocialMessage":
-                self.onSubscribe(User(i))
-            elif i["common"]['method'] == "VideoLiveJoinDiscipulusMessage":
-                self.onJoin(User(i))
-            elif i["common"]['method'] == "VideoLiveControlMessage":
-                print("消息：", "主播离开一小会")
-                # 这个消息代表主播下播了，直接更新房间信息
-                self.updRoomInfo(True)
-            elif i["common"]['method'] == "VideoLiveDiggMessage":
-                self.onLike(User(i))
+            # elif i["common"]['method'] == "VideoLiveRoomAdMessage":
+            #     self.onAd(i)
+            # elif i["common"]['method'] == "VideoLiveChatMessage":
+            #     self.onChat(Chat(i, self.lottery))
+            # elif i["common"]['method'] == "VideoLiveMemberMessage":
+            #     self.onEnter(MemberMsg(i))
+            #     self._updateRoomPopularity(i)
+            # elif i["common"]['method'] == "VideoLiveSocialMessage":
+            #     self.onSubscribe(User(i))
+            # elif i["common"]['method'] == "VideoLiveJoinDiscipulusMessage":
+            #     self.onJoin(User(i))
+            # elif i["common"]['method'] == "VideoLiveControlMessage":
+            #     print("消息：", "主播离开一小会")
+            #     # 这个消息代表主播下播了，直接更新房间信息
+            #     self.updRoomInfo(True)
+            # elif i["common"]['method'] == "VideoLiveDiggMessage":
+            #     self.onLike(User(i))
             else:
                 pass
             if self.lottery is None or self.lottery.ID == 0:
