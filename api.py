@@ -25,7 +25,12 @@ COMMON_GET_PARAM = (
 SEARCH_USER_API = (
     "https://security.snssdk.com/video/app/search/live/?format=json&search_sug=0&forum=0&m_tab=live&is_native_req=0"
     "&offset=0&from=live&en_qc=1&pd=xigua_live&ssmix=a{COMMON}&keyword={keyword}")
-USER_INFO_API = "https://ic.snssdk.com/video/app/user/home/v7/?to_user_id={userId}{COMMON}"
+USER_INFO_API = "https://is.snssdk.com/video/app/user/home/v7/?to_user_id={userId}{COMMON}"
+COMMON_HEADERS = {
+    "sdk-version": '1',
+    "User-Agent": "Dalvik/2.1.0 (Linux; U; Android 9) VideoArticle/8.1.6 cronet/TTNetVersion:b97574c0 2019-09-24",
+    "Accept-Encoding": "gzip, deflate"
+}
 
 
 class XiGuaLiveApi:
@@ -47,6 +52,7 @@ class XiGuaLiveApi:
         :param name: 主播名
         """
         self.name = name
+        self.s.headers.update(COMMON_HEADERS)
         self._updRoomAt = datetime.now()
         self.updRoomInfo(True)
 
@@ -182,6 +188,7 @@ class XiGuaLiveApi:
         if len(_results) > 0:
             self.isValidRoom = True
             self.roomLiver = _results[0]
+        return self._updateRoomOnly()
 
     def _updateRoomOnly(self):
         """
@@ -192,8 +199,8 @@ class XiGuaLiveApi:
             return False
         _formatData = {"COMMON": COMMON_GET_PARAM, "TIMESTAMP": time.time() * 1000, "userId": self.roomLiver.ID}
         _url = USER_INFO_API.format_map(_formatData).format_map(_formatData)
+        p = self.s.get(_url)
         try:
-            p = self.s.get(_url)
             d = p.json()
         except Exception as e:
             self.apiChangedError("更新房间接口错误", e.__str__())
@@ -209,7 +216,6 @@ class XiGuaLiveApi:
         self.isLive = d["user_info"]["is_living"]
         self._rawRoomInfo = d["user_info"]['live_info']
         if self.isLive:
-            self.roomPopularity = d["user_info"]['live_info']["watching_count"]
             # 处理抽奖事件
             l = Lottery(self._rawRoomInfo)
             if l.isActive:
