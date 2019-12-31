@@ -179,7 +179,7 @@ class XiGuaLiveApi:
         搜索主播名
         :return:
         """
-        _results = self.searchLive(self.name)
+        _results = self.searchUser(self.name)
         if len(_results) > 0:
             self.isValidRoom = True
             self.roomLiver = _results[0]
@@ -248,7 +248,7 @@ class XiGuaLiveApi:
         return XiGuaLiveApi(d["data"]["id"])
 
     @staticmethod
-    def searchLive(keyword):
+    def searchUser(keyword):
         """
         通过关键词搜索主播
         :param keyword: 关键词
