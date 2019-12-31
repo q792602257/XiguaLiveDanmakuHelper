@@ -4,9 +4,10 @@ message User {
 	// 头像
 	message Avatar {
 		optional string url = 1;
+		optional string id = 2;
 	}
 	// 头衔
-	message Prefix {
+	message Badge {
 		message FanClubText {
 			required string text = 1;
 			optional string color = 2;
@@ -14,23 +15,37 @@ message User {
 		}
 		repeated string url = 1;
 		optional string localUrl = 2;
+		optional int32 height = 3;
+		optional int32 width = 4;
+		// 3 房管
+		// 6 贵族
+		// 7 粉丝团
+		optional int32 type = 6;
 		optional string clickTo = 7;
-		optional FanClubText fanClub = 8;
+		optional FanClubText fanClubText = 8;
 	}
 	// 花钱等级
 	message PayGrade {
-		required int32 level = 6;
+		optional int32 level = 6 [default = 0];
 		optional string unknownThing = 13;
-		optional Prefix prefix = 19;
+		required Badge badge = 19;
 	}
 	// 荣誉等级
 	message HonorLevel {
-		required Prefix rpefix = 19;
+		required Badge badge = 19;
+	}
+	// 贵族
+	message Noble {
+
 	}
 	required int32 id = 1;
 	required string nickname = 3;
-	optional Avatar avatar = 9;
-	repeated Prefix prefix = 21;
+	required int32 gender = 4;
+	// 这个顺序可能有点迷，不是很清楚
+	required Avatar avatarThumb = 9;
+	optional Avatar avatarMedium = 10;
+	optional Avatar avatarLarge = 11;
+	repeated Badge badge = 21;
 	required PayGrade payGrade = 23;
 }
 // 样式
@@ -55,9 +70,12 @@ message XiguaLiveRoom {
 			// 通用定义
 			message Common {
 				// 自定义显示信息
-				message CustomDisplay {
+				message DisplayText {
 					// 参数
 					message Params {
+						// 1 字符串
+						// 11 用户
+						// 12 礼物
 						required int32 type = 1;
 						optional Style style = 2;
 						optional string string = 11;
@@ -73,7 +91,7 @@ message XiguaLiveRoom {
 				optional int32 msg_id = 2;
 				optional int32 room_id = 3;
 				optional int32 create_time = 4;
-				optional CustomDisplay customDisplay = 8;
+				optional DisplayText displayText = 8;
 			}
 			required Common common = 1;
 			optional string content = 3;
