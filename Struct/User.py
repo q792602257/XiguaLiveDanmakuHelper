@@ -50,3 +50,6 @@ class User:
 
     def __unicode__(self):
         return self.__str__()
+
+    def __repr__(self):
+        return "西瓜用户【{}(ID:{})】".format(self.name, self.ID)
