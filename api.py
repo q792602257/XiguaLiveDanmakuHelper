@@ -15,19 +15,17 @@ from datetime import datetime, timedelta
 DEBUG = False
 COMMON_GET_PARAM = (
     "&iid=96159232732&device_id=55714661189&channel=xiaomi&aid=32&app_name=video_article&version_code=812"
-    "&version_name=8.1.2&device_platform=android"
-    "&ab_version=941090,785218,668858,1046292,1073579,830454,956074,929436,797199,1135476,1179370,994679,"
-    "959010,900042,1113833,668854,1193963,901277,1043330,1038721,994822,1002058,1230687,1189797,1143356,1143441,"
-    "1143501,1143698,1143713,1371009,1243997,1392586,1395695,1395486,1398858,668852,668856,668853,1186421,668851,"
-    "668859,999124,668855,1039075"
-    "&device_type=MI+8+SE&device_brand=Xiaomi&language=zh&os_api=28&os_version=9&openudid=70d6668d41512c39"
-    "&manifest_version_code=412&update_version_code=81206&_rticket=1577627203917"
-    "&_rticket=1577627935921&cdid_ts=1577625556989&fp=a_fake_fp&tma_jssdk_version=1290000"
+    "&version_name=8.1.2&device_platform=android&ab_version=941090,785218,668858,1046292,1073579,830454,956074,929436,"
+    "797199,1135476,1179370,994679,959010,900042,1113833,668854,1193963,901277,1043330,1038721,994822,1002058,1230687,"
+    "1189797,1143356,1143441,1143501,1143698,1143713,1371009,1243997,1392586,1395695,1395486,1398858,668852,668856,"
+    "668853,1186421,668851,668859,999124,668855,1039075&device_type=MI+8+SE&device_brand=Xiaomi&language=zh"
+    "&os_api=28&os_version=9&openudid=70d6668d41512c39&manifest_version_code=412&update_version_code=81206"
+    "&_rticket={TIMESTAMP:.0f}&_rticket={TIMESTAMP:.0f}&cdid_ts={TIMESTAMP:.0f}&fp=a_fake_fp&tma_jssdk_version=1290000"
     "&cdid=ed4295e8-5d9a-4cb9-b2a2-04009a3baa2d&oaid=a625f466e0975d42")
 SEARCH_USER_API = (
-    "https://security.snssdk.com/video/app/search/live/?format=json&search_sug=0&forum=0"
-    "&m_tab=live&is_native_req=0&offset=0&from=live&en_qc=1&pd=xigua_live&ssmix=a"
-    "{COMMON}&keyword={keyword}")
+    "https://security.snssdk.com/video/app/search/live/?format=json&search_sug=0&forum=0&m_tab=live&is_native_req=0"
+    "&offset=0&from=live&en_qc=1&pd=xigua_live&ssmix=a{COMMON}&keyword={keyword}")
+USER_INFO_API = "https://ic.snssdk.com/video/app/user/home/v7/?to_user_id={userId}{COMMON}"
 
 
 class XiGuaLiveApi:
@@ -36,7 +34,6 @@ class XiGuaLiveApi:
     _rawRoomInfo = {}
     name = ""
     roomID = 0
-    roomTitle = ""
     roomLiver = None
     roomPopularity = 0
     _cursor = "0"
@@ -181,68 +178,43 @@ class XiGuaLiveApi:
         搜索主播名
         :return:
         """
-        try:
-            p = self.s.get(SEARCH_USER_API.format(COMMON=COMMON_GET_PARAM, keyword=self.name))
-            d = p.json()
-        except json.decoder.JSONDecodeError as e:
-            self.apiChangedError("搜索接口错误", e.__str__())
-            return
-        if "data" in d and d["data"] is not None:
-            for i in d["data"]:
-                if i["block_type"] != 0:
-                    continue
-                if "cells" not in i or len(i["cells"]) == 0:
-                    return
-                self.isValidRoom = True
-                if "is_living" in i["cells"][0]["anchor"]["user_info"]:
-                    self.isLive = i["cells"][0]["anchor"]["user_info"]["is_living"]
-                else:
-                    self.isLive = False
-                if "room_id" in i["cells"][0]["anchor"]:
-                    self.roomID = int(i["cells"][0]["anchor"]["room_id"])
-                else:
-                    self.isLive = False
-                self.roomLiver = User(i["cells"][0])
-        if self.isLive:
-            return self._updateRoomOnly()
-        else:
-            return False
+        _results = self.searchLive(self.name)
+        if len(_results) > 0:
+            self.isValidRoom = True
+            self.roomLiver = _results[0]
 
     def _updateRoomOnly(self):
         """
-        仅更新房间，不重新获取信息
+        获取用户信息
         :return:
         """
+        if self.roomLiver is None and not self._forceSearchUser():
+            return False
+        _formatData = {"COMMON": COMMON_GET_PARAM, "TIMESTAMP": time.time() * 1000, "userId": self.roomLiver.ID}
+        _url = USER_INFO_API.format_map(_formatData).format_map(_formatData)
         try:
-            p = self.s.post("https://i.snssdk.com/videolive/room/enter?version_code=730"
-                            "&device_platform=android",
-                            data="room_id={roomID}&version_code=730"
-                                 "&device_platform=android".format(roomID=self.roomID),
-                            headers={"Content-Type": "application/x-www-form-urlencoded"})
+            p = self.s.get(_url)
             d = p.json()
         except Exception as e:
             self.apiChangedError("更新房间接口错误", e.__str__())
             return False
-        self.isValidRoom = d["base_resp"]["status_code"] == 0
-        if d["base_resp"]["status_code"] != 0:
-            self.apiChangedError("更新房间信息接口返回非0状态值", d)
-            return False
-        if "room" not in d and d["room"] is None:
+        self.isValidRoom = d["status"] == 0
+        if "user_info" not in d and d["user_info"] is None:
             self.apiChangedError("Api发生改变，请及时联系我", d)
             return False
         self.roomLiver = User(d)
         if not self._checkUsernameIsMatched():
             self.isLive = False
             return False
-        self._rawRoomInfo = d["room"]
-        self.isLive = d["room"]["status"] == 2
-        self.roomTitle = d["room"]["title"]
-        self.roomPopularity = d["room"]["user_count"]
-        # 处理抽奖事件
-        l = Lottery(d)
-        if l.isActive:
-            # 因为现在每个房间只能同时开启一个抽奖，所以放一个就行了
-            self.lottery = l
+        self.isLive = d["user_info"]["is_living"]
+        self._rawRoomInfo = d["user_info"]['live_info']
+        if self.isLive:
+            self.roomPopularity = d["user_info"]['live_info']["watching_count"]
+            # 处理抽奖事件
+            l = Lottery(self._rawRoomInfo)
+            if l.isActive:
+                # 因为现在每个房间只能同时开启一个抽奖，所以放一个就行了
+                self.lottery = l
         return True
 
     def updRoomInfo(self, force=False):
@@ -282,14 +254,22 @@ class XiGuaLiveApi:
         :return: array: 搜索结果
         """
         ret = []
-        p = requests.get("https://security.snssdk.com/video/app/search/live/?version_code=730&device_platform=android"
-                         "&format=json&keyword={}".format(keyword))
-        d = p.json()
-        if "data" in d:
+        _formatData = {"COMMON": COMMON_GET_PARAM, "TIMESTAMP": time.time() * 1000, "keyword": keyword}
+        _url = SEARCH_USER_API.format_map(_formatData).format_map(_formatData)
+        try:
+            p = requests.get(_url)
+            d = p.json()
+        except json.decoder.JSONDecodeError as e:
+            XiGuaLiveApi.apiChangedError("搜索接口错误", e.__str__())
+            return ret
+        if "data" in d and d["data"] is not None:
             for i in d["data"]:
-                if i["block_type"] == 0:
-                    for _i in i["cells"]:
-                        ret.append(_i["room"])
+                if i["block_type"] != 0:
+                    continue
+                if "cells" not in i or len(i["cells"]) == 0:
+                    break
+                for _j in i["cells"]:
+                    ret.append(User(_j))
         return ret
 
     def getDanmaku(self):
