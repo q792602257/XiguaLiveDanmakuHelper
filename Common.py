@@ -64,7 +64,7 @@ network = [{
 
 def reloadConfig():
     global config
-    if(os.path.exists('config.json')):
+    if (os.path.exists('config.json')):
         _config_fp = open("config.json", "r", encoding="utf8")
         _config = json.load(_config_fp)
         config.update(_config)
@@ -100,14 +100,14 @@ def updateNetwork():
 
 def getTimeDelta(a, b):
     sec = (a - b).seconds
-    ms  = (a - b).microseconds
-    return sec+(ms/100000.0)
+    ms = (a - b).microseconds
+    return sec + (ms / 100000.0)
 
 
 def _doClean(_force=False):
     global doCleanTime, _clean_flag
     _disk = psutil.disk_usage(".")
-    if _disk.percent > config["max"] or getTimeDelta(datetime.now(), doCleanTime) > config["exp"]*86400 or _force:
+    if _disk.percent > config["max"] or getTimeDelta(datetime.now(), doCleanTime) > config["exp"] * 86400 or _force:
         _clean_flag = True
         doCleanTime = datetime.now()
         appendOperation("执行配置的清理命令")
@@ -127,9 +127,9 @@ def doClean(_force=False):
 
 def getCurrentStatus():
     _disk = psutil.disk_usage(".")
-    _mem  = psutil.virtual_memory()
-    _net  = psutil.net_io_counters()
-    _delta= getTimeDelta(network[-1]["currentTime"], network[-2]["currentTime"])
+    _mem = psutil.virtual_memory()
+    _net = psutil.net_io_counters()
+    _delta = getTimeDelta(network[-1]["currentTime"], network[-2]["currentTime"])
     if 60 > _delta > 1:
         _inSpeed = (network[-1]["in"]["currentByte"] - network[-2]["in"]["currentByte"]) / _delta
         _outSpeed = (network[-1]["out"]["currentByte"] - network[-2]["out"]["currentByte"]) / _delta
@@ -312,7 +312,6 @@ def loginBilibili(force=False):
 class downloader(XiGuaLiveApi):
     playlist = None
 
-
     def updRoomInfo(self, force=False):
         doClean()
         super(downloader, self).updRoomInfo(force)
@@ -338,36 +337,6 @@ class downloader(XiGuaLiveApi):
         else:
             streamUrl = None
             self.playlist = None
-
-    def onLike(self, user):
-        pass
-
-    def onAd(self, i):
-        pass
-
-    def onChat(self, chat):
-        pass
-
-    def onEnter(self, msg):
-        pass
-
-    def onJoin(self, user):
-        pass
-
-    def onLeave(self, json):
-        self.updRoomInfo()
-
-    def onMessage(self, msg):
-        pass
-
-    def onPresent(self, gift):
-        pass
-
-    def onPresentEnd(self, gift):
-        pass
-
-    def onSubscribe(self, user):
-        pass
 
 
 api = downloader(config["l_u"])
@@ -399,7 +368,7 @@ def publishVideo(date):
     global isUpload
     if forceNotUpload is False:
         b.finishUpload(config["t_t"].format(date), 17, config["tag"], config["des"],
-                              source=config["src"], no_reprint=0)
+                       source=config["src"], no_reprint=0)
         b.clear()
     else:
         appendUploadStatus("设置了不上传，所以[{}]的录播不会上传了".format(date))
@@ -417,16 +386,16 @@ def encodeVideo(name):
         appendEncodeStatus("Encoded File >{}< is too small, will ignore it".format(name))
         return False
     global isEncode
-    isEncode=True
+    isEncode = True
     appendEncodeStatus("Encoding >{}< Start".format(name))
-    _new_name = os.path.splitext(name)[0]+".mp4"
+    _new_name = os.path.splitext(name)[0] + ".mp4"
     _code = os.system(config["enc"].format(f=name, t=_new_name))
     if _code != 0:
         Common.appendError("Encode {} with Non-Zero Return.".format(name))
         return False
     Common.modifyLastEncodeStatus("Encode >{}< Finished".format(name))
     uploadQueue.put(_new_name)
-    isEncode=False
+    isEncode = False
 
 
 loginBilibili(True)
