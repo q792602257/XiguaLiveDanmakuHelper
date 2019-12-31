@@ -51,6 +51,8 @@ class XiGuaLiveApi:
         Init Function
         :param name: class:str|User: 主播名
         """
+        if name is None:
+            name = "永恒de草薙"
         if type(name) == User:
             self.roomLiver = name
             self.name = name.name
@@ -199,7 +201,7 @@ class XiGuaLiveApi:
         获取用户信息
         :return:
         """
-        if self.roomLiver is None and not self._forceSearchUser():
+        if self.roomLiver is None:
             return False
         _formatData = {"COMMON": COMMON_GET_PARAM, "TIMESTAMP": time.time() * 1000, "userId": self.roomLiver.ID}
         _url = USER_INFO_API.format_map(_formatData).format_map(_formatData)
