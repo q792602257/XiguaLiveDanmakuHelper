@@ -30,16 +30,10 @@ COMMON_HEADERS = {
 
 
 class XiGuaLiveApi:
-    isLive = False
-    isValidRoom = False
-    _rawRoomInfo = {}
-    name = ""
-    roomID = 0
-    roomLiver = None
-    roomPopularity = 0
-    _cursor = "0"
-    lottery = None
-    s = requests.session()
+    isValidRoom: bool
+    isLive: bool
+    roomLiver: User or None
+    roomID: int
 
     def __init__(self, name=None):
         """
@@ -54,6 +48,14 @@ class XiGuaLiveApi:
             self.name = name.name
         else:
             self.name = str(name)
+        self.isLive = False
+        self.isValidRoom = False
+        self._rawRoomInfo = {}
+        self.roomID = 0
+        self.roomLiver = None
+        self.roomPopularity = 0
+        self._cursor = "0"
+        self.s = requests.session()
         self.s.headers.update(COMMON_HEADERS)
         self._updRoomAt = datetime.now()
         self.updRoomInfo(True)
@@ -145,7 +147,7 @@ class XiGuaLiveApi:
         if not force and self._updRoomAt > (datetime.now() - timedelta(minutes=3)):
             return self.isLive
         self._updRoomAt = datetime.now()
-        if self.isLive:
+        if self.isValidRoom:
             return self._updateUserOnly()
         else:
             return self._forceSearchUser()
