@@ -3,14 +3,14 @@ from .User import User
 
 
 class Gift:
-    ID = 0
-    count = 0
     roomID = 0
     giftList = {}
-    amount = 0
-    user = None
 
     def __init__(self, json=None):
+        self.ID = 0
+        self.count = 0
+        self.amount = 0
+        self.user = None
         if json:
             self.parse(json)
 
@@ -34,7 +34,7 @@ class Gift:
 
     def update(self):
         p = requests.get("https://i.snssdk.com/videolive/gift/get_gift_list?room_id={roomID}"
-                         "&version_code=730&device_platform=android".format(roomID = self.roomID))
+                         "&version_code=800&device_platform=android".format(roomID=self.roomID))
         d = p.json()
         if "gift_info" not in d:
             print("错误：礼物更新失败")
@@ -48,7 +48,14 @@ class Gift:
             giftN = self.giftList[self.ID]["Name"]
         else:
             giftN = "未知礼物[{}]".format(self.ID)
-        return "{user} 送出的 {count} 个 {name}".format(user= self.user, count= self.count, name= giftN)
+        return "{user} 送出的 {count} 个 {name}".format(user=self.user, count=self.count, name=giftN)
 
     def __unicode__(self):
         return self.__str__()
+
+    def __repr__(self):
+        if self.ID in self.giftList:
+            giftN = self.giftList[self.ID]["Name"]
+        else:
+            giftN = "未知礼物"
+        return "西瓜礼物【{}(ID:{})】".format(giftN, self.ID)

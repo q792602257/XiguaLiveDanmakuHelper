@@ -317,9 +317,9 @@ class downloader(XiGuaLiveApi):
         doClean()
         super(downloader, self).updRoomInfo(force)
 
-    def _updateRoomOnly(self):
+    def _updateUserOnly(self):
         global broadcaster, isBroadcasting, updateTime
-        super(downloader, self)._updateRoomOnly()
+        super(downloader, self)._updateUserOnly()
         updateTime = datetime.strftime(datetime.now(), dt_format)
         broadcaster = self.roomLiver
         isBroadcasting = self.isLive

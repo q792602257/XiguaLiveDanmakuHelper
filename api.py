@@ -45,13 +45,17 @@ class XiGuaLiveApi:
     lottery = None
     s = requests.session()
 
-    def __init__(self, name: str = "永恒de草薙"):
+    def __init__(self, name=None):
         """
         Api类
         Init Function
-        :param name: 主播名
+        :param name: class:str|User: 主播名
         """
-        self.name = name
+        if type(name) == User:
+            self.roomLiver = name
+            self.name = name.name
+        else:
+            self.name = str(name)
         self.s.headers.update(COMMON_HEADERS)
         self._updRoomAt = datetime.now()
         self.updRoomInfo(True)
@@ -188,9 +192,9 @@ class XiGuaLiveApi:
         if len(_results) > 0:
             self.isValidRoom = True
             self.roomLiver = _results[0]
-        return self._updateRoomOnly()
+        return self._updateUserOnly()
 
-    def _updateRoomOnly(self):
+    def _updateUserOnly(self):
         """
         获取用户信息
         :return:
@@ -199,7 +203,11 @@ class XiGuaLiveApi:
             return False
         _formatData = {"COMMON": COMMON_GET_PARAM, "TIMESTAMP": time.time() * 1000, "userId": self.roomLiver.ID}
         _url = USER_INFO_API.format_map(_formatData).format_map(_formatData)
-        p = self.s.get(_url)
+        try:
+            p = self.s.get(_url)
+        except Exception as e:
+            self.apiChangedError("更新用户信息接口请求失败", e.__str__())
+            return False
         try:
             d = p.json()
         except Exception as e:
@@ -216,6 +224,7 @@ class XiGuaLiveApi:
         self.isLive = d["user_info"]["is_living"]
         self._rawRoomInfo = d["user_info"]['live_info']
         if self.isLive:
+            self.roomID = d["user_info"]['live_info']['room_id']
             # 处理抽奖事件
             l = Lottery(self._rawRoomInfo)
             if l.isActive:
@@ -232,25 +241,30 @@ class XiGuaLiveApi:
             return self.isLive
         self._updRoomAt = datetime.now()
         if self.isLive:
-            return self._updateRoomOnly()
+            return self._updateUserOnly()
         else:
             return self._forceSearchUser()
 
     @staticmethod
-    def findRoomByUserId(userId: int):
+    def getUserInfoByUserId(userId):
         """
-        通过UserId查找用户的房间号(已弃用)
+        通过UserId查找用户的房间号
         :param userId: 用户ID
         :return: XiGuaLiveApi
         """
-        p = requests.get("https://live.ixigua.com/api/room?anchorId={room}".format(room=userId))
-        if DEBUG:
-            print(p.text)
-        d = p.json()
-        if "data" not in d or "title" not in d["data"] or "id" not in d["data"]:
-            XiGuaLiveApi.apiChangedError("网页接口已更改，除非你是开发者，请不要用这个方法", d)
-            return XiGuaLiveApi()
-        return XiGuaLiveApi(d["data"]["id"])
+        _formatData = {"COMMON": COMMON_GET_PARAM, "TIMESTAMP": time.time() * 1000, "userId": userId}
+        _url = USER_INFO_API.format_map(_formatData).format_map(_formatData)
+        try:
+            p = requests.get(_url, headers=COMMON_HEADERS)
+        except Exception as e:
+            XiGuaLiveApi.apiChangedError("更新用户信息接口请求失败", e.__str__())
+            return None
+        try:
+            d = p.json()
+        except Exception as e:
+            XiGuaLiveApi.apiChangedError("更新房间接口错误", e.__str__())
+            return None
+        return XiGuaLiveApi(User(d))
 
     @staticmethod
     def searchUser(keyword):
@@ -286,7 +300,7 @@ class XiGuaLiveApi:
             self.updRoomInfo()
             return
         p = self.s.get("https://i.snssdk.com/videolive/im/get_msg?cursor={cursor}&room_id={roomID}"
-                       "&version_code=730&device_platform=android".format(
+                       "&version_code=800&device_platform=android".format(
             roomID=self.roomID,
             cursor=self._cursor
         ))
