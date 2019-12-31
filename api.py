@@ -112,6 +112,7 @@ class XiGuaLiveApi:
         :return:
         """
         if self.roomLiver is None:
+            self.isLive = False
             return False
         _formatData = {"COMMON": COMMON_GET_PARAM, "TIMESTAMP": time.time() * 1000, "userId": self.roomLiver.ID}
         _url = USER_INFO_API.format_map(_formatData).format_map(_formatData)
