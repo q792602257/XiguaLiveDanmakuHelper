@@ -354,4 +354,11 @@ if __name__ == "__main__":
                 api.getDanmaku()
                 time.sleep(1)
             except requests.exceptions.BaseHTTPError:
-                pri
+                print("网络错误，请确认网络")
+                time.sleep(5)
+            except Exception as e:
+                print(e)
+            else:
+                print("主播未开播，等待2分钟后重试")
+                time.sleep(60)
+                api.updRoomInfo()
