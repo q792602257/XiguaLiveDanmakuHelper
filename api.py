@@ -242,7 +242,7 @@ class XiGuaLiveApi:
         if not force and self._updRoomAt > (datetime.now() - timedelta(minutes=3)):
             return self.isLive
         self._updRoomAt = datetime.now()
-        if self.isLive:
+        if self.isValidRoom:
             return self._updateUserOnly()
         else:
             return self._forceSearchUser()
