@@ -34,11 +34,6 @@ COMMON_HEADERS = {
 
 
 class XiGuaLiveApi:
-    lottery: Lottery or None
-    isValidRoom: bool
-    isLive: bool
-    roomLiver: User or None
-    roomID: int
 
     def __init__(self, name=None):
         """
@@ -185,6 +180,7 @@ class XiGuaLiveApi:
         Check name matched
         :return: bool: 是否匹配
         """
+        return True
         if self.name is None or self.roomLiver is None:
             return False
         return self.name == self.roomLiver.__str__() or self.roomLiver.__str__() in self.name or self.name in self.roomLiver.__str__()
