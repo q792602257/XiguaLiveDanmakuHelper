@@ -3,7 +3,8 @@ import "XiguaUser.proto";
 import "XiguaGift.proto";
 message Message {
 	required CommonInfo commonInfo = 1;
-	optional string content = 3;
+	required bytes contents = 2;
+	optional bool isFinished = 9 [ default = false ];
 }
 // 样式
 message Style {

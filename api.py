@@ -69,7 +69,7 @@ class XiGuaLiveApi:
         self._updRoomAt = datetime.fromtimestamp(0)
         self.updRoomInfo()
         self._ext = ""
-        self._cursor = ""
+        self._cursor = "0"
 
     def _updateRoomPopularity(self, _data):
         """
@@ -107,7 +107,7 @@ class XiGuaLiveApi:
 
     def postJson(self, url, data, **kwargs):
         try:
-            p = self.s.post(url, data, **kwargs)
+            p = self.s.post(url, data=data, **kwargs)
         except Exception as e:
             print("网络请求失败")
             if DEBUG:
@@ -317,6 +317,8 @@ class XiGuaLiveApi:
         self.isLive = d["data"]["status"] == 2
         self._updRoomAt = datetime.now()
         self._updateRoomPopularity(d)
+        Gift.roomID = self.roomID
+        Gift.update()
         return self.isLive
 
     def updRoomInfo(self, force=False):
@@ -343,26 +345,28 @@ class XiGuaLiveApi:
                         headers={"Content-Type": "application/x-www-form-urlencoded"})
         data = XiguaLive()
         data.ParseFromString(p.content)
-        f = open("Demo/a.txt", 'wb')
-        f.write(p.content)
-        f.close()
         self._cursor = data.cursor
         self._ext = data.internal_ext
         for _each in data.data:
             if _each.method == "WebcastGiftMessage":
-                print("Gift\t", _each.message.commonInfo.displayText.params.gifts.id, "\t",
-                      _each.message.commonInfo.displayText.params.users.user.nickname,
-                      _each.message.commonInfo.displayText.params.gifts.gift.name,
-                      _each.message.commonInfo.displayText.params.string)
+                _gift = Gift()
+                _gift.ID = _each.message.commonInfo.displayText.params.gifts.id
+                _gift.count = _each.message.commonInfo.displayText.params.string
+                if _gift.isAnimate() or _each.message.isFinished:
+                    _user = User()
+                    _user.ID = _each.message.commonInfo.displayText.params.users.user.id
+                    _user.name = _each.message.commonInfo.displayText.params.users.user.nickname
+                    _gift.user = _user
+                    _gift.backupName = _each.message.commonInfo.displayText.params.gifts.gift.name
+                    self.onPresentEnd(_gift)
             else:
-                pass
+                print(_each.message.contents)
         # 更新抽奖信息
         if self.lottery is not None and self.lottery.ID != 0:
             self.lottery.update()
             if self.lottery.isFinished:
                 self.onLottery(self.lottery)
                 self.lottery = None
-        time.sleep(1)
 
 if __name__ == "__main__":
     name = "永恒de草薙"
