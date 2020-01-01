@@ -110,7 +110,7 @@ def awakeUpload():
 
 def run():
     Common.refreshDownloader()
-    if not Common.api.isValidRoom:
+    if not Common.api.isValidUser:
         Common.appendError("[{}]房间未找到".format(Common.config["l_u"]))
         return
     while True:
