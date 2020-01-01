@@ -314,19 +314,18 @@ class downloader(XiGuaLiveApi):
 
     def updRoomInfo(self, force=False):
         doClean()
-        super(downloader, self).updRoomInfo(force)
-
-    def _updateUserOnly(self):
-        global broadcaster, isBroadcasting, updateTime
-        super(downloader, self)._updateUserOnly()
-        updateTime = datetime.strftime(datetime.now(), dt_format)
-        broadcaster = self.roomLiver
-        isBroadcasting = self.isLive
-        if self.isLive:
-            self.updPlayList()
-        else:
-            resetDelay()
-            self.playlist = False
+        _result = super(downloader, self).updRoomInfo(force)
+        if _result:
+            global broadcaster, isBroadcasting, updateTime
+            updateTime = datetime.strftime(datetime.now(), dt_format)
+            broadcaster = self.broadcaster
+            isBroadcasting = self.isLive
+            if self.isLive:
+                self.updPlayList()
+            else:
+                resetDelay()
+                self.playlist = False
+        return _result
 
     def updPlayList(self):
         global streamUrl
