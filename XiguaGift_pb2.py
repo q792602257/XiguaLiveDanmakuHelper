@@ -18,28 +18,28 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='',
   syntax='proto2',
   serialized_options=None,
-  serialized_pb=b'\n\x0fXiguaGift.proto\"\\\n\x04Gift\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x1a\n\x04gift\x18\x02 \x02(\x0b\x32\x0c.Gift.Detail\x1a,\n\x06\x44\x65tail\x12\x0f\n\x07gift_id\x18\x01 \x02(\t\x12\x11\n\tgift_name\x18\x02 \x02(\t'
+  serialized_pb=b'\n\x0fXiguaGift.proto\" \n\x04Gift\x12\n\n\x02id\x18\x01 \x02(\t\x12\x0c\n\x04name\x18\x02 \x02(\t\"+\n\x08GiftPack\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x13\n\x04gift\x18\x02 \x02(\x0b\x32\x05.Gift'
 )
 
 
 
 
-_GIFT_DETAIL = _descriptor.Descriptor(
-  name='Detail',
-  full_name='Gift.Detail',
+_GIFT = _descriptor.Descriptor(
+  name='Gift',
+  full_name='Gift',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='gift_id', full_name='Gift.Detail.gift_id', index=0,
+      name='id', full_name='Gift.id', index=0,
       number=1, type=9, cpp_type=9, label=2,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='gift_name', full_name='Gift.Detail.gift_name', index=1,
+      name='name', full_name='Gift.name', index=1,
       number=2, type=9, cpp_type=9, label=2,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
@@ -57,26 +57,27 @@ _GIFT_DETAIL = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=67,
-  serialized_end=111,
+  serialized_start=19,
+  serialized_end=51,
 )
 
-_GIFT = _descriptor.Descriptor(
-  name='Gift',
-  full_name='Gift',
+
+_GIFTPACK = _descriptor.Descriptor(
+  name='GiftPack',
+  full_name='GiftPack',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='id', full_name='Gift.id', index=0,
+      name='id', full_name='GiftPack.id', index=0,
       number=1, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='gift', full_name='Gift.gift', index=1,
+      name='gift', full_name='GiftPack.gift', index=1,
       number=2, type=11, cpp_type=10, label=2,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -85,7 +86,7 @@ _GIFT = _descriptor.Descriptor(
   ],
   extensions=[
   ],
-  nested_types=[_GIFT_DETAIL, ],
+  nested_types=[],
   enum_types=[
   ],
   serialized_options=None,
@@ -94,29 +95,28 @@ _GIFT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=19,
-  serialized_end=111,
+  serialized_start=53,
+  serialized_end=96,
 )
 
-_GIFT_DETAIL.containing_type = _GIFT
-_GIFT.fields_by_name['gift'].message_type = _GIFT_DETAIL
+_GIFTPACK.fields_by_name['gift'].message_type = _GIFT
 DESCRIPTOR.message_types_by_name['Gift'] = _GIFT
+DESCRIPTOR.message_types_by_name['GiftPack'] = _GIFTPACK
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 Gift = _reflection.GeneratedProtocolMessageType('Gift', (_message.Message,), {
-
-  'Detail' : _reflection.GeneratedProtocolMessageType('Detail', (_message.Message,), {
-    'DESCRIPTOR' : _GIFT_DETAIL,
-    '__module__' : 'XiguaGift_pb2'
-    # @@protoc_insertion_point(class_scope:Gift.Detail)
-    })
-  ,
   'DESCRIPTOR' : _GIFT,
   '__module__' : 'XiguaGift_pb2'
   # @@protoc_insertion_point(class_scope:Gift)
   })
 _sym_db.RegisterMessage(Gift)
-_sym_db.RegisterMessage(Gift.Detail)
+
+GiftPack = _reflection.GeneratedProtocolMessageType('GiftPack', (_message.Message,), {
+  'DESCRIPTOR' : _GIFTPACK,
+  '__module__' : 'XiguaGift_pb2'
+  # @@protoc_insertion_point(class_scope:GiftPack)
+  })
+_sym_db.RegisterMessage(GiftPack)
 
 
 # @@protoc_insertion_point(module_scope)

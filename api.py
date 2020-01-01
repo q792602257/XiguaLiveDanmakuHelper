@@ -11,6 +11,7 @@ from Struct.Lottery import Lottery
 import requests
 import time
 from datetime import datetime, timedelta
+from Xigua_pb2 import XiguaLive
 
 DEBUG = False
 COMMON_GET_PARAM = (
@@ -26,7 +27,10 @@ SEARCH_USER_API = (
     "https://security.snssdk.com/video/app/search/live/?format=json&search_sug=0&forum=0&m_tab=live&is_native_req=0"
     "&offset=0&from=live&en_qc=1&pd=xigua_live&ssmix=a{COMMON}&keyword={keyword}")
 USER_INFO_API = "https://is.snssdk.com/video/app/user/home/v7/?to_user_id={userId}{COMMON}"
-ROOM_INFO_API = "https://webcast3.ixigua.com/webcast/room/enter/?room_id={roomId}&pack_level=4{COMMON}"
+ROOM_INFO_API = ("https://webcast3.ixigua.com/webcast/room/enter/?room_id={roomId}&webcast_sdk_version=1350"
+                 "&webcast_language=zh&webcast_locale=zh_CN&pack_level=4{COMMON}")
+DANMAKU_GET_API = ("https://webcast3.ixigua.com/webcast/room/{roomId}/_fetch_message_polling/?webcast_sdk_version=1350"
+                   "&webcast_language=zh&webcast_locale=zh_CN{COMMON}")
 COMMON_HEADERS = {
     "sdk-version": '1',
     "User-Agent": "Dalvik/2.1.0 (Linux; U; Android 9) VideoArticle/8.1.6 cronet/TTNetVersion:b97574c0 2019-09-24",
@@ -59,12 +63,13 @@ class XiGuaLiveApi:
         self._rawRoomInfo = {}
         self.roomID = 0
         self.roomPopularity = 0
-        self._cursor = "0"
         self.lottery = None
         self.s = requests.session()
         self.s.headers.update(COMMON_HEADERS)
         self._updRoomAt = datetime.fromtimestamp(0)
         self.updRoomInfo()
+        self._ext = ""
+        self._cursor = ""
 
     def _updateRoomPopularity(self, _data):
         """
@@ -331,60 +336,33 @@ class XiGuaLiveApi:
         获取弹幕
         """
         self.updRoomInfo()
-        p = self.s.get("https://i.snssdk.com/videolive/im/get_msg?cursor={cursor}&room_id={roomID}"
-                       "&version_code=800&device_platform=android".format(
-            roomID=self.roomID,
-            cursor=self._cursor
-        ))
-        d = p.json()
-        if "data" not in d or "extra" not in d or "cursor" not in d["extra"]:
-            if "base_resp" in d and d["base_resp"]["status_code"] != 10038:
-                print(d["base_resp"]["status_message"])
-                self.apiChangedError("接口数据返回错误", d)
-            return
-        else:
-            self._cursor = d["extra"]["cursor"]
-            if DEBUG:
-                print("Cursor:\t", self._cursor)
-        for i in d['data']:
-            if DEBUG:
-                print(i)
-            if "common" not in i and "method" not in i["common"]:
-                continue
-            if i["common"]['method'] == "VideoLivePresentMessage":
-                self.onPresent(Gift(i))
-            elif i["common"]['method'] == "VideoLivePresentEndTipMessage":
-                self.onPresentEnd(Gift(i))
-            # elif i["common"]['method'] == "VideoLiveRoomAdMessage":
-            #     self.onAd(i)
-            # elif i["common"]['method'] == "VideoLiveChatMessage":
-            #     self.onChat(Chat(i, self.lottery))
-            # elif i["common"]['method'] == "VideoLiveMemberMessage":
-            #     self.onEnter(MemberMsg(i))
-            #     self._updateRoomPopularity(i)
-            # elif i["common"]['method'] == "VideoLiveSocialMessage":
-            #     self.onSubscribe(User(i))
-            # elif i["common"]['method'] == "VideoLiveJoinDiscipulusMessage":
-            #     self.onJoin(User(i))
-            # elif i["common"]['method'] == "VideoLiveControlMessage":
-            #     print("消息：", "主播离开一小会")
-            #     # 这个消息代表主播下播了，直接更新房间信息
-            #     self.updRoomInfo(True)
-            # elif i["common"]['method'] == "VideoLiveDiggMessage":
-            #     self.onLike(User(i))
+        _formatData = {"COMMON": COMMON_GET_PARAM, "TIMESTAMP": time.time() * 1000, "roomId": self.roomID}
+        _url = DANMAKU_GET_API.format_map(_formatData).format_map(_formatData)
+        p = self.s.post(_url, data="cursor={cursor}&resp_content_type=protobuf&live_id=3&user_id=0&identity=audience"
+                                   "&internal_ext={ext}".format_map({"cursor": self._cursor, "ext": self._ext}),
+                        headers={"Content-Type": "application/x-www-form-urlencoded"})
+        data = XiguaLive()
+        data.ParseFromString(p.content)
+        f = open("Demo/a.txt", 'wb')
+        f.write(p.content)
+        f.close()
+        self._cursor = data.cursor
+        self._ext = data.internal_ext
+        for _each in data.data:
+            if _each.method == "WebcastGiftMessage":
+                print("Gift\t", _each.message.commonInfo.displayText.params.gifts.id, "\t",
+                      _each.message.commonInfo.displayText.params.users.user.nickname,
+                      _each.message.commonInfo.displayText.params.gifts.gift.name,
+                      _each.message.commonInfo.displayText.params.string)
             else:
                 pass
-            if self.lottery is None or self.lottery.ID == 0:
-                self.lottery = Lottery(i)
         # 更新抽奖信息
         if self.lottery is not None and self.lottery.ID != 0:
             self.lottery.update()
             if self.lottery.isFinished:
                 self.onLottery(self.lottery)
                 self.lottery = None
-        # 2分钟自动更新下房间信息
-        self.updRoomInfo(len(d['data']) == 0)
-
+        time.sleep(1)
 
 if __name__ == "__main__":
     name = "永恒de草薙"
@@ -393,13 +371,13 @@ if __name__ == "__main__":
             DEBUG = True
         name = sys.argv[1]
     print("西瓜直播弹幕助手 by JerryYan")
-    print("搜索【", name, "】中", end="\t", flush=True)
+    print("搜索【", name, "】", end="\t", flush=True)
     api = XiGuaLiveApi(name)
     if not api.isValidUser:
         input("用户不存在")
         sys.exit()
     print("OK")
-    print("直播用户：", api.broadcaster)
+    print(api.broadcaster.__repr__())
     print("更新房间信息，请稍后", end="\t", flush=True)
     if api.updRoomInfo(True):
         print("OK")

@@ -1,10 +1,10 @@
 syntax = "proto2";
 // 礼物
 message Gift {
-	message Detail {
-		required string gift_id = 1;
-		required string gift_name = 2;
-	}
+	required string id = 1;
+	required string name = 2;
+}
+message GiftPack {
 	required int32 id = 1;
-	required Detail gift = 2;
+	required Gift gift = 2;
 }

@@ -18,8 +18,8 @@ message Params {
 	required int32 type = 1;
 	optional Style style = 2;
 	optional string string = 11;
-	optional User user = 21;
-	optional Gift gift = 22;
+	optional UserPack users = 21;
+	optional GiftPack gifts = 22;
 }
 // 自定义显示信息
 message DisplayText {
@@ -27,7 +27,7 @@ message DisplayText {
 	required string method = 1;
 	required string format = 2;
 	optional Style bgStyle = 3;
-	repeated Params params = 4;
+	required Params params = 4;
 }
 // 通用定义
 message CommonInfo {

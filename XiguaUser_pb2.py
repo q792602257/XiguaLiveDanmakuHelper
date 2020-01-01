@@ -18,10 +18,41 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='',
   syntax='proto2',
   serialized_options=None,
-  serialized_pb=b'\n\x0fXiguaUser.proto\"\x96\x07\n\x04User\x12\n\n\x02id\x18\x01 \x02(\x05\x12\x10\n\x08nickname\x18\x03 \x02(\t\x12\x0e\n\x06gender\x18\x04 \x02(\x05\x12!\n\x0b\x61vatarThumb\x18\t \x02(\x0b\x32\x0c.User.Avatar\x12\"\n\x0c\x61vatarMedium\x18\n \x01(\x0b\x32\x0c.User.Avatar\x12!\n\x0b\x61vatarLarge\x18\x0b \x01(\x0b\x32\x0c.User.Avatar\x12\x1a\n\x05\x62\x61\x64ge\x18\x15 \x03(\x0b\x32\x0b.User.Badge\x12\x1c\n\x06\x66ollow\x18\x16 \x01(\x0b\x32\x0c.User.Follow\x12 \n\x08payGrade\x18\x17 \x02(\x0b\x32\x0e.User.PayGrade\x12\x11\n\ttotalPaid\x18\" \x02(\x05\x1a!\n\x06\x41vatar\x12\x0b\n\x03url\x18\x01 \x02(\t\x12\n\n\x02id\x18\x02 \x01(\t\x1a\xcd\x01\n\x05\x42\x61\x64ge\x12\x0b\n\x03url\x18\x01 \x03(\t\x12\x10\n\x08localUrl\x18\x02 \x01(\t\x12\x0e\n\x06height\x18\x03 \x01(\x05\x12\r\n\x05width\x18\x04 \x01(\x05\x12\x0c\n\x04type\x18\x06 \x01(\x05\x12\x0f\n\x07\x63lickTo\x18\x07 \x01(\t\x12,\n\x0b\x66\x61nClubText\x18\x08 \x01(\x0b\x32\x17.User.Badge.FanClubText\x1a\x39\n\x0b\x46\x61nClubText\x12\x0c\n\x04text\x18\x01 \x02(\t\x12\r\n\x05\x63olor\x18\x02 \x01(\t\x12\r\n\x05level\x18\x03 \x02(\x05\x1a\x33\n\x06\x46ollow\x12\x14\n\tfollowing\x18\x01 \x01(\x05:\x01\x30\x12\x13\n\x08\x66ollower\x18\x02 \x01(\x05:\x01\x30\x1a\xa1\x01\n\x08PayGrade\x12\x0f\n\x07\x63urrent\x18\x01 \x02(\x05\x12\r\n\x05level\x18\x06 \x02(\x05\x12\x18\n\x10\x63urrentLevelNeed\x18\n \x01(\x05\x12\x15\n\rnextLevelNeed\x18\x0b \x01(\x05\x12\x0f\n\x07\x63ontent\x18\r \x01(\t\x12\x1a\n\x05\x62\x61\x64ge\x18\x13 \x02(\x0b\x32\x0b.User.Badge\x12\x17\n\x0ftoNextLevelNeed\x18\x15 \x01(\x05\x1a(\n\nHonorLevel\x12\x1a\n\x05\x62\x61\x64ge\x18\x13 \x02(\x0b\x32\x0b.User.Badge\x1a\x90\x01\n\x05Noble\x12\x0f\n\x07\x63ontent\x18\x04 \x02(\t\x12)\n\x07\x62oarder\x18\x08 \x01(\x0b\x32\x18.User.Noble.NobleBoarder\x1aK\n\x0cNobleBoarder\x12\x0f\n\x07urlList\x18\x01 \x03(\t\x12\x0b\n\x03uri\x18\x02 \x02(\t\x12\x0e\n\x06height\x18\x03 \x01(\x05\x12\r\n\x05width\x18\x04 \x01(\x05'
+  serialized_pb=b'\n\x0fXiguaUser.proto\"\x1f\n\x08UserPack\x12\x13\n\x04user\x18\x01 \x02(\x0b\x32\x05.User\"\x96\x07\n\x04User\x12\n\n\x02id\x18\x01 \x02(\x03\x12\x10\n\x08nickname\x18\x03 \x02(\t\x12\x0e\n\x06gender\x18\x04 \x02(\x05\x12!\n\x0b\x61vatarThumb\x18\t \x02(\x0b\x32\x0c.User.Avatar\x12\"\n\x0c\x61vatarMedium\x18\n \x01(\x0b\x32\x0c.User.Avatar\x12!\n\x0b\x61vatarLarge\x18\x0b \x01(\x0b\x32\x0c.User.Avatar\x12\x1a\n\x05\x62\x61\x64ge\x18\x15 \x03(\x0b\x32\x0b.User.Badge\x12\x1c\n\x06\x66ollow\x18\x16 \x01(\x0b\x32\x0c.User.Follow\x12 \n\x08payGrade\x18\x17 \x02(\x0b\x32\x0e.User.PayGrade\x12\x11\n\ttotalPaid\x18\" \x02(\x05\x1a!\n\x06\x41vatar\x12\x0b\n\x03url\x18\x01 \x02(\t\x12\n\n\x02id\x18\x02 \x01(\t\x1a\xcd\x01\n\x05\x42\x61\x64ge\x12\x0b\n\x03url\x18\x01 \x03(\t\x12\x10\n\x08localUrl\x18\x02 \x01(\t\x12\x0e\n\x06height\x18\x03 \x01(\x05\x12\r\n\x05width\x18\x04 \x01(\x05\x12\x0c\n\x04type\x18\x06 \x01(\x05\x12\x0f\n\x07\x63lickTo\x18\x07 \x01(\t\x12,\n\x0b\x66\x61nClubText\x18\x08 \x01(\x0b\x32\x17.User.Badge.FanClubText\x1a\x39\n\x0b\x46\x61nClubText\x12\x0c\n\x04text\x18\x01 \x02(\t\x12\r\n\x05\x63olor\x18\x02 \x01(\t\x12\r\n\x05level\x18\x03 \x02(\x05\x1a\x33\n\x06\x46ollow\x12\x14\n\tfollowing\x18\x01 \x01(\x05:\x01\x30\x12\x13\n\x08\x66ollower\x18\x02 \x01(\x05:\x01\x30\x1a\xa1\x01\n\x08PayGrade\x12\x0f\n\x07\x63urrent\x18\x01 \x02(\x05\x12\r\n\x05level\x18\x06 \x02(\x05\x12\x18\n\x10\x63urrentLevelNeed\x18\n \x01(\x05\x12\x15\n\rnextLevelNeed\x18\x0b \x01(\x05\x12\x0f\n\x07\x63ontent\x18\r \x01(\t\x12\x1a\n\x05\x62\x61\x64ge\x18\x13 \x02(\x0b\x32\x0b.User.Badge\x12\x17\n\x0ftoNextLevelNeed\x18\x15 \x01(\x05\x1a(\n\nHonorLevel\x12\x1a\n\x05\x62\x61\x64ge\x18\x13 \x02(\x0b\x32\x0b.User.Badge\x1a\x90\x01\n\x05Noble\x12\x0f\n\x07\x63ontent\x18\x04 \x02(\t\x12)\n\x07\x62oarder\x18\x08 \x01(\x0b\x32\x18.User.Noble.NobleBoarder\x1aK\n\x0cNobleBoarder\x12\x0f\n\x07urlList\x18\x01 \x03(\t\x12\x0b\n\x03uri\x18\x02 \x02(\t\x12\x0e\n\x06height\x18\x03 \x01(\x05\x12\r\n\x05width\x18\x04 \x01(\x05'
 )
 
 
+
+
+_USERPACK = _descriptor.Descriptor(
+  name='UserPack',
+  full_name='UserPack',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='user', full_name='UserPack.user', index=0,
+      number=1, type=11, cpp_type=10, label=2,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=19,
+  serialized_end=50,
+)
 
 
 _USER_AVATAR = _descriptor.Descriptor(
@@ -57,8 +88,8 @@ _USER_AVATAR = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=291,
-  serialized_end=324,
+  serialized_start=324,
+  serialized_end=357,
 )
 
 _USER_BADGE_FANCLUBTEXT = _descriptor.Descriptor(
@@ -101,8 +132,8 @@ _USER_BADGE_FANCLUBTEXT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=475,
-  serialized_end=532,
+  serialized_start=508,
+  serialized_end=565,
 )
 
 _USER_BADGE = _descriptor.Descriptor(
@@ -173,8 +204,8 @@ _USER_BADGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=327,
-  serialized_end=532,
+  serialized_start=360,
+  serialized_end=565,
 )
 
 _USER_FOLLOW = _descriptor.Descriptor(
@@ -210,8 +241,8 @@ _USER_FOLLOW = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=534,
-  serialized_end=585,
+  serialized_start=567,
+  serialized_end=618,
 )
 
 _USER_PAYGRADE = _descriptor.Descriptor(
@@ -282,8 +313,8 @@ _USER_PAYGRADE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=588,
-  serialized_end=749,
+  serialized_start=621,
+  serialized_end=782,
 )
 
 _USER_HONORLEVEL = _descriptor.Descriptor(
@@ -312,8 +343,8 @@ _USER_HONORLEVEL = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=751,
-  serialized_end=791,
+  serialized_start=784,
+  serialized_end=824,
 )
 
 _USER_NOBLE_NOBLEBOARDER = _descriptor.Descriptor(
@@ -363,8 +394,8 @@ _USER_NOBLE_NOBLEBOARDER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=863,
-  serialized_end=938,
+  serialized_start=896,
+  serialized_end=971,
 )
 
 _USER_NOBLE = _descriptor.Descriptor(
@@ -400,8 +431,8 @@ _USER_NOBLE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=794,
-  serialized_end=938,
+  serialized_start=827,
+  serialized_end=971,
 )
 
 _USER = _descriptor.Descriptor(
@@ -413,7 +444,7 @@ _USER = _descriptor.Descriptor(
   fields=[
     _descriptor.FieldDescriptor(
       name='id', full_name='User.id', index=0,
-      number=1, type=5, cpp_type=1, label=2,
+      number=1, type=3, cpp_type=2, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -493,10 +524,11 @@ _USER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=20,
-  serialized_end=938,
+  serialized_start=53,
+  serialized_end=971,
 )
 
+_USERPACK.fields_by_name['user'].message_type = _USER
 _USER_AVATAR.containing_type = _USER
 _USER_BADGE_FANCLUBTEXT.containing_type = _USER_BADGE
 _USER_BADGE.fields_by_name['fanClubText'].message_type = _USER_BADGE_FANCLUBTEXT
@@ -515,8 +547,16 @@ _USER.fields_by_name['avatarLarge'].message_type = _USER_AVATAR
 _USER.fields_by_name['badge'].message_type = _USER_BADGE
 _USER.fields_by_name['follow'].message_type = _USER_FOLLOW
 _USER.fields_by_name['payGrade'].message_type = _USER_PAYGRADE
+DESCRIPTOR.message_types_by_name['UserPack'] = _USERPACK
 DESCRIPTOR.message_types_by_name['User'] = _USER
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
+
+UserPack = _reflection.GeneratedProtocolMessageType('UserPack', (_message.Message,), {
+  'DESCRIPTOR' : _USERPACK,
+  '__module__' : 'XiguaUser_pb2'
+  # @@protoc_insertion_point(class_scope:UserPack)
+  })
+_sym_db.RegisterMessage(UserPack)
 
 User = _reflection.GeneratedProtocolMessageType('User', (_message.Message,), {
 

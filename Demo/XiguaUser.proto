@@ -1,4 +1,8 @@
 syntax = "proto2";
+
+message UserPack {
+	required User user = 1;
+}
 // 用户信息
 message User {
 	// 头像
@@ -54,7 +58,7 @@ message User {
 		required string content = 4;
 		optional NobleBoarder boarder = 8;
 	}
-	required int32 id = 1;
+	required int64 id = 1;
 	required string nickname = 3;
 	required int32 gender = 4;
 	// 这个顺序可能有点迷，不是很清楚
