@@ -317,7 +317,7 @@ class downloader(XiGuaLiveApi):
         _result = super(downloader, self).updRoomInfo(force)
         if _result:
             global broadcaster, isBroadcasting, updateTime
-            updateTime = datetime.strftime(datetime.now(), dt_format)
+            updateTime = datetime.strftime(self._updRoomAt, dt_format)
             broadcaster = self.broadcaster
             isBroadcasting = self.isLive
             if self.isLive:
