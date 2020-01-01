@@ -134,7 +134,7 @@ def run():
             except Exception as e:
                 Common.appendError(e.__str__())
                 Common.refreshDownloader()
-            if not Common.api.roomLiver:
+            if not Common.api.broadcaster:
                 Common.refreshDownloader()
             if Common.forceStartEncodeThread:
                 awakeEncode()
