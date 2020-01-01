@@ -351,7 +351,9 @@ class XiGuaLiveApi:
                 print(i)
             if "common" not in i and "method" not in i["common"]:
                 continue
-            if i["common"]['method'] == "VideoLivePresentEndTipMessage":
+            if i["common"]['method'] == "VideoLivePresentMessage":
+                self.onPresent(Gift(i))
+            elif i["common"]['method'] == "VideoLivePresentEndTipMessage":
                 self.onPresentEnd(Gift(i))
             # elif i["common"]['method'] == "VideoLiveRoomAdMessage":
             #     self.onAd(i)
@@ -391,14 +393,14 @@ if __name__ == "__main__":
             DEBUG = True
         name = sys.argv[1]
     print("西瓜直播弹幕助手 by JerryYan")
-    print("用户名【", name, "】搜索中", end="\t")
+    print("搜索【", name, "】中", end="\t", flush=True)
     api = XiGuaLiveApi(name)
     if not api.isValidUser:
         input("用户不存在")
         sys.exit()
     print("OK")
     print("直播用户：", api.broadcaster)
-    print("更新房间信息，请稍后", end="\t")
+    print("更新房间信息，请稍后", end="\t", flush=True)
     if api.updRoomInfo(True):
         print("OK")
     else:
@@ -417,4 +419,4 @@ if __name__ == "__main__":
         else:
             print("主播未开播，等待1分钟后重试")
             time.sleep(60)
-            api.updRoomInfo()
+            api.updRoomInfo(True)
