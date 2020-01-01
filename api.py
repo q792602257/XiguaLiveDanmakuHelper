@@ -12,6 +12,7 @@ import requests
 import time
 from datetime import datetime, timedelta
 from Xigua_pb2 import XiguaLive
+from XiguaUser_pb2 import User as UserPb
 
 DEBUG = False
 COMMON_GET_PARAM = (
@@ -359,8 +360,19 @@ class XiGuaLiveApi:
                     _gift.user = _user
                     _gift.backupName = _each.message.commonInfo.displayText.params.gifts.gift.name
                     self.onPresentEnd(_gift)
+            elif _each.method == "WebcastFansclubMessage":
+                continue
+                _userRawData = _each.message.content4
+                _userPb = UserPb()
+                _userPb.ParseFromString(_userRawData)
+                _user = User()
+                _user.id = _userPb.id
+                _user.name = _userPb.nickname
+                self.onJoin(_user)
+                print(_each.message.content2)
+                print(_each.message.content3)
             else:
-                print(_each.message.contents)
+                pass
         # 更新抽奖信息
         if self.lottery is not None and self.lottery.ID != 0:
             self.lottery.update()
@@ -375,6 +387,7 @@ if __name__ == "__main__":
             DEBUG = True
         name = sys.argv[1]
     print("西瓜直播弹幕助手 by JerryYan")
+    print("接口版本8.1.6")
     print("搜索【", name, "】", end="\t", flush=True)
     api = XiGuaLiveApi(name)
     if not api.isValidUser:

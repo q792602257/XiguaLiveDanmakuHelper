@@ -182,22 +182,27 @@ def warning(*args):
 if __name__ == "__main__":
     name = "永恒de草薙"
     resetColor()
-    print("西瓜直播弹幕助手 by JerryYan")
+    print("西瓜直播礼物助手 by JerryYan")
+    print("接口版本8.1.6")
     if len(sys.argv) > 1:
         name = sys.argv[1]
         if len(sys.argv) > 2:
             SHOW_ALL = sys.argv[2] == "a"
     else:
         name = readInput("请输入主播用户名，默认为", name, 3)
+    print("搜索【", name, "】", end="\t", flush=True)
     api = WinMain(name)
-    while not api.isValidUser:
-        set_cmd_text_color(FOREGROUND_RED)
-        print("未找到对应房间或未开播，等待1分钟后重试")
-        resetColor()
-        time.sleep(60)
-        api.updRoomInfo()
-    print("进入", api.broadcaster, "的直播间")
+    if not api.isValidUser:
+        input("用户不存在")
+        sys.exit()
+    print("OK")
+    print(api.broadcaster.__repr__())
+    print("更新房间信息，请稍后", end="\t", flush=True)
     os.system("title {}".format(api.getTitle()))
+    if api.updRoomInfo(True):
+        print("OK")
+    else:
+        print("FAIL")
     print("=" * 30)
     while True:
         if api.isLive:
@@ -215,4 +220,4 @@ if __name__ == "__main__":
             print("主播未开播，等待1分钟后重试")
             resetColor()
             time.sleep(60)
-            api.updRoomInfo()
+            api.updRoomInfo(True)

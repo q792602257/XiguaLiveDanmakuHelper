@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='',
   syntax='proto2',
   serialized_options=None,
-  serialized_pb=b'\n\x11XiguaCommon.proto\x1a\x0fXiguaUser.proto\x1a\x0fXiguaGift.proto\"W\n\x07Message\x12\x1f\n\ncommonInfo\x18\x01 \x02(\x0b\x32\x0b.CommonInfo\x12\x10\n\x08\x63ontents\x18\x02 \x02(\x0c\x12\x19\n\nisFinished\x18\t \x01(\x08:\x05\x66\x61lse\"*\n\x05Style\x12\r\n\x05\x63olor\x18\x01 \x01(\t\x12\x12\n\nfontWeight\x18\x04 \x01(\x05\"q\n\x06Params\x12\x0c\n\x04type\x18\x01 \x02(\x05\x12\x15\n\x05style\x18\x02 \x01(\x0b\x32\x06.Style\x12\x0e\n\x06string\x18\x0b \x01(\t\x12\x18\n\x05users\x18\x15 \x01(\x0b\x32\t.UserPack\x12\x18\n\x05gifts\x18\x16 \x01(\x0b\x32\t.GiftPack\"_\n\x0b\x44isplayText\x12\x0e\n\x06method\x18\x01 \x02(\t\x12\x0e\n\x06\x66ormat\x18\x02 \x02(\t\x12\x17\n\x07\x62gStyle\x18\x03 \x01(\x0b\x32\x06.Style\x12\x17\n\x06params\x18\x04 \x02(\x0b\x32\x07.Params\"u\n\nCommonInfo\x12\x0e\n\x06method\x18\x01 \x01(\t\x12\x0e\n\x06msg_id\x18\x02 \x01(\x05\x12\x0f\n\x07room_id\x18\x03 \x01(\x05\x12\x13\n\x0b\x63reate_time\x18\x04 \x01(\x05\x12!\n\x0b\x64isplayText\x18\x08 \x01(\x0b\x32\x0c.DisplayText'
+  serialized_pb=b'\n\x11XiguaCommon.proto\x1a\x0fXiguaUser.proto\x1a\x0fXiguaGift.proto\"{\n\x07Message\x12\x1f\n\ncommonInfo\x18\x01 \x02(\x0b\x32\x0b.CommonInfo\x12\x10\n\x08\x63ontent2\x18\x02 \x02(\x0c\x12\x10\n\x08\x63ontent3\x18\x03 \x02(\x0c\x12\x10\n\x08\x63ontent4\x18\x04 \x02(\x0c\x12\x19\n\nisFinished\x18\t \x01(\x08:\x05\x66\x61lse\"*\n\x05Style\x12\r\n\x05\x63olor\x18\x01 \x01(\t\x12\x12\n\nfontWeight\x18\x04 \x01(\x05\"q\n\x06Params\x12\x0c\n\x04type\x18\x01 \x02(\x05\x12\x15\n\x05style\x18\x02 \x01(\x0b\x32\x06.Style\x12\x0e\n\x06string\x18\x0b \x01(\t\x12\x18\n\x05users\x18\x15 \x01(\x0b\x32\t.UserPack\x12\x18\n\x05gifts\x18\x16 \x01(\x0b\x32\t.GiftPack\"_\n\x0b\x44isplayText\x12\x0e\n\x06method\x18\x01 \x02(\t\x12\x0e\n\x06\x66ormat\x18\x02 \x02(\t\x12\x17\n\x07\x62gStyle\x18\x03 \x01(\x0b\x32\x06.Style\x12\x17\n\x06params\x18\x04 \x02(\x0b\x32\x07.Params\"u\n\nCommonInfo\x12\x0e\n\x06method\x18\x01 \x01(\t\x12\x0e\n\x06msg_id\x18\x02 \x01(\x05\x12\x0f\n\x07room_id\x18\x03 \x01(\x05\x12\x13\n\x0b\x63reate_time\x18\x04 \x01(\x05\x12!\n\x0b\x64isplayText\x18\x08 \x01(\x0b\x32\x0c.DisplayText'
   ,
   dependencies=[XiguaUser__pb2.DESCRIPTOR,XiguaGift__pb2.DESCRIPTOR,])
 
@@ -42,14 +42,28 @@ _MESSAGE = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='contents', full_name='Message.contents', index=1,
+      name='content2', full_name='Message.content2', index=1,
       number=2, type=12, cpp_type=9, label=2,
       has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='isFinished', full_name='Message.isFinished', index=2,
+      name='content3', full_name='Message.content3', index=2,
+      number=3, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='content4', full_name='Message.content4', index=3,
+      number=4, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=b"",
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='isFinished', full_name='Message.isFinished', index=4,
       number=9, type=8, cpp_type=7, label=1,
       has_default_value=True, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
@@ -68,7 +82,7 @@ _MESSAGE = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=55,
-  serialized_end=142,
+  serialized_end=178,
 )
 
 
@@ -105,8 +119,8 @@ _STYLE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=144,
-  serialized_end=186,
+  serialized_start=180,
+  serialized_end=222,
 )
 
 
@@ -164,8 +178,8 @@ _PARAMS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=188,
-  serialized_end=301,
+  serialized_start=224,
+  serialized_end=337,
 )
 
 
@@ -216,8 +230,8 @@ _DISPLAYTEXT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=303,
-  serialized_end=398,
+  serialized_start=339,
+  serialized_end=434,
 )
 
 
@@ -275,8 +289,8 @@ _COMMONINFO = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=400,
-  serialized_end=517,
+  serialized_start=436,
+  serialized_end=553,
 )
 
 _MESSAGE.fields_by_name['commonInfo'].message_type = _COMMONINFO
