@@ -30,12 +30,7 @@ COMMON_HEADERS = {
 }
 
 
-
 class XiGuaLiveApi:
-    isValidRoom: bool
-    isLive: bool
-    roomLiver: User or None
-    roomID: int
 
     def __init__(self, name=None):
         """
@@ -45,22 +40,27 @@ class XiGuaLiveApi:
         """
         if name is None:
             name = "永恒de草薙"
+        self.broadcaster = None
+        self.isValidUser = False
         if type(name) == User:
-            self.roomLiver = name
+            self.broadcaster = name
             self.name = name.name
+        elif str(name).isdigit():
+            self.broadcaster = User()
+            self.isValidUser = True
+            self.broadcaster.ID = int(name)
         else:
             self.name = str(name)
         self.isLive = False
-        self.isValidRoom = False
         self._rawRoomInfo = {}
         self.roomID = 0
-        self.roomLiver = None
         self.roomPopularity = 0
         self._cursor = "0"
+        self.lottery = None
         self.s = requests.session()
         self.s.headers.update(COMMON_HEADERS)
-        self._updRoomAt = datetime.now()
-        self.updRoomInfo(True)
+        self._updRoomAt = datetime.fromtimestamp(0)
+        self.updRoomInfo()
 
     def _updateRoomPopularity(self, _data):
         """
@@ -71,9 +71,51 @@ class XiGuaLiveApi:
         if "extra" in _data:
             if "member_count" in _data["extra"] and _data["extra"]["member_count"] > 0:
                 self.roomPopularity = _data["extra"]["member_count"]
-        elif "data" in _data:
+        if "data" in _data:
             if "popularity" in _data["data"]:
                 self.roomPopularity = _data["data"]["popularity"]
+
+    def getJson(self, url, **kwargs):
+        try:
+            p = self.s.get(url, **kwargs)
+        except Exception as e:
+            print("网络请求失败")
+            if DEBUG:
+                print("GET")
+                print("URL", url)
+                print("ERR ", e.__str__())
+            return None
+        try:
+            return p.json()
+        except Exception as e:
+            print("解析请求失败")
+            if DEBUG:
+                print("GET JSON")
+                print("URL", url)
+                print("CNT", p.text)
+                print("ERR ", e.__str__())
+            return None
+
+    def postJson(self, url, data, **kwargs):
+        try:
+            p = self.s.post(url, data, **kwargs)
+        except Exception as e:
+            print("网络请求失败")
+            if DEBUG:
+                print("POST")
+                print("URL", url)
+                print("ERR ", e.__str__())
+            return None
+        try:
+            return p.json()
+        except Exception as e:
+            print("解析请求失败")
+            if DEBUG:
+                print("GET JSON")
+                print("URL", url)
+                print("CNT", p.text)
+                print("ERR ", e.__str__())
+            return None
 
     @staticmethod
     def apiChangedError(msg: str, *args):
@@ -87,52 +129,65 @@ class XiGuaLiveApi:
         if DEBUG:
             print(*args)
 
-    def _checkUsernameIsMatched(self):
+    def _checkUsernameIsMatched(self, compare=None):
         """
         验证主播名字是自己想要的那个
         Check name matched
         :return: bool: 是否匹配
         """
-        if self.name is None or self.roomLiver is None:
+        return True
+        if compare is None:
+            compare = self.broadcaster
+        if self.name is None or compare is None:
             return False
-        return self.name == self.roomLiver.__str__() or self.roomLiver.__str__() in self.name or self.name in self.roomLiver.__str__()
+        return self.name == compare.__str__() or compare.__str__() in self.name or self.name in compare.__str__()
 
     def _forceSearchUser(self):
         """
         搜索主播名
         :return:
         """
-        _results = self.searchUser(self.name)
-        if len(_results) > 0:
-            self.isValidRoom = True
-            self.roomLiver = _results[0]
-        return self._updateUserOnly()
+        _formatData = {"COMMON": COMMON_GET_PARAM, "TIMESTAMP": time.time() * 1000, "keyword": self.name}
+        _url = SEARCH_USER_API.format_map(_formatData).format_map(_formatData)
+        d = self.getJson(_url)
+        if d is None:
+            print("搜索接口请求失败")
+            return False
+        self.broadcaster = None
+        if "data" in d and d["data"] is not None:
+            for i in d["data"]:
+                if self.broadcaster is not None:
+                    break
+                if i["block_type"] != 0:
+                    continue
+                if "cells" not in i or len(i["cells"]) == 0:
+                    break
+                for _j in i["cells"]:
+                    _user = User(_j)
+                    if self._checkUsernameIsMatched(_user):
+                        self.isValidUser = True
+                        self.broadcaster = _user
+                        break
+        return self._updateUserInfo()
 
-    def _updateUserOnly(self):
+    def _updateUserInfo(self):
         """
         获取用户信息
         :return:
         """
-        if self.roomLiver is None:
-            self.isLive = False
+        if self.broadcaster is None:
             return False
-        _formatData = {"COMMON": COMMON_GET_PARAM, "TIMESTAMP": time.time() * 1000, "userId": self.roomLiver.ID}
+        _formatData = {"COMMON": COMMON_GET_PARAM, "TIMESTAMP": time.time() * 1000, "userId": self.broadcaster.ID}
         _url = USER_INFO_API.format_map(_formatData).format_map(_formatData)
-        try:
-            p = self.s.get(_url)
-        except Exception as e:
-            self.apiChangedError("更新用户信息接口请求失败", e.__str__())
+        d = self.getJson(_url)
+        if d is None:
+            print("获取用户信息失败")
             return False
-        try:
-            d = p.json()
-        except Exception as e:
-            self.apiChangedError("更新房间接口错误", e.__str__())
-            return False
-        self.isValidRoom = d["status"] == 0
+        self.isValidUser = d["status"] == 0
         if "user_info" not in d and d["user_info"] is None:
             self.apiChangedError("Api发生改变，请及时联系我", d)
             return False
-        self.roomLiver = User(d)
+        self.broadcaster = User(d)
         if not self._checkUsernameIsMatched():
             self.isLive = False
             return False
@@ -142,62 +197,34 @@ class XiGuaLiveApi:
             self.roomID = d["user_info"]['live_info']['room_id']
         return True
 
+    def _getRoomInfo(self, force=False):
+        if self.roomID == 0:
+            return False
+        if not force or (self._updRoomAt + timedelta(minutes=2) > datetime.now()):
+            return self.isLive
+        _formatData = {"COMMON": COMMON_GET_PARAM, "TIMESTAMP": time.time() * 1000, "roomId": self.roomID}
+        _url = ROOM_INFO_API.format_map(_formatData).format_map(_formatData)
+        d = self.getJson(_url)
+        if d is None:
+            print("获取房间信息接口请求失败")
+            return False
+        if d["status_code"] != 0:
+            print("接口提示：【{}】".format(d["data"]["message"]))
+            return False
+        self._rawRoomInfo = d["data"]
+        self.isLive = d["data"]["status"] == 2
+        self._updRoomAt = datetime.now()
+        self._updateRoomPopularity(d)
+        return self.isLive
+
     def updRoomInfo(self, force=False):
         """
         更新房间信息
         :return:
         """
-        if not force and self._updRoomAt > (datetime.now() - timedelta(minutes=3)):
-            return self.isLive
-        self._updRoomAt = datetime.now()
-        if self.isValidRoom:
-            return self._updateUserOnly()
-        else:
+        if not self.isValidUser:
             return self._forceSearchUser()
-
-    @staticmethod
-    def getUserInfoByUserId(userId):
-        """
-        通过UserId查找用户的房间号
-        :param userId: 用户ID
-        :return: XiGuaLiveApi
-        """
-        _formatData = {"COMMON": COMMON_GET_PARAM, "TIMESTAMP": time.time() * 1000, "userId": userId}
-        _url = USER_INFO_API.format_map(_formatData).format_map(_formatData)
-        try:
-            p = requests.get(_url, headers=COMMON_HEADERS)
-        except Exception as e:
-            XiGuaLiveApi.apiChangedError("更新用户信息接口请求失败", e.__str__())
-            return None
-        try:
-            d = p.json()
-        except Exception as e:
-            XiGuaLiveApi.apiChangedError("更新房间接口错误", e.__str__())
-            return None
-        return XiGuaLiveApi(User(d))
-
-    @staticmethod
-    def searchUser(keyword):
-        """
-        通过关键词搜索主播
-        :param keyword: 关键词
-        :return: array: 搜索结果
-        """
-        ret = []
-        _formatData = {"COMMON": COMMON_GET_PARAM, "TIMESTAMP": time.time() * 1000, "keyword": keyword}
-        _url = SEARCH_USER_API.format_map(_formatData).format_map(_formatData)
-        try:
-            p = requests.get(_url)
-            d = p.json()
-        except json.decoder.JSONDecodeError as e:
-            XiGuaLiveApi.apiChangedError("搜索接口错误", e.__str__())
-            return ret
-        if "data" in d and d["data"] is not None:
-            for i in d["data"]:
-                if i["block_type"] != 0:
-                    continue
-                if "cells" not in i or len(i["cells"]) == 0:
-                    break
-                for _j in i["cells"]:
-                    ret.append(User(_j))
-        return ret
+        elif not self.isLive:
+            return self._updateUserInfo()
+        else:
+            return self._getRoomInfo(force)
