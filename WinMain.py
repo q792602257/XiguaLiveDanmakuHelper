@@ -112,7 +112,7 @@ class WinMain(Api):
         if self._tmp > 10:
             self._tmp = 0
         if self._tmp < 5:
-            return "{} 的直播间 --弹幕助手 by JerryYan".format(self.roomLiver)
+            return "{} 的直播间 --弹幕助手 by JerryYan".format(self.broadcaster)
         else:
             if self.roomPopularity == 0:
                 self._tmp = 0
@@ -190,13 +190,13 @@ if __name__ == "__main__":
     else:
         name = readInput("请输入主播用户名，默认为", name, 3)
     api = WinMain(name)
-    while not api.isValidRoom:
+    while not api.isValidUser:
         set_cmd_text_color(FOREGROUND_RED)
         print("未找到对应房间或未开播，等待1分钟后重试")
         resetColor()
         time.sleep(60)
         api.updRoomInfo()
-    print("进入", api.roomLiver, "的直播间")
+    print("进入", api.broadcaster, "的直播间")
     os.system("title {}".format(api.getTitle()))
     print("=" * 30)
     while True:
