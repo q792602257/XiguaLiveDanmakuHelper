@@ -19,49 +19,12 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='',
   syntax='proto2',
   serialized_options=None,
-  serialized_pb=b'\n\x0bXigua.proto\x1a\x11XiguaCommon.proto\"\xf4\x01\n\tXiguaLive\x12\x1d\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32\x0f.XiguaLive.Data\x12\x0e\n\x06\x63ursor\x18\x02 \x02(\t\x12\x16\n\x0e\x66\x65tch_interval\x18\x03 \x01(\x05\x12\x0b\n\x03now\x18\x04 \x01(\x05\x12\x14\n\x0cinternal_ext\x18\x05 \x02(\t\x1a}\n\x04\x44\x61ta\x12\x0e\n\x06method\x18\x01 \x02(\t\x12(\n\x07message\x18\x02 \x02(\x0b\x32\x17.XiguaLive.Data.Message\x1a;\n\x07Message\x12\x1f\n\ncommonInfo\x18\x01 \x02(\x0b\x32\x0b.CommonInfo\x12\x0f\n\x07\x63ontent\x18\x03 \x01(\t'
+  serialized_pb=b'\n\x0bXigua.proto\x1a\x11XiguaCommon.proto\"\xa8\x01\n\tXiguaLive\x12\x1d\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32\x0f.XiguaLive.Data\x12\x0e\n\x06\x63ursor\x18\x02 \x02(\t\x12\x16\n\x0e\x66\x65tch_interval\x18\x03 \x01(\x05\x12\x0b\n\x03now\x18\x04 \x01(\x05\x12\x14\n\x0cinternal_ext\x18\x05 \x02(\t\x1a\x31\n\x04\x44\x61ta\x12\x0e\n\x06method\x18\x01 \x02(\t\x12\x19\n\x07message\x18\x02 \x02(\x0b\x32\x08.Message'
   ,
   dependencies=[XiguaCommon__pb2.DESCRIPTOR,])
 
 
 
-
-_XIGUALIVE_DATA_MESSAGE = _descriptor.Descriptor(
-  name='Message',
-  full_name='XiguaLive.Data.Message',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='commonInfo', full_name='XiguaLive.Data.Message.commonInfo', index=0,
-      number=1, type=11, cpp_type=10, label=2,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='content', full_name='XiguaLive.Data.Message.content', index=1,
-      number=3, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=220,
-  serialized_end=279,
-)
 
 _XIGUALIVE_DATA = _descriptor.Descriptor(
   name='Data',
@@ -87,7 +50,7 @@ _XIGUALIVE_DATA = _descriptor.Descriptor(
   ],
   extensions=[
   ],
-  nested_types=[_XIGUALIVE_DATA_MESSAGE, ],
+  nested_types=[],
   enum_types=[
   ],
   serialized_options=None,
@@ -97,7 +60,7 @@ _XIGUALIVE_DATA = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=154,
-  serialized_end=279,
+  serialized_end=203,
 )
 
 _XIGUALIVE = _descriptor.Descriptor(
@@ -155,12 +118,10 @@ _XIGUALIVE = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=35,
-  serialized_end=279,
+  serialized_end=203,
 )
 
-_XIGUALIVE_DATA_MESSAGE.fields_by_name['commonInfo'].message_type = XiguaCommon__pb2._COMMONINFO
-_XIGUALIVE_DATA_MESSAGE.containing_type = _XIGUALIVE_DATA
-_XIGUALIVE_DATA.fields_by_name['message'].message_type = _XIGUALIVE_DATA_MESSAGE
+_XIGUALIVE_DATA.fields_by_name['message'].message_type = XiguaCommon__pb2._MESSAGE
 _XIGUALIVE_DATA.containing_type = _XIGUALIVE
 _XIGUALIVE.fields_by_name['data'].message_type = _XIGUALIVE_DATA
 DESCRIPTOR.message_types_by_name['XiguaLive'] = _XIGUALIVE
@@ -169,13 +130,6 @@ _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 XiguaLive = _reflection.GeneratedProtocolMessageType('XiguaLive', (_message.Message,), {
 
   'Data' : _reflection.GeneratedProtocolMessageType('Data', (_message.Message,), {
-
-    'Message' : _reflection.GeneratedProtocolMessageType('Message', (_message.Message,), {
-      'DESCRIPTOR' : _XIGUALIVE_DATA_MESSAGE,
-      '__module__' : 'Xigua_pb2'
-      # @@protoc_insertion_point(class_scope:XiguaLive.Data.Message)
-      })
-    ,
     'DESCRIPTOR' : _XIGUALIVE_DATA,
     '__module__' : 'Xigua_pb2'
     # @@protoc_insertion_point(class_scope:XiguaLive.Data)
@@ -187,7 +141,6 @@ XiguaLive = _reflection.GeneratedProtocolMessageType('XiguaLive', (_message.Mess
   })
 _sym_db.RegisterMessage(XiguaLive)
 _sym_db.RegisterMessage(XiguaLive.Data)
-_sym_db.RegisterMessage(XiguaLive.Data.Message)
 
 
 # @@protoc_insertion_point(module_scope)

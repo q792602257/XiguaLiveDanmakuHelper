@@ -1,6 +1,10 @@
 syntax = "proto2";
 import "XiguaUser.proto";
 import "XiguaGift.proto";
+message Message {
+	required CommonInfo commonInfo = 1;
+	optional string content = 3;
+}
 // 样式
 message Style {
 	optional string color = 1;
@@ -23,7 +27,7 @@ message DisplayText {
 	required string method = 1;
 	required string format = 2;
 	optional Style bgStyle = 3;
-	optional Params params = 4;
+	repeated Params params = 4;
 }
 // 通用定义
 message CommonInfo {

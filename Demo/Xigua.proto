@@ -4,10 +4,6 @@ import "XiguaCommon.proto";
 
 message XiguaLive {
 	message Data {
-		message Message {
-			required CommonInfo commonInfo = 1;
-			optional string content = 3;
-		}
 		// WebcastChatMessage 聊天
 		// WebcastGiftMessage 礼物
 		required string method = 1;
