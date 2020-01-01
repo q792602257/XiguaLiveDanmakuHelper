@@ -45,16 +45,17 @@ class XiGuaLiveApi:
         if name is None:
             name = "永恒de草薙"
         self.broadcaster = None
+        self.isValidUser = False
         if type(name) == User:
             self.broadcaster = name
             self.name = name.name
         elif str(name).isdigit():
             self.broadcaster = User()
+            self.isValidUser = True
             self.broadcaster.ID = int(name)
         else:
             self.name = str(name)
         self.isLive = False
-        self.isValidUser = False
         self._rawRoomInfo = {}
         self.roomID = 0
         self.roomPopularity = 0
@@ -62,7 +63,7 @@ class XiGuaLiveApi:
         self.lottery = None
         self.s = requests.session()
         self.s.headers.update(COMMON_HEADERS)
-        self._updRoomAt = datetime.now()
+        self._updRoomAt = datetime.fromtimestamp(0)
         self.updRoomInfo()
 
     def _updateRoomPopularity(self, _data):
@@ -74,7 +75,7 @@ class XiGuaLiveApi:
         if "extra" in _data:
             if "member_count" in _data["extra"] and _data["extra"]["member_count"] > 0:
                 self.roomPopularity = _data["extra"]["member_count"]
-        elif "data" in _data:
+        if "data" in _data:
             if "popularity" in _data["data"]:
                 self.roomPopularity = _data["data"]["popularity"]
 
@@ -244,8 +245,11 @@ class XiGuaLiveApi:
         if d is None:
             print("搜索接口请求失败")
             return False
+        self.broadcaster = None
         if "data" in d and d["data"] is not None:
             for i in d["data"]:
+                if self.broadcaster is not None:
+                    break
                 if i["block_type"] != 0:
                     continue
                 if "cells" not in i or len(i["cells"]) == 0:
@@ -290,7 +294,11 @@ class XiGuaLiveApi:
                 self.lottery = l
         return True
 
-    def _getRoomInfo(self):
+    def _getRoomInfo(self, force=False):
+        if self.roomID == 0:
+            return False
+        if not force or (self._updRoomAt + timedelta(minutes=2) > datetime.now()):
+            return self.isLive
         _formatData = {"COMMON": COMMON_GET_PARAM, "TIMESTAMP": time.time() * 1000, "roomId": self.roomID}
         _url = ROOM_INFO_API.format_map(_formatData).format_map(_formatData)
         d = self.getJson(_url)
@@ -301,9 +309,12 @@ class XiGuaLiveApi:
             print("接口提示：【{}】".format(d["data"]["message"]))
             return False
         self._rawRoomInfo = d["data"]
-        return True
+        self.isLive = d["data"]["status"] == 2
+        self._updRoomAt = datetime.now()
+        self._updateRoomPopularity(d)
+        return self.isLive
 
-    def updRoomInfo(self):
+    def updRoomInfo(self, force=False):
         """
         更新房间信息
         :return:
@@ -313,7 +324,7 @@ class XiGuaLiveApi:
         elif not self.isLive:
             return self._updateUserInfo()
         else:
-            return self._getRoomInfo()
+            return self._getRoomInfo(force)
 
     def getDanmaku(self):
         """
@@ -370,7 +381,7 @@ class XiGuaLiveApi:
                 self.onLottery(self.lottery)
                 self.lottery = None
         # 2分钟自动更新下房间信息
-        self.updRoomInfo()
+        self.updRoomInfo(len(d['data']) == 0)
 
 
 if __name__ == "__main__":
@@ -380,11 +391,18 @@ if __name__ == "__main__":
             DEBUG = True
         name = sys.argv[1]
     print("西瓜直播弹幕助手 by JerryYan")
+    print("用户名【", name, "】搜索中", end="\t")
     api = XiGuaLiveApi(name)
     if not api.isValidUser:
-        input("房间不存在")
+        input("用户不存在")
         sys.exit()
-    print("进入", api.broadcaster, "的直播间")
+    print("OK")
+    print("直播用户：", api.broadcaster)
+    print("更新房间信息，请稍后", end="\t")
+    if api.updRoomInfo(True):
+        print("OK")
+    else:
+        print("FAIL")
     print("=" * 30)
     while True:
         if api.isLive:
