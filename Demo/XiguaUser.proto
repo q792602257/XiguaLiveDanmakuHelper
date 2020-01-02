@@ -11,7 +11,7 @@ message Badge {
 		required int32 level = 3;
 	}
 	repeated string url = 1;
-	optional string localUrl = 2;
+//	optional string localUrl = 2;
 	optional int32 height = 3;
 	optional int32 width = 4;
 	// 3 房管
@@ -21,16 +21,11 @@ message Badge {
 	optional string clickTo = 7;
 	optional FanClubText fanClubText = 8;
 }
-message FansClubBadgePack {
-	required Badge badge = 1;
-	optional string title = 2 [default = ''];
-}
 message FansClubPack {
 	message FansClub {
 		required string title = 1 [default = ''];
 		required int32 level = 2 [default = 0];
 		optional int32 someEnum = 3;
-		required FansClubBadgePack fansClubs = 4;
 	}
 	required FansClub fansClub = 1;
 }

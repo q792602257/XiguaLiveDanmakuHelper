@@ -1,15 +1,33 @@
-class User:
-    ID = 0
-    name = ""
-    brand = ""
-    level = 0
-    type = 0
-    block = False
-    mute = False
+from XiguaUser_pb2 import User as UserPb
 
+
+class User:
     def __init__(self, json=None):
+        self.ID = 0
+        self.name = ""
+        self.brand = ""
+        self.level = 0
+        self.type = 0
+        self.block = False
+        self.mute = False
         if json:
-            self.parse(json)
+            if type(json) == bytes:
+                self.parsePb(json)
+            elif type(json) == UserPb:
+                self.parseUserPb(json)
+            else:
+                self.parse(json)
+
+    def parseUserPb(self, _user):
+        self.ID = _user.id
+        self.name = _user.nickname
+        self.brand = _user.fansClub.fansClub.title
+        self.level = _user.fansClub.fansClub.level
+
+    def parsePb(self, raw):
+        _user = UserPb()
+        _user.ParseFromString(raw)
+        self.parseUserPb(_user)
 
     def parse(self, json):
         if "extra" in json:

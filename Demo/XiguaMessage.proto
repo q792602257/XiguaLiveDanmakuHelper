@@ -9,9 +9,15 @@ message Message {
 }
 message FansClubMessage {
 	required CommonInfo commonInfo = 1;
-	required int32 someEnum = 2;
-	required int32 someInt3 = 3;
+	// 0没有 1有且是本直播间
+	required int32 type = 2;
+	required string content = 3;
 	required User user = 4;
+}
+message FansClubStatsMessage {
+	required CommonInfo commonInfo = 1;
+	required string title = 2;
+	required int32 count = 3;
 }
 message UserSeqMessage {
 	required CommonInfo commonInfo = 1;
@@ -41,7 +47,7 @@ message GiftMessage {
 	// 5,6 顺序可能不对
 	required int32 repeated = 5;
 	required int32 combo = 6;
-	required User user = 7;
+	optional User user = 7;
 	optional bool isFinished = 9 [ default = false ];
 }
 // 样式

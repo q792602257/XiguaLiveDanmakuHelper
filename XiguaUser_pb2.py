@@ -18,7 +18,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='',
   syntax='proto2',
   serialized_options=None,
-  serialized_pb=b'\n\x0fXiguaUser.proto\"\x1f\n\x08UserPack\x12\x13\n\x04user\x18\x01 \x02(\x0b\x32\x05.User\"\xc8\x01\n\x05\x42\x61\x64ge\x12\x0b\n\x03url\x18\x01 \x03(\t\x12\x10\n\x08localUrl\x18\x02 \x01(\t\x12\x0e\n\x06height\x18\x03 \x01(\x05\x12\r\n\x05width\x18\x04 \x01(\x05\x12\x0c\n\x04type\x18\x06 \x01(\x05\x12\x0f\n\x07\x63lickTo\x18\x07 \x01(\t\x12\'\n\x0b\x66\x61nClubText\x18\x08 \x01(\x0b\x32\x12.Badge.FanClubText\x1a\x39\n\x0b\x46\x61nClubText\x12\x0c\n\x04text\x18\x01 \x02(\t\x12\r\n\x05\x63olor\x18\x02 \x01(\t\x12\r\n\x05level\x18\x03 \x02(\x05\";\n\x11\x46\x61nsClubBadgePack\x12\x15\n\x05\x62\x61\x64ge\x18\x01 \x02(\x0b\x32\x06.Badge\x12\x0f\n\x05title\x18\x02 \x01(\t:\x00\"\xa0\x01\n\x0c\x46\x61nsClubPack\x12(\n\x08\x66\x61nsClub\x18\x01 \x02(\x0b\x32\x16.FansClubPack.FansClub\x1a\x66\n\x08\x46\x61nsClub\x12\x0f\n\x05title\x18\x01 \x02(\t:\x00\x12\x10\n\x05level\x18\x02 \x02(\x05:\x01\x30\x12\x10\n\x08someEnum\x18\x03 \x01(\x05\x12%\n\tfansClubs\x18\x04 \x02(\x0b\x32\x12.FansClubBadgePack\"\xd8\x05\n\x04User\x12\n\n\x02id\x18\x01 \x02(\x03\x12\x10\n\x08nickname\x18\x03 \x02(\t\x12\x0e\n\x06gender\x18\x04 \x02(\x05\x12!\n\x0b\x61vatarThumb\x18\t \x02(\x0b\x32\x0c.User.Avatar\x12\"\n\x0c\x61vatarMedium\x18\n \x01(\x0b\x32\x0c.User.Avatar\x12!\n\x0b\x61vatarLarge\x18\x0b \x01(\x0b\x32\x0c.User.Avatar\x12\x15\n\x05\x62\x61\x64ge\x18\x15 \x03(\x0b\x32\x06.Badge\x12\x1c\n\x06\x66ollow\x18\x16 \x01(\x0b\x32\x0c.User.Follow\x12 \n\x08payGrade\x18\x17 \x02(\x0b\x32\x0e.User.PayGrade\x12\x1f\n\x08\x66\x61nsClub\x18\x18 \x02(\x0b\x32\r.FansClubPack\x12\x11\n\ttotalPaid\x18\" \x02(\x05\x1a!\n\x06\x41vatar\x12\x0b\n\x03url\x18\x01 \x02(\t\x12\n\n\x02id\x18\x02 \x01(\t\x1a\x33\n\x06\x46ollow\x12\x14\n\tfollowing\x18\x01 \x01(\x05:\x01\x30\x12\x13\n\x08\x66ollower\x18\x02 \x01(\x05:\x01\x30\x1a\x9c\x01\n\x08PayGrade\x12\x0f\n\x07\x63urrent\x18\x01 \x02(\x05\x12\r\n\x05level\x18\x06 \x02(\x05\x12\x18\n\x10\x63urrentLevelNeed\x18\n \x01(\x05\x12\x15\n\rnextLevelNeed\x18\x0b \x01(\x05\x12\x0f\n\x07\x63ontent\x18\r \x01(\t\x12\x15\n\x05\x62\x61\x64ge\x18\x13 \x02(\x0b\x32\x06.Badge\x12\x17\n\x0ftoNextLevelNeed\x18\x15 \x01(\x05\x1a#\n\nHonorLevel\x12\x15\n\x05\x62\x61\x64ge\x18\x13 \x02(\x0b\x32\x06.Badge\x1a\x90\x01\n\x05Noble\x12\x0f\n\x07\x63ontent\x18\x04 \x02(\t\x12)\n\x07\x62oarder\x18\x08 \x01(\x0b\x32\x18.User.Noble.NobleBoarder\x1aK\n\x0cNobleBoarder\x12\x0f\n\x07urlList\x18\x01 \x03(\t\x12\x0b\n\x03uri\x18\x02 \x02(\t\x12\x0e\n\x06height\x18\x03 \x01(\x05\x12\r\n\x05width\x18\x04 \x01(\x05'
+  serialized_pb=b'\n\x0fXiguaUser.proto\"\x1f\n\x08UserPack\x12\x13\n\x04user\x18\x01 \x02(\x0b\x32\x05.User\"\xb6\x01\n\x05\x42\x61\x64ge\x12\x0b\n\x03url\x18\x01 \x03(\t\x12\x0e\n\x06height\x18\x03 \x01(\x05\x12\r\n\x05width\x18\x04 \x01(\x05\x12\x0c\n\x04type\x18\x06 \x01(\x05\x12\x0f\n\x07\x63lickTo\x18\x07 \x01(\t\x12\'\n\x0b\x66\x61nClubText\x18\x08 \x01(\x0b\x32\x12.Badge.FanClubText\x1a\x39\n\x0b\x46\x61nClubText\x12\x0c\n\x04text\x18\x01 \x02(\t\x12\r\n\x05\x63olor\x18\x02 \x01(\t\x12\r\n\x05level\x18\x03 \x02(\x05\"y\n\x0c\x46\x61nsClubPack\x12(\n\x08\x66\x61nsClub\x18\x01 \x02(\x0b\x32\x16.FansClubPack.FansClub\x1a?\n\x08\x46\x61nsClub\x12\x0f\n\x05title\x18\x01 \x02(\t:\x00\x12\x10\n\x05level\x18\x02 \x02(\x05:\x01\x30\x12\x10\n\x08someEnum\x18\x03 \x01(\x05\"\xd8\x05\n\x04User\x12\n\n\x02id\x18\x01 \x02(\x03\x12\x10\n\x08nickname\x18\x03 \x02(\t\x12\x0e\n\x06gender\x18\x04 \x02(\x05\x12!\n\x0b\x61vatarThumb\x18\t \x02(\x0b\x32\x0c.User.Avatar\x12\"\n\x0c\x61vatarMedium\x18\n \x01(\x0b\x32\x0c.User.Avatar\x12!\n\x0b\x61vatarLarge\x18\x0b \x01(\x0b\x32\x0c.User.Avatar\x12\x15\n\x05\x62\x61\x64ge\x18\x15 \x03(\x0b\x32\x06.Badge\x12\x1c\n\x06\x66ollow\x18\x16 \x01(\x0b\x32\x0c.User.Follow\x12 \n\x08payGrade\x18\x17 \x02(\x0b\x32\x0e.User.PayGrade\x12\x1f\n\x08\x66\x61nsClub\x18\x18 \x02(\x0b\x32\r.FansClubPack\x12\x11\n\ttotalPaid\x18\" \x02(\x05\x1a!\n\x06\x41vatar\x12\x0b\n\x03url\x18\x01 \x02(\t\x12\n\n\x02id\x18\x02 \x01(\t\x1a\x33\n\x06\x46ollow\x12\x14\n\tfollowing\x18\x01 \x01(\x05:\x01\x30\x12\x13\n\x08\x66ollower\x18\x02 \x01(\x05:\x01\x30\x1a\x9c\x01\n\x08PayGrade\x12\x0f\n\x07\x63urrent\x18\x01 \x02(\x05\x12\r\n\x05level\x18\x06 \x02(\x05\x12\x18\n\x10\x63urrentLevelNeed\x18\n \x01(\x05\x12\x15\n\rnextLevelNeed\x18\x0b \x01(\x05\x12\x0f\n\x07\x63ontent\x18\r \x01(\t\x12\x15\n\x05\x62\x61\x64ge\x18\x13 \x02(\x0b\x32\x06.Badge\x12\x17\n\x0ftoNextLevelNeed\x18\x15 \x01(\x05\x1a#\n\nHonorLevel\x12\x15\n\x05\x62\x61\x64ge\x18\x13 \x02(\x0b\x32\x06.Badge\x1a\x90\x01\n\x05Noble\x12\x0f\n\x07\x63ontent\x18\x04 \x02(\t\x12)\n\x07\x62oarder\x18\x08 \x01(\x0b\x32\x18.User.Noble.NobleBoarder\x1aK\n\x0cNobleBoarder\x12\x0f\n\x07urlList\x18\x01 \x03(\t\x12\x0b\n\x03uri\x18\x02 \x02(\t\x12\x0e\n\x06height\x18\x03 \x01(\x05\x12\r\n\x05width\x18\x04 \x01(\x05'
 )
 
 
@@ -95,8 +95,8 @@ _BADGE_FANCLUBTEXT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=196,
-  serialized_end=253,
+  serialized_start=178,
+  serialized_end=235,
 )
 
 _BADGE = _descriptor.Descriptor(
@@ -114,42 +114,35 @@ _BADGE = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='localUrl', full_name='Badge.localUrl', index=1,
-      number=2, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='height', full_name='Badge.height', index=2,
+      name='height', full_name='Badge.height', index=1,
       number=3, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='width', full_name='Badge.width', index=3,
+      name='width', full_name='Badge.width', index=2,
       number=4, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='type', full_name='Badge.type', index=4,
+      name='type', full_name='Badge.type', index=3,
       number=6, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='clickTo', full_name='Badge.clickTo', index=5,
+      name='clickTo', full_name='Badge.clickTo', index=4,
       number=7, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='fanClubText', full_name='Badge.fanClubText', index=6,
+      name='fanClubText', full_name='Badge.fanClubText', index=5,
       number=8, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -168,45 +161,7 @@ _BADGE = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=53,
-  serialized_end=253,
-)
-
-
-_FANSCLUBBADGEPACK = _descriptor.Descriptor(
-  name='FansClubBadgePack',
-  full_name='FansClubBadgePack',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='badge', full_name='FansClubBadgePack.badge', index=0,
-      number=1, type=11, cpp_type=10, label=2,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='title', full_name='FansClubBadgePack.title', index=1,
-      number=2, type=9, cpp_type=9, label=1,
-      has_default_value=True, default_value=b"".decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  serialized_options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=255,
-  serialized_end=314,
+  serialized_end=235,
 )
 
 
@@ -238,13 +193,6 @@ _FANSCLUBPACK_FANSCLUB = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='fansClubs', full_name='FansClubPack.FansClub.fansClubs', index=3,
-      number=4, type=11, cpp_type=10, label=2,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -257,8 +205,8 @@ _FANSCLUBPACK_FANSCLUB = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=375,
-  serialized_end=477,
+  serialized_start=295,
+  serialized_end=358,
 )
 
 _FANSCLUBPACK = _descriptor.Descriptor(
@@ -287,8 +235,8 @@ _FANSCLUBPACK = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=317,
-  serialized_end=477,
+  serialized_start=237,
+  serialized_end=358,
 )
 
 
@@ -325,8 +273,8 @@ _USER_AVATAR = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=779,
-  serialized_end=812,
+  serialized_start=660,
+  serialized_end=693,
 )
 
 _USER_FOLLOW = _descriptor.Descriptor(
@@ -362,8 +310,8 @@ _USER_FOLLOW = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=814,
-  serialized_end=865,
+  serialized_start=695,
+  serialized_end=746,
 )
 
 _USER_PAYGRADE = _descriptor.Descriptor(
@@ -434,8 +382,8 @@ _USER_PAYGRADE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=868,
-  serialized_end=1024,
+  serialized_start=749,
+  serialized_end=905,
 )
 
 _USER_HONORLEVEL = _descriptor.Descriptor(
@@ -464,8 +412,8 @@ _USER_HONORLEVEL = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1026,
-  serialized_end=1061,
+  serialized_start=907,
+  serialized_end=942,
 )
 
 _USER_NOBLE_NOBLEBOARDER = _descriptor.Descriptor(
@@ -515,8 +463,8 @@ _USER_NOBLE_NOBLEBOARDER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1133,
-  serialized_end=1208,
+  serialized_start=1014,
+  serialized_end=1089,
 )
 
 _USER_NOBLE = _descriptor.Descriptor(
@@ -552,8 +500,8 @@ _USER_NOBLE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1064,
-  serialized_end=1208,
+  serialized_start=945,
+  serialized_end=1089,
 )
 
 _USER = _descriptor.Descriptor(
@@ -652,15 +600,13 @@ _USER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=480,
-  serialized_end=1208,
+  serialized_start=361,
+  serialized_end=1089,
 )
 
 _USERPACK.fields_by_name['user'].message_type = _USER
 _BADGE_FANCLUBTEXT.containing_type = _BADGE
 _BADGE.fields_by_name['fanClubText'].message_type = _BADGE_FANCLUBTEXT
-_FANSCLUBBADGEPACK.fields_by_name['badge'].message_type = _BADGE
-_FANSCLUBPACK_FANSCLUB.fields_by_name['fansClubs'].message_type = _FANSCLUBBADGEPACK
 _FANSCLUBPACK_FANSCLUB.containing_type = _FANSCLUBPACK
 _FANSCLUBPACK.fields_by_name['fansClub'].message_type = _FANSCLUBPACK_FANSCLUB
 _USER_AVATAR.containing_type = _USER
@@ -681,7 +627,6 @@ _USER.fields_by_name['payGrade'].message_type = _USER_PAYGRADE
 _USER.fields_by_name['fansClub'].message_type = _FANSCLUBPACK
 DESCRIPTOR.message_types_by_name['UserPack'] = _USERPACK
 DESCRIPTOR.message_types_by_name['Badge'] = _BADGE
-DESCRIPTOR.message_types_by_name['FansClubBadgePack'] = _FANSCLUBBADGEPACK
 DESCRIPTOR.message_types_by_name['FansClubPack'] = _FANSCLUBPACK
 DESCRIPTOR.message_types_by_name['User'] = _USER
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
@@ -707,13 +652,6 @@ Badge = _reflection.GeneratedProtocolMessageType('Badge', (_message.Message,), {
   })
 _sym_db.RegisterMessage(Badge)
 _sym_db.RegisterMessage(Badge.FanClubText)
-
-FansClubBadgePack = _reflection.GeneratedProtocolMessageType('FansClubBadgePack', (_message.Message,), {
-  'DESCRIPTOR' : _FANSCLUBBADGEPACK,
-  '__module__' : 'XiguaUser_pb2'
-  # @@protoc_insertion_point(class_scope:FansClubBadgePack)
-  })
-_sym_db.RegisterMessage(FansClubBadgePack)
 
 FansClubPack = _reflection.GeneratedProtocolMessageType('FansClubPack', (_message.Message,), {
 

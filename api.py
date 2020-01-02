@@ -350,27 +350,18 @@ class XiGuaLiveApi:
         self._ext = data.internal_ext
         for _each in data.data:
             if _each.method == "WebcastGiftMessage":
-                _giftMessage = GiftMessage()
-                _giftMessage.ParseFromString(_each.raw)
-                _gift = Gift()
-                _gift.ID = _giftMessage.giftId
-                _gift.count = _giftMessage.combo
-                if _gift.isAnimate() or _giftMessage.isFinished:
-                    _user = User()
-                    _user.ID = _giftMessage.user.id
-                    _user.name = _giftMessage.user.nickname
-                    _gift.user = _user
-                    _gift.backupName = _each.message.commonInfo.displayText.params.gifts.gift.name
+                _gift = Gift(_each.raw)
+                if _gift.isAnimate() or _gift.isFinished:
                     self.onPresentEnd(_gift)
+            elif _each.method == "WebcastChatMessage":
+                _chat = Chat(_each.raw)
+                self.onChat(_chat)
             elif _each.method == "WebcastFansclubMessage":
                 _fansClubMessage = FansClubMessage()
                 _fansClubMessage.ParseFromString(_each.raw)
-                _user = User()
-                _user.id = _fansClubMessage.user.id
-                _user.name = _fansClubMessage.user.nickname
-                print(_fansClubMessage.someEnum)
-                print(_fansClubMessage.someInt3)
-                # self.onJoin(_user)
+                if _fansClubMessage.type == 2:
+                    _user = User(_fansClubMessage.user)
+                    self.onJoin(_user)
             else:
                 pass
         # 更新抽奖信息
@@ -410,8 +401,8 @@ if __name__ == "__main__":
             except requests.exceptions.BaseHTTPError:
                 print("网络错误，请确认网络")
                 time.sleep(5)
-            except Exception as e:
-                print(e)
+            # except Exception as e:
+            #     print(e)
         else:
             print("主播未开播，等待1分钟后重试")
             time.sleep(60)

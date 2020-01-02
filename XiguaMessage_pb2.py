@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='',
   syntax='proto2',
   serialized_options=None,
-  serialized_pb=b'\n\x12XiguaMessage.proto\x1a\x0fXiguaUser.proto\x1a\x0fXiguaGift.proto\"`\n\x07Message\x12\x1f\n\ncommonInfo\x18\x01 \x02(\x0b\x32\x0b.CommonInfo\x12\x10\n\x08\x63ontent2\x18\x02 \x02(\x0c\x12\x10\n\x08\x63ontent3\x18\x03 \x02(\x0c\x12\x10\n\x08\x63ontent4\x18\x04 \x02(\x0c\"k\n\x0f\x46\x61nsClubMessage\x12\x1f\n\ncommonInfo\x18\x01 \x02(\x0b\x32\x0b.CommonInfo\x12\x10\n\x08someEnum\x18\x02 \x02(\x05\x12\x10\n\x08someInt3\x18\x03 \x02(\x05\x12\x13\n\x04user\x18\x04 \x02(\x0b\x32\x05.User\"]\n\x0eUserSeqMessage\x12\x1f\n\ncommonInfo\x18\x01 \x02(\x0b\x32\x0b.CommonInfo\x12\x16\n\x0epopularityText\x18\x04 \x02(\t\x12\x12\n\npopularity\x18\x06 \x02(\x05\"D\n\x10\x44\x61ilyRankMessage\x12\x1f\n\ncommonInfo\x18\x01 \x02(\x0b\x32\x0b.CommonInfo\x12\x0f\n\x07ranking\x18\n \x02(\x05\"T\n\x0b\x43hatMessage\x12\x1f\n\ncommonInfo\x18\x01 \x02(\x0b\x32\x0b.CommonInfo\x12\x13\n\x04user\x18\x02 \x02(\x0b\x32\x05.User\x12\x0f\n\x07\x63ontent\x18\x03 \x02(\t\"]\n\rMemberMessage\x12\x1f\n\ncommonInfo\x18\x01 \x02(\x0b\x32\x0b.CommonInfo\x12\x13\n\x04user\x18\x02 \x02(\x0b\x32\x05.User\x12\x16\n\x0epopularityText\x18\x0e \x02(\t\"\xa1\x01\n\x0bGiftMessage\x12\x1f\n\ncommonInfo\x18\x01 \x02(\x0b\x32\x0b.CommonInfo\x12\x0e\n\x06giftId\x18\x02 \x02(\x05\x12\x10\n\x08\x63ontent4\x18\x04 \x02(\x05\x12\x10\n\x08repeated\x18\x05 \x02(\x05\x12\r\n\x05\x63ombo\x18\x06 \x02(\x05\x12\x13\n\x04user\x18\x07 \x02(\x0b\x32\x05.User\x12\x19\n\nisFinished\x18\t \x01(\x08:\x05\x66\x61lse\"*\n\x05Style\x12\r\n\x05\x63olor\x18\x01 \x01(\t\x12\x12\n\nfontWeight\x18\x04 \x01(\x05\"q\n\x06Params\x12\x0c\n\x04type\x18\x01 \x02(\x05\x12\x15\n\x05style\x18\x02 \x01(\x0b\x32\x06.Style\x12\x0e\n\x06string\x18\x0b \x01(\t\x12\x18\n\x05users\x18\x15 \x01(\x0b\x32\t.UserPack\x12\x18\n\x05gifts\x18\x16 \x01(\x0b\x32\t.GiftPack\"_\n\x0b\x44isplayText\x12\x0e\n\x06method\x18\x01 \x02(\t\x12\x0e\n\x06\x66ormat\x18\x02 \x02(\t\x12\x17\n\x07\x62gStyle\x18\x03 \x01(\x0b\x32\x06.Style\x12\x17\n\x06params\x18\x04 \x02(\x0b\x32\x07.Params\"\x87\x01\n\nCommonInfo\x12\x0e\n\x06method\x18\x01 \x02(\t\x12\x0e\n\x06msg_id\x18\x02 \x02(\x05\x12\x0f\n\x07room_id\x18\x03 \x02(\x05\x12\x13\n\x0b\x63reate_time\x18\x04 \x02(\x05\x12\x10\n\x08someEnum\x18\x06 \x01(\x05\x12!\n\x0b\x64isplayText\x18\x08 \x01(\x0b\x32\x0c.DisplayText'
+  serialized_pb=b'\n\x12XiguaMessage.proto\x1a\x0fXiguaUser.proto\x1a\x0fXiguaGift.proto\"`\n\x07Message\x12\x1f\n\ncommonInfo\x18\x01 \x02(\x0b\x32\x0b.CommonInfo\x12\x10\n\x08\x63ontent2\x18\x02 \x02(\x0c\x12\x10\n\x08\x63ontent3\x18\x03 \x02(\x0c\x12\x10\n\x08\x63ontent4\x18\x04 \x02(\x0c\"f\n\x0f\x46\x61nsClubMessage\x12\x1f\n\ncommonInfo\x18\x01 \x02(\x0b\x32\x0b.CommonInfo\x12\x0c\n\x04type\x18\x02 \x02(\x05\x12\x0f\n\x07\x63ontent\x18\x03 \x02(\t\x12\x13\n\x04user\x18\x04 \x02(\x0b\x32\x05.User\"U\n\x14\x46\x61nsClubStatsMessage\x12\x1f\n\ncommonInfo\x18\x01 \x02(\x0b\x32\x0b.CommonInfo\x12\r\n\x05title\x18\x02 \x02(\t\x12\r\n\x05\x63ount\x18\x03 \x02(\x05\"]\n\x0eUserSeqMessage\x12\x1f\n\ncommonInfo\x18\x01 \x02(\x0b\x32\x0b.CommonInfo\x12\x16\n\x0epopularityText\x18\x04 \x02(\t\x12\x12\n\npopularity\x18\x06 \x02(\x05\"D\n\x10\x44\x61ilyRankMessage\x12\x1f\n\ncommonInfo\x18\x01 \x02(\x0b\x32\x0b.CommonInfo\x12\x0f\n\x07ranking\x18\n \x02(\x05\"T\n\x0b\x43hatMessage\x12\x1f\n\ncommonInfo\x18\x01 \x02(\x0b\x32\x0b.CommonInfo\x12\x13\n\x04user\x18\x02 \x02(\x0b\x32\x05.User\x12\x0f\n\x07\x63ontent\x18\x03 \x02(\t\"]\n\rMemberMessage\x12\x1f\n\ncommonInfo\x18\x01 \x02(\x0b\x32\x0b.CommonInfo\x12\x13\n\x04user\x18\x02 \x02(\x0b\x32\x05.User\x12\x16\n\x0epopularityText\x18\x0e \x02(\t\"\xa1\x01\n\x0bGiftMessage\x12\x1f\n\ncommonInfo\x18\x01 \x02(\x0b\x32\x0b.CommonInfo\x12\x0e\n\x06giftId\x18\x02 \x02(\x05\x12\x10\n\x08\x63ontent4\x18\x04 \x02(\x05\x12\x10\n\x08repeated\x18\x05 \x02(\x05\x12\r\n\x05\x63ombo\x18\x06 \x02(\x05\x12\x13\n\x04user\x18\x07 \x01(\x0b\x32\x05.User\x12\x19\n\nisFinished\x18\t \x01(\x08:\x05\x66\x61lse\"*\n\x05Style\x12\r\n\x05\x63olor\x18\x01 \x01(\t\x12\x12\n\nfontWeight\x18\x04 \x01(\x05\"q\n\x06Params\x12\x0c\n\x04type\x18\x01 \x02(\x05\x12\x15\n\x05style\x18\x02 \x01(\x0b\x32\x06.Style\x12\x0e\n\x06string\x18\x0b \x01(\t\x12\x18\n\x05users\x18\x15 \x01(\x0b\x32\t.UserPack\x12\x18\n\x05gifts\x18\x16 \x01(\x0b\x32\t.GiftPack\"_\n\x0b\x44isplayText\x12\x0e\n\x06method\x18\x01 \x02(\t\x12\x0e\n\x06\x66ormat\x18\x02 \x02(\t\x12\x17\n\x07\x62gStyle\x18\x03 \x01(\x0b\x32\x06.Style\x12\x17\n\x06params\x18\x04 \x02(\x0b\x32\x07.Params\"\x87\x01\n\nCommonInfo\x12\x0e\n\x06method\x18\x01 \x02(\t\x12\x0e\n\x06msg_id\x18\x02 \x02(\x05\x12\x0f\n\x07room_id\x18\x03 \x02(\x05\x12\x13\n\x0b\x63reate_time\x18\x04 \x02(\x05\x12\x10\n\x08someEnum\x18\x06 \x01(\x05\x12!\n\x0b\x64isplayText\x18\x08 \x01(\x0b\x32\x0c.DisplayText'
   ,
   dependencies=[XiguaUser__pb2.DESCRIPTOR,XiguaGift__pb2.DESCRIPTOR,])
 
@@ -94,16 +94,16 @@ _FANSCLUBMESSAGE = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='someEnum', full_name='FansClubMessage.someEnum', index=1,
+      name='type', full_name='FansClubMessage.type', index=1,
       number=2, type=5, cpp_type=1, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='someInt3', full_name='FansClubMessage.someInt3', index=2,
-      number=3, type=5, cpp_type=1, label=2,
-      has_default_value=False, default_value=0,
+      name='content', full_name='FansClubMessage.content', index=2,
+      number=3, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=b"".decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
@@ -127,7 +127,52 @@ _FANSCLUBMESSAGE = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=154,
-  serialized_end=261,
+  serialized_end=256,
+)
+
+
+_FANSCLUBSTATSMESSAGE = _descriptor.Descriptor(
+  name='FansClubStatsMessage',
+  full_name='FansClubStatsMessage',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='commonInfo', full_name='FansClubStatsMessage.commonInfo', index=0,
+      number=1, type=11, cpp_type=10, label=2,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='title', full_name='FansClubStatsMessage.title', index=1,
+      number=2, type=9, cpp_type=9, label=2,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='count', full_name='FansClubStatsMessage.count', index=2,
+      number=3, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto2',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=258,
+  serialized_end=343,
 )
 
 
@@ -171,8 +216,8 @@ _USERSEQMESSAGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=263,
-  serialized_end=356,
+  serialized_start=345,
+  serialized_end=438,
 )
 
 
@@ -209,8 +254,8 @@ _DAILYRANKMESSAGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=358,
-  serialized_end=426,
+  serialized_start=440,
+  serialized_end=508,
 )
 
 
@@ -254,8 +299,8 @@ _CHATMESSAGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=428,
-  serialized_end=512,
+  serialized_start=510,
+  serialized_end=594,
 )
 
 
@@ -299,8 +344,8 @@ _MEMBERMESSAGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=514,
-  serialized_end=607,
+  serialized_start=596,
+  serialized_end=689,
 )
 
 
@@ -348,7 +393,7 @@ _GIFTMESSAGE = _descriptor.Descriptor(
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
       name='user', full_name='GiftMessage.user', index=5,
-      number=7, type=11, cpp_type=10, label=2,
+      number=7, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -372,8 +417,8 @@ _GIFTMESSAGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=610,
-  serialized_end=771,
+  serialized_start=692,
+  serialized_end=853,
 )
 
 
@@ -410,8 +455,8 @@ _STYLE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=773,
-  serialized_end=815,
+  serialized_start=855,
+  serialized_end=897,
 )
 
 
@@ -469,8 +514,8 @@ _PARAMS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=817,
-  serialized_end=930,
+  serialized_start=899,
+  serialized_end=1012,
 )
 
 
@@ -521,8 +566,8 @@ _DISPLAYTEXT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=932,
-  serialized_end=1027,
+  serialized_start=1014,
+  serialized_end=1109,
 )
 
 
@@ -587,13 +632,14 @@ _COMMONINFO = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1030,
-  serialized_end=1165,
+  serialized_start=1112,
+  serialized_end=1247,
 )
 
 _MESSAGE.fields_by_name['commonInfo'].message_type = _COMMONINFO
 _FANSCLUBMESSAGE.fields_by_name['commonInfo'].message_type = _COMMONINFO
 _FANSCLUBMESSAGE.fields_by_name['user'].message_type = XiguaUser__pb2._USER
+_FANSCLUBSTATSMESSAGE.fields_by_name['commonInfo'].message_type = _COMMONINFO
 _USERSEQMESSAGE.fields_by_name['commonInfo'].message_type = _COMMONINFO
 _DAILYRANKMESSAGE.fields_by_name['commonInfo'].message_type = _COMMONINFO
 _CHATMESSAGE.fields_by_name['commonInfo'].message_type = _COMMONINFO
@@ -610,6 +656,7 @@ _DISPLAYTEXT.fields_by_name['params'].message_type = _PARAMS
 _COMMONINFO.fields_by_name['displayText'].message_type = _DISPLAYTEXT
 DESCRIPTOR.message_types_by_name['Message'] = _MESSAGE
 DESCRIPTOR.message_types_by_name['FansClubMessage'] = _FANSCLUBMESSAGE
+DESCRIPTOR.message_types_by_name['FansClubStatsMessage'] = _FANSCLUBSTATSMESSAGE
 DESCRIPTOR.message_types_by_name['UserSeqMessage'] = _USERSEQMESSAGE
 DESCRIPTOR.message_types_by_name['DailyRankMessage'] = _DAILYRANKMESSAGE
 DESCRIPTOR.message_types_by_name['ChatMessage'] = _CHATMESSAGE
@@ -634,6 +681,13 @@ FansClubMessage = _reflection.GeneratedProtocolMessageType('FansClubMessage', (_
   # @@protoc_insertion_point(class_scope:FansClubMessage)
   })
 _sym_db.RegisterMessage(FansClubMessage)
+
+FansClubStatsMessage = _reflection.GeneratedProtocolMessageType('FansClubStatsMessage', (_message.Message,), {
+  'DESCRIPTOR' : _FANSCLUBSTATSMESSAGE,
+  '__module__' : 'XiguaMessage_pb2'
+  # @@protoc_insertion_point(class_scope:FansClubStatsMessage)
+  })
+_sym_db.RegisterMessage(FansClubStatsMessage)
 
 UserSeqMessage = _reflection.GeneratedProtocolMessageType('UserSeqMessage', (_message.Message,), {
   'DESCRIPTOR' : _USERSEQMESSAGE,

@@ -1,5 +1,6 @@
 import requests
 from .User import User
+from XiguaMessage_pb2 import GiftMessage
 
 
 class Gift:
@@ -11,9 +12,22 @@ class Gift:
         self.count = 0
         self.amount = 0
         self.user = None
+        self.isFinished = False
         self.backupName = None
         if json:
-            self.parse(json)
+            if type(json) == bytes:
+                self.parsePb(json)
+            else:
+                self.parse(json)
+
+    def parsePb(self, raw):
+        _message = GiftMessage()
+        _message.ParseFromString(raw)
+        self.user = User(_message.user)
+        self.ID = _message.giftId
+        self.count = _message.combo
+        self.isFinished = _message.isFinished
+        self.backupName = _message.commonInfo.displayText.params.gifts.gift.name
 
     def parse(self, json):
         self.user = User(json)
