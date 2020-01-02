@@ -23,15 +23,16 @@ message Badge {
 }
 message FansClubBadgePack {
 	required Badge badge = 1;
-	required string title = 2;
+	optional string title = 2 [default = ''];
 }
 message FansClubPack {
 	message FansClub {
-		required string text = 1;
-		required int32 level = 2;
+		required string title = 1 [default = ''];
+		required int32 level = 2 [default = 0];
 		optional int32 someEnum = 3;
 		required FansClubBadgePack fansClubs = 4;
 	}
+	required FansClub fansClub = 1;
 }
 // 用户信息
 message User {
@@ -80,5 +81,6 @@ message User {
 	repeated Badge badge = 21;
 	optional Follow follow = 22;
 	required PayGrade payGrade = 23;
+	required FansClubPack fansClub = 24;
 	required int32 totalPaid = 34;
 }
