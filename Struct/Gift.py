@@ -25,7 +25,7 @@ class Gift:
         _message.ParseFromString(raw)
         self.user = User(_message.user)
         self.ID = _message.giftId
-        self.count = _message.combo
+        self.count = _message.repeated
         self.isFinished = _message.isFinished
         self.backupName = _message.commonInfo.displayText.params.gifts.gift.name
 
@@ -43,12 +43,12 @@ class Gift:
                 self.ID = int(json["extra"]['present_end_info']['id'])
                 self.count = json["extra"]['present_end_info']['count']
         if self.ID != 0 and self.ID in self.giftList:
-            self.amount = self.giftList[self.ID]["Price"] * self.count
+            self.amount = self.giftList[self.ID]['diamond_count'] * self.count
         else:
             self.update()
 
-    @staticmethod
-    def update():
+    @classmethod
+    def update(cls):
         p = requests.get("https://i.snssdk.com/videolive/gift/get_gift_list?room_id={roomID}"
                          "&version_code=800&device_platform=android".format(roomID=Gift.roomID))
         d = p.json()
@@ -56,15 +56,21 @@ class Gift:
             print("错误：礼物更新失败")
         else:
             for i in d["gift_info"]:
-                _id = int(i["id"])
-                Gift.giftList[_id] = {"Name": i["name"], "Price": i["diamond_count"], "Type": i["type"]}
+                cls.addGift(i)
 
     def isAnimate(self):
-        return self.ID != 0 and self.ID in self.giftList and self.giftList[self.ID]["Type"] == 2
+        if self.ID != 0 and self.ID in self.giftList:
+            if 'combo' in self.giftList[self.ID]:
+                return self.giftList[self.ID]["combo"] == False
+            elif 'meta' in self.giftList[self.ID] and 'combo' in self.giftList[self.ID]['meta']:
+                return self.giftList[self.ID]['meta']["combo"] == False
+            elif 'type' in self.giftList[self.ID]:
+                return self.giftList[self.ID]["type"] == 2
+        return False
 
     def _getGiftName(self):
         if self.ID in self.giftList:
-            return self.giftList[self.ID]["Name"]
+            return self.giftList[self.ID]["name"]
         elif self.backupName is not None:
             return self.backupName
         else:
@@ -78,3 +84,10 @@ class Gift:
 
     def __repr__(self):
         return "西瓜礼物【{}(ID:{})】".format(self._getGiftName(), self.ID)
+
+    @classmethod
+    def addGift(cls, _gift):
+        if 'id' not in _gift:
+            return
+        _id = int(_gift["id"])
+        cls.giftList[_id] = _gift

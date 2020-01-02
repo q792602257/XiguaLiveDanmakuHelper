@@ -32,6 +32,8 @@ ROOM_INFO_API = ("https://webcast3.ixigua.com/webcast/room/enter/?room_id={roomI
                  "&webcast_language=zh&webcast_locale=zh_CN&pack_level=4{COMMON}")
 DANMAKU_GET_API = ("https://webcast3.ixigua.com/webcast/room/{roomId}/_fetch_message_polling/?webcast_sdk_version=1350"
                    "&webcast_language=zh&webcast_locale=zh_CN{COMMON}")
+GIFT_DATA_API = ("https://webcast.ixigua.com/webcast/gift/list/?room_id={roomId}&fetch_giftlist_from=2"
+                 "&webcast_sdk_version=1350&webcast_language=zh&webcast_locale=zh_CN{COMMON}")
 COMMON_HEADERS = {
     "sdk-version": '1',
     "User-Agent": "Dalvik/2.1.0 (Linux; U; Android 9) VideoArticle/8.1.6 cronet/TTNetVersion:b97574c0 2019-09-24",
@@ -319,7 +321,6 @@ class XiGuaLiveApi:
         self._updRoomAt = datetime.now()
         self._updateRoomPopularity(d)
         Gift.roomID = self.roomID
-        Gift.update()
         return self.isLive
 
     def updRoomInfo(self, force=False):
@@ -333,6 +334,23 @@ class XiGuaLiveApi:
             return self._updateUserInfo()
         else:
             return self._getRoomInfo(force)
+
+    def updGiftInfo(self):
+        self.updRoomInfo()
+        _formatData = {"COMMON": COMMON_GET_PARAM, "TIMESTAMP": time.time() * 1000, "roomId": self.roomID}
+        _url = GIFT_DATA_API.format_map(_formatData).format_map(_formatData)
+        d = self.getJson(_url)
+        Gift.roomID = self.roomID
+        if d is None or d["status_code"] != 0:
+            Gift.update()
+        elif 'pages' not in d["data"]:
+            Gift.update()
+        else:
+            for _page in d["data"]['pages']:
+                if 'gifts' in _page:
+                    for _gift in _page['gifts']:
+                        Gift.addGift(_gift)
+        return len(Gift.giftList)
 
     def getDanmaku(self):
         """
@@ -355,7 +373,7 @@ class XiGuaLiveApi:
                     self.onPresentEnd(_gift)
             elif _each.method == "WebcastChatMessage":
                 _chat = Chat(_each.raw)
-                self.onChat(_chat)
+                # self.onChat(_chat)
             elif _each.method == "WebcastFansclubMessage":
                 _fansClubMessage = FansClubMessage()
                 _fansClubMessage.ParseFromString(_each.raw)
@@ -392,6 +410,12 @@ if __name__ == "__main__":
         print("OK")
     else:
         print("FAIL")
+    print("更新房间礼物信息", end="\t", flush=True)
+    __res = api.updGiftInfo()
+    if __res < 0:
+        print("FAIL")
+    else:
+        print('OK\n礼物种数：', __res)
     print("=" * 30)
     while True:
         if api.isLive:

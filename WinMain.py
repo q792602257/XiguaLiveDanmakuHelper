@@ -203,6 +203,12 @@ if __name__ == "__main__":
         print("OK")
     else:
         print("FAIL")
+    print("更新房间礼物信息", end="\t", flush=True)
+    __res = api.updGiftInfo()
+    if __res < 0:
+        print("FAIL")
+    else:
+        print('OK\n礼物种数：', __res)
     print("=" * 30)
     while True:
         if api.isLive:
