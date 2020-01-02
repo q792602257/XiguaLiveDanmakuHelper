@@ -363,16 +363,14 @@ class XiGuaLiveApi:
                     _gift.backupName = _each.message.commonInfo.displayText.params.gifts.gift.name
                     self.onPresentEnd(_gift)
             elif _each.method == "WebcastFansclubMessage":
-                continue
-                _userRawData = _each.message.content4
-                _userPb = UserPb()
-                _userPb.ParseFromString(_userRawData)
+                _fansClubMessage = FansClubMessage()
+                _fansClubMessage.ParseFromString(_each.raw)
                 _user = User()
-                _user.id = _userPb.id
-                _user.name = _userPb.nickname
-                self.onJoin(_user)
-                print(_each.message.content2)
-                print(_each.message.content3)
+                _user.id = _fansClubMessage.user.id
+                _user.name = _fansClubMessage.user.nickname
+                print(_fansClubMessage.someEnum)
+                print(_fansClubMessage.someInt3)
+                # self.onJoin(_user)
             else:
                 pass
         # 更新抽奖信息
