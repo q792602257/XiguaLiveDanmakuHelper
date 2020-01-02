@@ -3,30 +3,42 @@ syntax = "proto2";
 message UserPack {
 	required User user = 1;
 }
+// 头衔
+message Badge {
+	message FanClubText {
+		required string text = 1;
+		optional string color = 2;
+		required int32 level = 3;
+	}
+	repeated string url = 1;
+	optional string localUrl = 2;
+	optional int32 height = 3;
+	optional int32 width = 4;
+	// 3 房管
+	// 6 贵族
+	// 7 粉丝团
+	optional int32 type = 6;
+	optional string clickTo = 7;
+	optional FanClubText fanClubText = 8;
+}
+message FansClubBadgePack {
+	required Badge badge = 1;
+	required string title = 2;
+}
+message FansClubPack {
+	message FansClub {
+		required string text = 1;
+		required int32 level = 2;
+		optional int32 someEnum = 3;
+		required FansClubBadgePack fansClubs = 4;
+	}
+}
 // 用户信息
 message User {
 	// 头像
 	message Avatar {
 		required string url = 1;
 		optional string id = 2;
-	}
-	// 头衔
-	message Badge {
-		message FanClubText {
-			required string text = 1;
-			optional string color = 2;
-			required int32 level = 3;
-		}
-		repeated string url = 1;
-		optional string localUrl = 2;
-		optional int32 height = 3;
-		optional int32 width = 4;
-		// 3 房管
-		// 6 贵族
-		// 7 粉丝团
-		optional int32 type = 6;
-		optional string clickTo = 7;
-		optional FanClubText fanClubText = 8;
 	}
 	// 粉丝和粉
 	message Follow {

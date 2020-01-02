@@ -11,7 +11,6 @@ from google.protobuf import symbol_database as _symbol_database
 _sym_db = _symbol_database.Default()
 
 
-import XiguaCommon_pb2 as XiguaCommon__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
@@ -19,9 +18,8 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='',
   syntax='proto2',
   serialized_options=None,
-  serialized_pb=b'\n\x0bXigua.proto\x1a\x11XiguaCommon.proto\"\xa8\x01\n\tXiguaLive\x12\x1d\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32\x0f.XiguaLive.Data\x12\x0e\n\x06\x63ursor\x18\x02 \x02(\t\x12\x16\n\x0e\x66\x65tch_interval\x18\x03 \x01(\x05\x12\x0b\n\x03now\x18\x04 \x01(\x05\x12\x14\n\x0cinternal_ext\x18\x05 \x02(\t\x1a\x31\n\x04\x44\x61ta\x12\x0e\n\x06method\x18\x01 \x02(\t\x12\x19\n\x07message\x18\x02 \x02(\x0b\x32\x08.Message'
-  ,
-  dependencies=[XiguaCommon__pb2.DESCRIPTOR,])
+  serialized_pb=b'\n\x0bXigua.proto\"\x9a\x01\n\tXiguaLive\x12\x1d\n\x04\x64\x61ta\x18\x01 \x03(\x0b\x32\x0f.XiguaLive.Data\x12\x0e\n\x06\x63ursor\x18\x02 \x02(\t\x12\x16\n\x0e\x66\x65tch_interval\x18\x03 \x01(\x05\x12\x0b\n\x03now\x18\x04 \x01(\x05\x12\x14\n\x0cinternal_ext\x18\x05 \x02(\t\x1a#\n\x04\x44\x61ta\x12\x0e\n\x06method\x18\x01 \x02(\t\x12\x0b\n\x03raw\x18\x02 \x02(\x0c'
+)
 
 
 
@@ -41,9 +39,9 @@ _XIGUALIVE_DATA = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='message', full_name='XiguaLive.Data.message', index=1,
-      number=2, type=11, cpp_type=10, label=2,
-      has_default_value=False, default_value=None,
+      name='raw', full_name='XiguaLive.Data.raw', index=1,
+      number=2, type=12, cpp_type=9, label=2,
+      has_default_value=False, default_value=b"",
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
@@ -59,8 +57,8 @@ _XIGUALIVE_DATA = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=154,
-  serialized_end=203,
+  serialized_start=135,
+  serialized_end=170,
 )
 
 _XIGUALIVE = _descriptor.Descriptor(
@@ -117,11 +115,10 @@ _XIGUALIVE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=35,
-  serialized_end=203,
+  serialized_start=16,
+  serialized_end=170,
 )
 
-_XIGUALIVE_DATA.fields_by_name['message'].message_type = XiguaCommon__pb2._MESSAGE
 _XIGUALIVE_DATA.containing_type = _XIGUALIVE
 _XIGUALIVE.fields_by_name['data'].message_type = _XIGUALIVE_DATA
 DESCRIPTOR.message_types_by_name['XiguaLive'] = _XIGUALIVE

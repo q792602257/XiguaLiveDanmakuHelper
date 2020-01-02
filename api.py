@@ -12,7 +12,7 @@ import requests
 import time
 from datetime import datetime, timedelta
 from Xigua_pb2 import XiguaLive
-from XiguaUser_pb2 import User as UserPb
+from XiguaMessage_pb2 import GiftMessage, UserSeqMessage, ChatMessage, MemberMessage, FansClubMessage
 
 DEBUG = False
 COMMON_GET_PARAM = (
@@ -350,13 +350,15 @@ class XiGuaLiveApi:
         self._ext = data.internal_ext
         for _each in data.data:
             if _each.method == "WebcastGiftMessage":
+                _giftMessage = GiftMessage()
+                _giftMessage.ParseFromString(_each.raw)
                 _gift = Gift()
-                _gift.ID = _each.message.commonInfo.displayText.params.gifts.id
-                _gift.count = _each.message.commonInfo.displayText.params.string
-                if _gift.isAnimate() or _each.message.isFinished:
+                _gift.ID = _giftMessage.giftId
+                _gift.count = _giftMessage.combo
+                if _gift.isAnimate() or _giftMessage.isFinished:
                     _user = User()
-                    _user.ID = _each.message.commonInfo.displayText.params.users.user.id
-                    _user.name = _each.message.commonInfo.displayText.params.users.user.nickname
+                    _user.ID = _giftMessage.user.id
+                    _user.name = _giftMessage.user.nickname
                     _gift.user = _user
                     _gift.backupName = _each.message.commonInfo.displayText.params.gifts.gift.name
                     self.onPresentEnd(_gift)
@@ -379,6 +381,7 @@ class XiGuaLiveApi:
             if self.lottery.isFinished:
                 self.onLottery(self.lottery)
                 self.lottery = None
+
 
 if __name__ == "__main__":
     name = "永恒de草薙"

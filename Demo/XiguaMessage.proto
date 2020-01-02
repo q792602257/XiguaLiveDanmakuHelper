@@ -1,0 +1,79 @@
+syntax = "proto2";
+import "XiguaUser.proto";
+import "XiguaGift.proto";
+message Message {
+	required CommonInfo commonInfo = 1;
+	required bytes content2 = 2;
+	required bytes content3 = 3;
+	required bytes content4 = 4;
+}
+message FansClubMessage {
+	required CommonInfo commonInfo = 1;
+	required int32 someEnum = 2;
+	required int32 someInt3 = 3;
+	required User user = 4;
+}
+message UserSeqMessage {
+	required CommonInfo commonInfo = 1;
+	required string popularityText = 4;
+	required int32 popularity = 6;
+}
+message DailyRankMessage {
+	required CommonInfo commonInfo = 1;
+	required int32 ranking = 10;
+}
+message ChatMessage {
+	required CommonInfo commonInfo = 1;
+	required User user = 2;
+	required string content = 3;
+}
+message MemberMessage {
+	required CommonInfo commonInfo = 1;
+	required User user = 2;
+	required string popularityText = 14;
+}
+message GiftMessage {
+	required CommonInfo commonInfo = 1;
+	required int32 giftId = 2;
+	// 可能是GroupId之类的东西
+//	required int32 UNKNOWN_INT = 3;
+	required int32 content4 = 4;
+	// 5,6 顺序可能不对
+	required int32 repeated = 5;
+	required int32 combo = 6;
+	required User user = 7;
+	optional bool isFinished = 9 [ default = false ];
+}
+// 样式
+message Style {
+	optional string color = 1;
+	optional int32 fontWeight = 4;
+}
+// 参数
+message Params {
+	// 1 字符串
+	// 11 用户
+	// 12 礼物
+	required int32 type = 1;
+	optional Style style = 2;
+	optional string string = 11;
+	optional UserPack users = 21;
+	optional GiftPack gifts = 22;
+}
+// 自定义显示信息
+message DisplayText {
+	// 参数
+	required string method = 1;
+	required string format = 2;
+	optional Style bgStyle = 3;
+	required Params params = 4;
+}
+// 通用定义
+message CommonInfo {
+	required string method = 1;
+	required int32 msg_id = 2;
+	required int32 room_id = 3;
+	required int32 create_time = 4;
+	optional int32 someEnum = 6;
+	optional DisplayText displayText = 8;
+}

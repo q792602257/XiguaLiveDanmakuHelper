@@ -1,13 +1,11 @@
 syntax = "proto2";
-import "XiguaCommon.proto";
-
 
 message XiguaLive {
 	message Data {
 		// WebcastChatMessage 聊天
 		// WebcastGiftMessage 礼物
 		required string method = 1;
-		required Message message = 2;
+		required bytes raw = 2;
 	}
 	repeated Data data = 1;
 	required string cursor = 2;
