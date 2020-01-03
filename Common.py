@@ -1,7 +1,6 @@
 import os
 import queue
 from datetime import datetime, timedelta
-from glob import glob
 
 import psutil
 from api import XiGuaLiveApi
@@ -37,10 +36,10 @@ config = {
     "dly": 30,
     "enc": "ffmpeg -i {f} -c:v copy -c:a copy -f mp4 {t} -y"
 }
-doCleanTime = datetime.now()
-loginTime = datetime.now()
+doCleanTime = datetime.fromtimestamp(0)
+loginTime = datetime.fromtimestamp(0)
 _clean_flag = None
-delay = datetime.now()
+delay = datetime.fromtimestamp(0)
 b = Bilibili()
 
 network = [{
@@ -77,11 +76,11 @@ def resetDelay():
 
 
 def doDelay():
-    global delay, isBroadcasting, isEncode, isUpload
-    if isBroadcasting or isEncode or isUpload:
+    global delay, isBroadcasting
+    if isBroadcasting:
         resetDelay()
         return False
-    return datetime.now() > delay
+    return (datetime.now() - delay).seconds < 120
 
 
 def updateNetwork():
@@ -299,7 +298,7 @@ def appendError(obj):
 def loginBilibili(force=False):
     if config["dlO"] is False or forceNotUpload is False:
         global loginTime
-        if not force and getTimeDelta(datetime.now(), loginTime) < 86400 * 5:
+        if not force and getTimeDelta(datetime.now(), loginTime) < 86400 * 10:
             return False
         res = b.login(config["b_u"], config["b_p"])
         loginTime = datetime.now()
@@ -364,14 +363,14 @@ def uploadVideo(name):
 
 
 def publishVideo(date):
-    global isUpload
     if forceNotUpload is False:
         b.finishUpload(config["t_t"].format(date), 17, config["tag"], config["des"],
                        source=config["src"], no_reprint=0)
         b.clear()
+        global delay
+        delay = datetime.fromtimestamp(0)
     else:
-        appendUploadStatus("设置了不上传，所以[{}]的录播不会上传了".format(date))
-    isUpload = False
+        appendUploadStatus("设置了不上传，所以[{}]的录播不会投了".format(date))
 
 
 def encodeVideo(name):
@@ -384,8 +383,6 @@ def encodeVideo(name):
     if os.path.getsize(name) < 8 * 1024 * 1024:
         appendEncodeStatus("Encoded File >{}< is too small, will ignore it".format(name))
         return False
-    global isEncode
-    isEncode = True
     appendEncodeStatus("Encoding >{}< Start".format(name))
     _new_name = os.path.splitext(name)[0] + ".mp4"
     _code = os.system(config["enc"].format(f=name, t=_new_name))
@@ -394,7 +391,4 @@ def encodeVideo(name):
         return False
     Common.modifyLastEncodeStatus("Encode >{}< Finished".format(name))
     uploadQueue.put(_new_name)
-    isEncode = False
 
-
-loginBilibili(True)

@@ -1,5 +1,3 @@
-import shutil
-import sys
 import time
 from datetime import datetime
 import threading
@@ -111,7 +109,7 @@ def awakeUpload():
 def run():
     Common.refreshDownloader()
     if not Common.api.isValidUser:
-        Common.appendError("[{}]房间未找到".format(Common.config["l_u"]))
+        Common.appendError("[{}]用户未找到".format(Common.api.name))
         return
     while True:
         if Common.api.isLive and not Common.forceNotBroadcasting:
@@ -144,6 +142,4 @@ def run():
                 Common.forceStartUploadThread = False
             if Common.doDelay():
                 Common.uploadQueue.put(True)
-                Common.isEncode = True
-                Common.isUpload = True
             time.sleep(5)
