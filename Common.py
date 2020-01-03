@@ -323,7 +323,6 @@ class downloader(XiGuaLiveApi):
             if self.isLive:
                 self.updPlayList()
             else:
-                resetDelay()
                 self.playlist = False
         return _result
 
