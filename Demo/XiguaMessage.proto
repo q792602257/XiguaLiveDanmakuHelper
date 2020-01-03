@@ -3,14 +3,12 @@ import "XiguaUser.proto";
 import "XiguaGift.proto";
 message Message {
 	required CommonInfo commonInfo = 1;
-	required bytes content2 = 2;
-	required bytes content3 = 3;
-	required bytes content4 = 4;
 }
 message FansClubMessage {
 	required CommonInfo commonInfo = 1;
-	// 0没有 1有且是本直播间
+	// 升级是1，加入是2
 	required int32 type = 2;
+	// 提示文字
 	required string content = 3;
 	required User user = 4;
 }
@@ -44,10 +42,10 @@ message GiftMessage {
 	// 可能是GroupId之类的东西
 //	required int32 UNKNOWN_INT = 3;
 	required int32 content4 = 4;
-	// 5,6 顺序可能不对
 	required int32 repeated = 5;
 	required int32 combo = 6;
 	optional User user = 7;
+	// 是否发完了，注：不可连击的也是没有发完的
 	optional bool isFinished = 9 [ default = false ];
 }
 // 样式

@@ -371,12 +371,15 @@ class XiGuaLiveApi:
                 _gift = Gift(_each.raw)
                 if _gift.isAnimate() or _gift.isFinished:
                     self.onPresentEnd(_gift)
+                else:
+                    self.onPresent(_gift)
             elif _each.method == "WebcastChatMessage":
                 _chat = Chat(_each.raw)
-                # self.onChat(_chat)
+                self.onChat(_chat)
             elif _each.method == "WebcastFansclubMessage":
                 _fansClubMessage = FansClubMessage()
                 _fansClubMessage.ParseFromString(_each.raw)
+                # 升级是1，加入是2
                 if _fansClubMessage.type == 2:
                     _user = User(_fansClubMessage.user)
                     self.onJoin(_user)
