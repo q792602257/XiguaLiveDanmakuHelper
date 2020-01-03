@@ -79,8 +79,11 @@ def doDelay():
     global delay, isBroadcasting
     if isBroadcasting:
         resetDelay()
-        return False
-    return (datetime.now() - delay).seconds < 120
+    else:
+        if (datetime.now() - delay).seconds < 120:
+            delay = datetime.fromtimestamp(0)
+            return True
+    return False
 
 
 def updateNetwork():
@@ -167,8 +170,6 @@ if config["dlO"] is True:
     forceNotEncode = True
 forceStartEncodeThread = False
 forceStartUploadThread = False
-isEncode = True
-isUpload = True
 
 uploadQueue = queue.Queue()
 encodeQueue = queue.Queue()
@@ -346,18 +347,15 @@ def refreshDownloader():
 
 
 def uploadVideo(name):
-    global isUpload
     if not os.path.exists(name):
         Common.appendError("Upload File Not Exist {}".format(name))
         return
-    isUpload = True
     loginBilibili()
     doClean()
     if forceNotUpload is False:
         b.preUpload(VideoPart(name, os.path.basename(name)))
     else:
         appendUploadStatus("设置了不上传，所以[{}]不会上传了".format(name))
-    isUpload = False
     if not Common.forceNotEncode:
         os.remove(name)
 
@@ -367,8 +365,6 @@ def publishVideo(date):
         b.finishUpload(config["t_t"].format(date), 17, config["tag"], config["des"],
                        source=config["src"], no_reprint=0)
         b.clear()
-        global delay
-        delay = datetime.fromtimestamp(0)
     else:
         appendUploadStatus("设置了不上传，所以[{}]的录播不会投了".format(date))
 
@@ -391,4 +387,3 @@ def encodeVideo(name):
         return False
     Common.modifyLastEncodeStatus("Encode >{}< Finished".format(name))
     uploadQueue.put(_new_name)
-
