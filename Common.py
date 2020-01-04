@@ -76,13 +76,10 @@ def resetDelay():
 
 
 def doDelay():
-    global delay, isBroadcasting
-    if isBroadcasting:
-        resetDelay()
-    else:
-        if (datetime.now() - delay).seconds < 120:
-            delay = datetime.fromtimestamp(0)
-            return True
+    global delay
+    if (datetime.now() - delay).seconds < 120:
+        delay = datetime.fromtimestamp(0)
+        return True
     return False
 
 
@@ -299,7 +296,7 @@ def appendError(obj):
 def loginBilibili(force=False):
     if config["dlO"] is False or forceNotUpload is False:
         global loginTime
-        if not force and getTimeDelta(datetime.now(), loginTime) < 86400 * 10:
+        if getTimeDelta(datetime.now(), loginTime) < 86400 * 10 or not Force:
             return False
         res = b.login(config["b_u"], config["b_p"])
         loginTime = datetime.now()
@@ -321,6 +318,7 @@ class downloader(XiGuaLiveApi):
             broadcaster = self.broadcaster
             isBroadcasting = self.isLive
             if self.isLive:
+                resetDelay()
                 self.updPlayList()
             else:
                 self.playlist = False
