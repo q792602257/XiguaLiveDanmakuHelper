@@ -98,9 +98,7 @@ def updateNetwork():
 
 
 def getTimeDelta(a, b):
-    sec = (a - b).seconds
-    ms = (a - b).microseconds
-    return sec + (ms / 100000.0)
+    return (a - b).total_seconds()
 
 
 def _doClean(_force=False):
@@ -312,9 +310,9 @@ class downloader(XiGuaLiveApi):
     def updRoomInfo(self, force=False):
         doClean()
         _result = super(downloader, self).updRoomInfo(force)
+        global broadcaster, isBroadcasting, updateTime
+        updateTime = datetime.strftime(self._updRoomAt, dt_format)
         if _result:
-            global broadcaster, isBroadcasting, updateTime
-            updateTime = datetime.strftime(self._updRoomAt, dt_format)
             broadcaster = self.broadcaster
             isBroadcasting = self.isLive
             if self.isLive:
