@@ -308,15 +308,17 @@ class downloader(XiGuaLiveApi):
     playlist = None
 
     def updRoomInfo(self, force=False):
+        global broadcaster, isBroadcasting, updateTime
+        _prev_status = self.isLive
         doClean()
         _result = super(downloader, self).updRoomInfo(force)
-        global broadcaster, isBroadcasting, updateTime
         updateTime = datetime.strftime(self._updRoomAt, dt_format)
+        if _prev_status != self.isLive:
+            resetDelay()
         if _result:
             broadcaster = self.broadcaster
             isBroadcasting = self.isLive
             if self.isLive:
-                resetDelay()
                 self.updPlayList()
             else:
                 self.playlist = False
