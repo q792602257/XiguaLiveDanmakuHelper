@@ -312,7 +312,7 @@ class downloader(XiGuaLiveApi):
         _prev_status = self.isLive
         doClean()
         _result = super(downloader, self).updRoomInfo(force)
-        updateTime = datetime.strftime(self._updRoomAt, dt_format)
+        updateTime = datetime.strftime(datetime.now(), dt_format)
         if _prev_status != self.isLive:
             resetDelay()
         if _result:
