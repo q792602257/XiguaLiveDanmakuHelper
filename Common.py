@@ -384,3 +384,29 @@ def encodeVideo(name):
         return False
     Common.modifyLastEncodeStatus("Encode >{}< Finished".format(name))
     uploadQueue.put(_new_name)
+
+
+def collectInfomation():
+    return {
+        "download": downloadStatus,
+        "encode": encodeStatus,
+        "encodeQueueSize": encodeQueue.qsize(),
+        "upload": uploadStatus,
+        "uploadQueueSize": uploadQueue.qsize(),
+        "error": errors,
+        "operation": operations,
+        "broadcast": {
+            "broadcaster": broadcaster.__str__(),
+            "isBroadcasting": isBroadcasting,
+            "streamUrl": streamUrl,
+            "updateTime": updateTime,
+            "delayTime": delay.strftime(dt_format)
+        },
+        "config": {
+            "forceNotBroadcasting": forceNotBroadcasting,
+            "forceNotDownload": forceNotDownload,
+            "forceNotUpload": forceNotUpload,
+            "forceNotEncode": forceNotEncode,
+            "downloadOnly": config['dlO'],
+        },
+    }
