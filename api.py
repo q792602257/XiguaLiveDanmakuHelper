@@ -195,7 +195,7 @@ class XiGuaLiveApi:
         self._rawRoomInfo = d["user_info"]['live_info']
         if self.isLive:
             self.roomID = d["user_info"]['live_info']['room_id']
-        return True
+        return self.isLive
 
     def _getRoomInfo(self, force=False):
         if self.roomID == 0:
