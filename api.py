@@ -235,7 +235,6 @@ class XiGuaLiveApi:
         Check name matched
         :return: bool: 是否匹配
         """
-        return True
         if compare is None:
             compare = self.broadcaster
         if self.name is None or compare is None:
@@ -386,6 +385,8 @@ class XiGuaLiveApi:
                 if _fansClubMessage.type == 2:
                     _user = User(_fansClubMessage.user)
                     self.onJoin(_user)
+                else:
+                    self.onMessage(_fansClubMessage.content)
             else:
                 pass
         # 更新抽奖信息
