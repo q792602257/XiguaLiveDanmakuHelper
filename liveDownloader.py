@@ -36,6 +36,7 @@ def download():
             Common.modifyLastDownloadStatus("Download >{}< Finished".format(path))
         except Exception as e:
             Common.appendError("Download >{}< With Exception {}".format(path, e.__str__()))
+            Common.api.updRoomInfo(True)
         f.close()
         if os.path.getsize(path) < 1024 * 1024:
             Common.modifyLastDownloadStatus("Downloaded File >{}< is too small, will ignore it".format(path))
