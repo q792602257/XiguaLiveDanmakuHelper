@@ -63,7 +63,7 @@ network = [{
 
 def reloadConfig():
     global config
-    if (os.path.exists('config.json')):
+    if os.path.exists('config.json'):
         _config_fp = open("config.json", "r", encoding="utf8")
         _config = json.load(_config_fp)
         config.update(_config)
@@ -341,7 +341,7 @@ def refreshDownloader():
 
 def uploadVideo(name):
     if not os.path.exists(name):
-        Common.appendError("Upload File Not Exist {}".format(name))
+        appendError("Upload File Not Exist {}".format(name))
         return
     loginBilibili()
     doClean()
@@ -349,7 +349,7 @@ def uploadVideo(name):
         b.preUpload(VideoPart(name, os.path.basename(name)))
     else:
         appendUploadStatus("设置了不上传，所以[{}]不会上传了".format(name))
-    if not Common.forceNotEncode:
+    if not forceNotEncode:
         os.remove(name)
 
 
