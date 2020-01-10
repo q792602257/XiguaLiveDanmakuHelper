@@ -324,6 +324,10 @@ class downloader(XiGuaLiveApi):
         global streamUrl
         if self.isLive and "stream_url" in self._rawRoomInfo:
             self.playlist = self._rawRoomInfo["stream_url"]["flv_pull_url"]
+            if type(self.playlist) is dict:
+                for _ in self.playlist.values():
+                    self.playlist = _
+                    break
             self.playlist = self.playlist.replace("_uhd", "").replace("_sd", "").replace("_ld", "")
             streamUrl = self.playlist
         else:
