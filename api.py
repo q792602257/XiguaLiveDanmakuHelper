@@ -188,6 +188,7 @@ class XiGuaLiveApi:
         if "user_info" not in d and d["user_info"] is None:
             self.apiChangedError("Api发生改变，请及时联系我", d)
             return False
+        self._updRoomAt = datetime.now()
         self.broadcaster = User(d)
         if not self._checkUsernameIsMatched():
             self.isLive = False
@@ -230,3 +231,7 @@ class XiGuaLiveApi:
             return self._updateUserInfo()
         else:
             return self._getRoomInfo(force)
+
+    @property
+    def updateAt(self):
+        return self._updRoomAt

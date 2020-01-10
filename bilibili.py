@@ -142,7 +142,7 @@ class Bilibili:
             )
             json = r.json()
 
-        if json['code'] is not 0:
+        if json['code'] != 0:
             return r.text
 
         ls = []

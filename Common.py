@@ -153,7 +153,6 @@ dt_format = "%Y/%m/%d %H:%M:%S"
 reloadConfig()
 broadcaster = ""
 streamUrl = ""
-updateTime = ""
 
 forceNotDownload = False
 forceNotBroadcasting = False
@@ -307,11 +306,10 @@ class downloader(XiGuaLiveApi):
     playlist = None
 
     def updRoomInfo(self, force=False):
-        global broadcaster, updateTime
+        global broadcaster
         _prev_status = self.isLive
         doClean()
         _result = super(downloader, self).updRoomInfo(force)
-        updateTime = datetime.now().strftime(dt_format)
         if _prev_status != self.isLive:
             resetDelay()
         if _result:
@@ -397,7 +395,7 @@ def collectInfomation():
             "broadcaster": broadcaster.__str__(),
             "isBroadcasting": api.isLive,
             "streamUrl": streamUrl,
-            "updateTime": updateTime,
+            "updateTime": api.updateAt.strftime(dt_format),
             "delayTime": delay.strftime(dt_format)
         },
         "config": {
