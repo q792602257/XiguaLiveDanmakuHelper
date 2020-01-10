@@ -203,7 +203,7 @@ class XiGuaLiveApi:
         if self.roomID == 0:
             self.isLive = False
             return False
-        if (self._updRoomAt + timedelta(minutes=2) > datetime.now()) or not force:
+        if (self._updRoomAt + timedelta(minutes=2) > datetime.now()) and not force:
             return self.isLive
         _formatData = {"COMMON": COMMON_GET_PARAM, "TIMESTAMP": time.time() * 1000, "roomId": self.roomID}
         _url = ROOM_INFO_API.format_map(_formatData).format_map(_formatData)
