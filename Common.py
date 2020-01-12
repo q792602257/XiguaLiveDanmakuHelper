@@ -77,7 +77,7 @@ def resetDelay():
 
 def doDelay():
     global delay
-    if getTimeDelta(datetime.now(), delay) < 120:
+    if -120 < getTimeDelta(datetime.now(), delay) < 120:
         delay = datetime.fromtimestamp(0)
         return True
     return False
