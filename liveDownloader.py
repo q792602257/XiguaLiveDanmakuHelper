@@ -13,7 +13,7 @@ def download():
             Common.appendError("Download with No StreamUrl Specific")
             break
         path = datetime.strftime(datetime.now(), "%Y%m%d_%H%M.flv")
-        p = session.get(Common.streamUrl, stream=True, timeout=5)
+        p = session.get(Common.streamUrl, stream=True, timeout=3)
         if p.status_code != 200:
             Common.appendDownloadStatus("Download with Response {}".format(p.status_code))
             Common.api.updRoomInfo(True)
