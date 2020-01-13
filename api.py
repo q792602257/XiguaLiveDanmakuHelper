@@ -293,6 +293,7 @@ class XiGuaLiveApi:
             self.isLive = False
             return False
         self.isLive = d["user_info"]["is_living"]
+        self._updRoomAt = datetime.now()
         self._rawRoomInfo = d["user_info"]['live_info']
         if self.isLive:
             self.roomID = d["user_info"]['live_info']['room_id']
@@ -307,7 +308,7 @@ class XiGuaLiveApi:
         if self.roomID == 0:
             self.isLive = False
             return False
-        if not force or (self._updRoomAt + timedelta(minutes=2) > datetime.now()):
+        if not force and (self._updRoomAt + timedelta(minutes=10) > datetime.now()):
             return self.isLive
         _formatData = {"COMMON": COMMON_GET_PARAM, "TIMESTAMP": time.time() * 1000, "roomId": self.roomID}
         _url = ROOM_INFO_API.format_map(_formatData).format_map(_formatData)
