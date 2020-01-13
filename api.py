@@ -397,6 +397,10 @@ class XiGuaLiveApi:
                 self.onLottery(self.lottery)
                 self.lottery = None
 
+    @property
+    def updateAt(self):
+        return self._updRoomAt
+
 
 if __name__ == "__main__":
     name = "永恒de草薙"
