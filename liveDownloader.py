@@ -11,6 +11,7 @@ def download():
     while Common.api.isLive and not Common.forceNotDownload:
         if not Common.streamUrl:
             Common.appendError("Download with No StreamUrl Specific")
+            Common.api.updRoomInfo(True)
             break
         path = datetime.strftime(datetime.now(), "%Y%m%d_%H%M.flv")
         p = session.get(Common.streamUrl, stream=True, timeout=3)
