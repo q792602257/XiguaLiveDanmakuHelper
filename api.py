@@ -168,6 +168,7 @@ class XiGuaLiveApi:
                         self.isValidUser = True
                         self.broadcaster = _user
                         break
+        self._updRoomAt = datetime.now()
         return self._updateUserInfo()
 
     def _updateUserInfo(self):
@@ -225,6 +226,8 @@ class XiGuaLiveApi:
         更新房间信息
         :return:
         """
+        if not force and (self._updRoomAt + timedelta(minutes=2) > datetime.now()):
+            return self.isLive
         if not self.isValidUser:
             return self._forceSearchUser()
         elif not self.isLive:
