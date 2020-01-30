@@ -368,6 +368,8 @@ class XiGuaLiveApi:
         p = self.s.post(_url, data="cursor={cursor}&resp_content_type=protobuf&live_id=3&user_id=0&identity=audience"
                                    "&internal_ext={ext}".format_map({"cursor": self._cursor, "ext": self._ext}),
                         headers={"Content-Type": "application/x-www-form-urlencoded"})
+        if p.status_code != 200:
+            return
         data = XiguaLive()
         data.ParseFromString(p.content)
         self._cursor = data.cursor
