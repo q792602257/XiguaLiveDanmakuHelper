@@ -1,7 +1,5 @@
 # coding=utf-8
-import json
 import sys
-import random
 
 from Struct.MemberMsg import MemberMsg
 from Struct.User import User
@@ -12,7 +10,7 @@ import requests
 import time
 from datetime import datetime, timedelta
 from Xigua_pb2 import XiguaLive
-from XiguaMessage_pb2 import GiftMessage, UserSeqMessage, ChatMessage, MemberMessage, FansClubMessage
+from XiguaMessage_pb2 import FansClubMessage, SocialMessage
 
 DEBUG = False
 COMMON_GET_PARAM = (
@@ -384,6 +382,11 @@ class XiGuaLiveApi:
             elif _each.method == "WebcastChatMessage":
                 _chat = Chat(_each.raw)
                 self.onChat(_chat)
+            elif _each.method == "WebcastSocialMessage":
+                _socialMessage = SocialMessage()
+                _socialMessage.ParseFromString(_each.raw)
+                _user = User(_socialMessage.user)
+                self.onSubscribe(_user)
             elif _each.method == "WebcastFansclubMessage":
                 _fansClubMessage = FansClubMessage()
                 _fansClubMessage.ParseFromString(_each.raw)

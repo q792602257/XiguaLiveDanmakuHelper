@@ -48,6 +48,12 @@ message GiftMessage {
 	// 是否发完了，注：不可连击的也是没有发完的
 	optional bool isFinished = 9 [ default = false ];
 }
+message SocialMessage {
+	required CommonInfo commonInfo = 1;
+	required User user = 2;
+	required int32 int4 = 4;
+	required int32 fansCount = 6;
+}
 // 样式
 message Style {
 	optional string color = 1;
