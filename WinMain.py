@@ -122,37 +122,43 @@ class WinMain(Api):
 
     def onMessage(self, msg: str):
         set_cmd_text_color(BACKGROUND_BLACK | FOREGROUND_DARKGRAY)
-        print("消息 : ", msg)
+        print("消息 : ", msg, end="")
         resetColor()
+        print()
 
     def onJoin(self, user: User):
         set_cmd_text_color(BACKGROUND_WHITE | FOREGROUND_BLACK)
-        print("欢迎", user, "加入了粉丝团")
+        print("欢迎", user, "加入了粉丝团", end="")
         resetColor()
+        print()
 
     def onSubscribe(self, user: User):
         if SHOW_ALL:
             set_cmd_text_color(BACKGROUND_BLACK | FOREGROUND_DARKGRAY)
-            print("用户", user, "关注了主播")
+            print("用户", user, "关注了主播", end="")
             resetColor()
+            print()
 
     def onEnter(self, msg:MemberMsg):
         if SHOW_ALL:
             set_cmd_text_color(BACKGROUND_BLACK | FOREGROUND_DARKGRAY)
-            print("提示 :", msg)
+            print("提示 :", msg, end="")
             resetColor()
+            print()
 
     def onChat(self, chat: Chat):
         if SHOW_ALL:
             set_cmd_text_color(BACKGROUND_BLACK | FOREGROUND_WHITE)
             if not chat.isFiltered:
-                print(chat)
+                print(chat, end="")
             resetColor()
+            print()
 
     def onLottery(self, i:Lottery):
         set_cmd_text_color(FOREGROUND_WHITE | BACKGROUND_DARKGRAY)
-        print(i)
+        print(i, end="")
         resetColor()
+        print()
 
     def onPresent(self, gift: Gift):
         if SHOW_ALL:
@@ -162,14 +168,16 @@ class WinMain(Api):
 
     def onPresentEnd(self, gift: Gift):
         set_cmd_text_color(BACKGROUND_WHITE | FOREGROUND_BLACK)
-        print("感谢", gift)
+        print("感谢", gift, end="")
         resetColor()
+        print()
 
     def onLike(self, user: User):
         if SHOW_ALL:
             set_cmd_text_color(BACKGROUND_BLACK | FOREGROUND_DARKGRAY)
-            print("用户", user, "点了喜欢")
+            print("用户", user, "点了喜欢", end="")
             resetColor()
+            print()
 
     def onLeave(self, json: any):
         return
