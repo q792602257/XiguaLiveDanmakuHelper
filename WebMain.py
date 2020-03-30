@@ -168,7 +168,8 @@ def fileDownload(path):
             f.seek(offset)
             for row in f:
                 yield row
-
+    if not (".mp4" in path or ".flv" in path):
+        return Response(status=404)
     if os.path.exists(path):
         if "RANGE" in request.headers:
             offset = int(request.headers["RANGE"].replace("=", "-").split("-")[1].strip())
