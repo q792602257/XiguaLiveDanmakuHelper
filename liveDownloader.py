@@ -54,7 +54,7 @@ def encode():
 
 
 def upload():
-    date = datetime.strftime(datetime.now(), "%Y_%m_%d")
+    date = datetime.strftime(datetime.now(), Common.config["sdf"])
     Common.appendUploadStatus("Upload Daemon Starting")
     i = Common.uploadQueue.get()
     while True:

@@ -34,6 +34,8 @@ config = {
     "dlO": True,
     # 下播延迟投稿
     "dly": 30,
+    # 短的时间的格式
+    "sdf": "%Y%m%d",
     "enc": "ffmpeg -i {f} -c:v copy -c:a copy -f mp4 {t} -y"
 }
 doCleanTime = datetime.fromtimestamp(0)
@@ -77,7 +79,7 @@ def resetDelay():
 
 def doDelay():
     global delay
-    if -120 < getTimeDelta(datetime.now(), delay) < 120:
+    if -120 < getTimeDelta(datetime.now(), delay) < 60:
         delay = datetime.fromtimestamp(0)
         return True
     return False
