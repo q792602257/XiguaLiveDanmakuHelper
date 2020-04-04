@@ -195,9 +195,15 @@ class XiGuaLiveApi:
             self.isLive = False
             return False
         self.isLive = d["user_info"]["is_living"]
-        self._rawRoomInfo = d["user_info"]['live_info']
+        if d["user_info"]['live_info'] is None:
+            if d["live_data"] is None:
+                self.isLive = False
+            else:
+                self._rawRoomInfo = d["user_info"]['live_info']
+        else:
+            self._rawRoomInfo = d["user_info"]['live_info']
         if self.isLive:
-            self.roomID = d["user_info"]['live_info']['room_id']
+            self.roomID = self._rawRoomInfo['room_id']
         return self.isLive
 
     def _getRoomInfo(self, force=False):
