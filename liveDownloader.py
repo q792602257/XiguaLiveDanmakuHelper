@@ -23,12 +23,12 @@ def download():
         f = open(path, "wb")
         _size = 0
         try:
-            for t in p.iter_content(chunk_size=64 * 1024):
+            for T in p.iter_content(chunk_size=64 * 1024):
                 if Common.forceNotDownload:
                     Common.modifyLastDownloadStatus("Force Stop Download".format(path))
-                    return
-                f.write(t)
-                _size += len(t)
+                    break
+                f.write(T)
+                _size += len(T)
                 Common.modifyLastDownloadStatus(
                     "Downloading >{}< @ {:.2f}%".format(path, 100.0 * _size / Common.config["p_s"]))
                 if _size > Common.config["p_s"]:
@@ -42,7 +42,7 @@ def download():
         if os.path.getsize(path) < 1024 * 1024:
             Common.modifyLastDownloadStatus("Downloaded File >{}< is too small, will ignore it".format(path))
             os.remove(path)
-            return False
+            break
         Common.encodeQueue.put(path)
 
 
