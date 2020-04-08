@@ -44,7 +44,7 @@ class Bilibili:
         :param pwd: password
         :type pwd: str
         :return: if success return True
-                 else return msg json
+                 else raise Exception
         """
         APPKEY = '4409e2ce8ffd12b8'
         ACTIONKEY = 'appkey'
@@ -122,20 +122,16 @@ class Bilibili:
                 'appkey={appkey}&build={build}&captcha=&channel=master&'
                 'guid=XYEBAA3E54D502E37BD606F0589A356902FCF&mobi_app={mobi_app}&'
                 'password={password}&platform={platform}&token=5598158bcd8511e2&ts=0&username={username}'
-                    .format(appkey=APPKEY, build=BUILD, platform=PLATFORM, mobi_app=MOBI_APP, username=user,
-                            password=pwd)),
+                .format(appkey=APPKEY, build=BUILD, platform=PLATFORM, mobi_app=MOBI_APP, username=user, password=pwd)),
         )
-        try:
-            json = r.json()
-        except:
-            return r.text
+        json = r.json()
 
         if json['code'] == -105:
             # need captcha
             raise Exception('TODO: login with captcha')
 
         if json['code'] != 0:
-            return r.text
+            raise Exception(r.text)
 
         access_token = json['data']['token_info']['access_token']
         cookie_dict = access_token_2_cookie(access_token)
@@ -144,14 +140,12 @@ class Bilibili:
             for k, v in cookie_dict.items()
         )
         self.session.headers["cookie"] = cookie
-
-        self.csrf = re.search('bili_jct=(.*?);', cookie).group(1)
-        self.mid = re.search('DedeUserID=(.*?);', cookie).group(1)
+        self.csrf = re.search('bili_jct=(.*?)(;|$)', cookie).group(1)
+        self.mid = re.search('DedeUserID=(.*?)(;|$)', cookie).group(1)
         self.session.headers['Accept'] = 'application/json, text/javascript, */*; q=0.01'
         self.session.headers['Referer'] = 'https://space.bilibili.com/{mid}/#!/'.format(mid=self.mid)
 
         return True
-
     def upload(self,
                parts,
                title,
