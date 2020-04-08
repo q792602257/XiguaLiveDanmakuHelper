@@ -5,6 +5,10 @@ import re
 import json as JSON
 from datetime import datetime
 from time import sleep
+
+from requests.adapters import HTTPAdapter
+from urllib3 import Retry
+
 import Common
 import rsa
 import math
@@ -146,6 +150,7 @@ class Bilibili:
         self.session.headers['Referer'] = 'https://space.bilibili.com/{mid}/#!/'.format(mid=self.mid)
 
         return True
+
     def upload(self,
                parts,
                title,
@@ -180,14 +185,25 @@ class Bilibili:
         self.finishUpload(title, tid, tag, desc, source, cover, no_reprint)
         self.clear()
 
-    def preUpload(self, parts):
+    def preUpload(self, parts, max_retry=5):
         """
+        :param max_retry:
         :param parts: e.g. VideoPart('part path', 'part title', 'part desc'), or [VideoPart(...), VideoPart(...)]
         :type parts: VideoPart or list<VideoPart>
         """
         self.session.headers['Content-Type'] = 'application/json; charset=utf-8'
         if not isinstance(parts, list):
             parts = [parts]
+
+        # retry by status
+        retries = Retry(
+            total=max_retry,
+            backoff_factor=1,
+            status_forcelist=(504, ),
+        )
+        self.session.mount('https://', HTTPAdapter(max_retries=retries))
+        self.session.mount('http://', HTTPAdapter(max_retries=retries))
+        #
 
         for part in parts:
             filepath = part.path
@@ -197,7 +213,7 @@ class Bilibili:
             self.files.append(part)
             r = self.session.get('https://member.bilibili.com/preupload?'
                                  'os=upos&upcdn=ws&name={name}&size={size}&r=upos&profile=ugcupos%2Fyb&ssl=0'
-                                 .format(name=filename, size=filesize))
+                                 .format(name=parse.quote_plus(filename), size=filesize))
             """return example
             {
                 "upos_uri": "upos://ugc/i181012ws18x52mti3gg0h33chn3tyhp.mp4",
@@ -223,8 +239,7 @@ class Bilibili:
             biz_id = json['biz_id']
             chunk_size = json['chunk_size']
             self.session.headers['X-Upos-Auth'] = auth  # add auth header
-            r = self.session.post(
-                'https:{}/{}?uploads&output=json'.format(endpoint, upos_uri.replace('upos://', '')))
+            r = self.session.post('https:{}/{}?uploads&output=json'.format(endpoint, upos_uri.replace('upos://', '')))
             # {"upload_id":"72eb747b9650b8c7995fdb0efbdc2bb6","key":"\/i181012ws2wg1tb7tjzswk2voxrwlk1u.mp4","OK":1,"bucket":"ugc"}
             json = r.json()
             upload_id = json['upload_id']
@@ -235,32 +250,47 @@ class Bilibili:
                 Common.modifyLastUploadStatus(
                     "Uploading >{}< @ {:.2f}%".format(filepath, 100.0 * chunks_index / chunks_num))
                 while True:
-                    _d = datetime.now()
                     if not chunks_data:
                         break
-                    r = self.session.put('https:{endpoint}/{upos_uri}?'
-                                         'partNumber={part_number}&uploadId={upload_id}&chunk={chunk}&chunks={chunks}&size={size}&start={start}&end={end}&total={total}'
-                                         .format(endpoint=endpoint,
-                                                 upos_uri=upos_uri.replace('upos://', ''),
-                                                 part_number=chunks_index + 1,  # starts with 1
-                                                 upload_id=upload_id,
-                                                 chunk=chunks_index,
-                                                 chunks=chunks_num,
-                                                 size=len(chunks_data),
-                                                 start=chunks_index * chunk_size,
-                                                 end=chunks_index * chunk_size + len(chunks_data),
-                                                 total=filesize,
-                                                 ),
-                                         chunks_data,
-                                         )
-                    if r.status_code != 200:
+
+                    def upload_chunk():
+                        r = self.session.put('https:{endpoint}/{upos_uri}?'
+                                             'partNumber={part_number}&uploadId={upload_id}&chunk={chunk}&chunks={chunks}&size={size}&start={start}&end={end}&total={total}'
+                                             .format(endpoint=endpoint,
+                                                     upos_uri=upos_uri.replace('upos://', ''),
+                                                     part_number=chunks_index + 1,  # starts with 1
+                                                     upload_id=upload_id,
+                                                     chunk=chunks_index,
+                                                     chunks=chunks_num,
+                                                     size=len(chunks_data),
+                                                     start=chunks_index * chunk_size,
+                                                     end=chunks_index * chunk_size + len(chunks_data),
+                                                     total=filesize,
+                                                     ),
+                                             chunks_data,
+                                             )
+                        return r
+
+                    def retry_upload_chunk():
+                        """return :class:`Response` if upload success, else return None."""
+                        for i in range(max_retry):
+                            r = upload_chunk()
+                            if r.status_code == 200:
+                                return r
+                            Common.modifyLastUploadStatus(
+                                "Uploading >{}< @ {:.2f}% RETRY[{}]".format(filepath, 100.0 * chunks_index / chunks_num, max_retry))
+                        return None
+
+                    r = retry_upload_chunk()
+                    if r:
+                        Common.modifyLastUploadStatus(
+                            "Uploading >{}< @ {:.2f}%".format(filepath, 100.0 * chunks_index / chunks_num))
+                    else:
+                        Common.modifyLastUploadStatus(
+                            "Uploading >{}< FAILED @ {:.2f}%".format(filepath, 100.0 * chunks_index / chunks_num))
                         continue
                     chunks_data = f.read(chunk_size)
                     chunks_index += 1  # start with 0
-                    Common.modifyLastUploadStatus(
-                        "Uploading >{}< @ {:.2f}%".format(filepath, 100.0 * chunks_index / chunks_num))
-                    if (datetime.now() - _d).seconds < 2:
-                        sleep(1)
 
                 # NOT DELETE! Refer to https://github.com/comwrg/bilibiliupload/issues/15#issuecomment-424379769
                 self.session.post('https:{endpoint}/{upos_uri}?'
@@ -279,6 +309,7 @@ class Bilibili:
             Common.modifyLastUploadStatus("Upload >{}< Finished".format(filepath))
             __f = open("uploaded.json", "w")
             JSON.dump(self.videos, __f)
+            __f.close()
 
     def finishUpload(self,
                      title,
