@@ -176,8 +176,8 @@ class XiGuaLiveApi:
         获取用户信息
         :return:
         """
+        self.isValidUser = False
         if self.broadcaster is None:
-            self.isValidUser = False
             return False
         _formatData = {"COMMON": COMMON_GET_PARAM, "TIMESTAMP": time.time() * 1000, "userId": self.broadcaster.ID}
         _url = USER_INFO_API.format_map(_formatData).format_map(_formatData)
