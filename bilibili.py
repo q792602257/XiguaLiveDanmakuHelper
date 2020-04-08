@@ -3,12 +3,6 @@
 import os
 import re
 import json as JSON
-from datetime import datetime
-from time import sleep
-
-from requests.adapters import HTTPAdapter
-from urllib3 import Retry
-
 import Common
 import rsa
 import math
@@ -16,6 +10,8 @@ import base64
 import hashlib
 import requests
 from urllib import parse
+from requests.adapters import HTTPAdapter
+from urllib3 import Retry
 
 
 class VideoPart:
