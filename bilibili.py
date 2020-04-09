@@ -3,8 +3,6 @@
 import os
 import re
 import json as JSON
-from datetime import datetime
-from time import sleep
 import Common
 import rsa
 import math
@@ -12,6 +10,8 @@ import base64
 import hashlib
 import requests
 from urllib import parse
+from requests.adapters import HTTPAdapter
+from urllib3 import Retry
 
 
 class VideoPart:
@@ -44,13 +44,13 @@ class Bilibili:
         :param pwd: password
         :type pwd: str
         :return: if success return True
-                 else return msg json
+                 else raise Exception
         """
         APPKEY = '4409e2ce8ffd12b8'
         ACTIONKEY = 'appkey'
         BUILD = 101800
-        DEVICE = 'android'
-        MOBI_APP = 'android'
+        DEVICE = 'android_tv_yst'
+        MOBI_APP = 'android_tv_yst'
         PLATFORM = 'android'
         APPSECRET = '59b43e04ad6965f34319062b478f83dd'
 
@@ -94,11 +94,16 @@ class Bilibili:
             data = json['data']
             return data['hash'], data['key']
 
-        def cnn_captcha(img):
-            url = "http://47.95.255.188:5000/code"
-            data = {"image": img}
-            r = requests.post(url, data=data)
-            return r.text
+        def access_token_2_cookie(access_token):
+            r = self.session.get(
+                'https://passport.bilibili.com/api/login/sso?' + \
+                signed_body(
+                    'access_key={access_token}&appkey={appkey}&gourl=https%3A%2F%2Faccount.bilibili.com%2Faccount%2Fhome'
+                        .format(access_token=access_token, appkey=APPKEY),
+                ),
+                allow_redirects=False,
+            )
+            return r.cookies.get_dict(domain=".bilibili.com")
 
         self.session.headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8'
         h, k = getkey()
@@ -112,47 +117,31 @@ class Bilibili:
         pwd = parse.quote_plus(pwd)
 
         r = self.session.post(
-            'https://passport.bilibili.com/api/v2/oauth2/login',
-            signed_body('appkey={appkey}&password={password}&username={username}'
-                        .format(appkey=APPKEY, username=user, password=pwd))
+            'https://passport.snm0516.aisee.tv/api/tv/login',
+            signed_body(
+                'appkey={appkey}&build={build}&captcha=&channel=master&'
+                'guid=XYEBAA3E54D502E37BD606F0589A356902FCF&mobi_app={mobi_app}&'
+                'password={password}&platform={platform}&token=5598158bcd8511e2&ts=0&username={username}'
+                .format(appkey=APPKEY, build=BUILD, platform=PLATFORM, mobi_app=MOBI_APP, username=user, password=pwd)),
         )
-        try:
-            json = r.json()
-        except:
-            return r.text
+        json = r.json()
 
         if json['code'] == -105:
             # need captcha
-            self.session.headers['cookie'] = 'sid=xxxxxxxx'
-            r = self.session.get('https://passport.bilibili.com/captcha')
-            captcha = cnn_captcha(base64.b64encode(r.content))
-            r = self.session.post(
-                'https://passport.bilibili.com/api/v2/oauth2/login',
-                signed_body('actionKey={actionKey}&appkey={appkey}&build={build}&captcha={captcha}&device={device}'
-                            '&mobi_app={mobi_app}&password={password}&platform={platform}&username={username}'
-                            .format(actionKey=ACTIONKEY,
-                                    appkey=APPKEY,
-                                    build=BUILD,
-                                    captcha=captcha,
-                                    device=DEVICE,
-                                    mobi_app=MOBI_APP,
-                                    password=pwd,
-                                    platform=PLATFORM,
-                                    username=user)),
-            )
-            json = r.json()
+            raise Exception('TODO: login with captcha')
 
         if json['code'] != 0:
-            return r.text
+            raise Exception(r.text)
 
-        ls = []
-        for item in json['data']['cookie_info']['cookies']:
-            ls.append(item['name'] + '=' + item['value'])
-        cookie = '; '.join(ls)
+        access_token = json['data']['token_info']['access_token']
+        cookie_dict = access_token_2_cookie(access_token)
+        cookie = '; '.join(
+            '%s=%s' % (k, v)
+            for k, v in cookie_dict.items()
+        )
         self.session.headers["cookie"] = cookie
-
-        self.csrf = re.search('bili_jct=(.*?);', cookie).group(1)
-        self.mid = re.search('DedeUserID=(.*?);', cookie).group(1)
+        self.csrf = re.search('bili_jct=(.*?)(;|$)', cookie).group(1)
+        self.mid = re.search('DedeUserID=(.*?)(;|$)', cookie).group(1)
         self.session.headers['Accept'] = 'application/json, text/javascript, */*; q=0.01'
         self.session.headers['Referer'] = 'https://space.bilibili.com/{mid}/#!/'.format(mid=self.mid)
 
@@ -192,14 +181,25 @@ class Bilibili:
         self.finishUpload(title, tid, tag, desc, source, cover, no_reprint)
         self.clear()
 
-    def preUpload(self, parts):
+    def preUpload(self, parts, max_retry=5):
         """
+        :param max_retry:
         :param parts: e.g. VideoPart('part path', 'part title', 'part desc'), or [VideoPart(...), VideoPart(...)]
         :type parts: VideoPart or list<VideoPart>
         """
         self.session.headers['Content-Type'] = 'application/json; charset=utf-8'
         if not isinstance(parts, list):
             parts = [parts]
+
+        # retry by status
+        retries = Retry(
+            total=max_retry,
+            backoff_factor=1,
+            status_forcelist=(504, ),
+        )
+        self.session.mount('https://', HTTPAdapter(max_retries=retries))
+        self.session.mount('http://', HTTPAdapter(max_retries=retries))
+        #
 
         for part in parts:
             filepath = part.path
@@ -209,7 +209,7 @@ class Bilibili:
             self.files.append(part)
             r = self.session.get('https://member.bilibili.com/preupload?'
                                  'os=upos&upcdn=ws&name={name}&size={size}&r=upos&profile=ugcupos%2Fyb&ssl=0'
-                                 .format(name=filename, size=filesize))
+                                 .format(name=parse.quote_plus(filename), size=filesize))
             """return example
             {
                 "upos_uri": "upos://ugc/i181012ws18x52mti3gg0h33chn3tyhp.mp4",
@@ -235,8 +235,7 @@ class Bilibili:
             biz_id = json['biz_id']
             chunk_size = json['chunk_size']
             self.session.headers['X-Upos-Auth'] = auth  # add auth header
-            r = self.session.post(
-                'https:{}/{}?uploads&output=json'.format(endpoint, upos_uri.replace('upos://', '')))
+            r = self.session.post('https:{}/{}?uploads&output=json'.format(endpoint, upos_uri.replace('upos://', '')))
             # {"upload_id":"72eb747b9650b8c7995fdb0efbdc2bb6","key":"\/i181012ws2wg1tb7tjzswk2voxrwlk1u.mp4","OK":1,"bucket":"ugc"}
             json = r.json()
             upload_id = json['upload_id']
@@ -244,33 +243,50 @@ class Bilibili:
                 chunks_num = math.ceil(filesize / chunk_size)
                 chunks_index = 0
                 chunks_data = f.read(chunk_size)
-                Common.modifyLastUploadStatus("Uploading >{}< @ {:.2f}%".format(filepath, 100.0 * chunks_index / chunks_num))
+                Common.modifyLastUploadStatus(
+                    "Uploading >{}< @ {:.2f}%".format(filepath, 100.0 * chunks_index / chunks_num))
                 while True:
-                    _d = datetime.now()
                     if not chunks_data:
                         break
-                    r = self.session.put('https:{endpoint}/{upos_uri}?'
-                                         'partNumber={part_number}&uploadId={upload_id}&chunk={chunk}&chunks={chunks}&size={size}&start={start}&end={end}&total={total}'
-                                         .format(endpoint=endpoint,
-                                                 upos_uri=upos_uri.replace('upos://', ''),
-                                                 part_number=chunks_index + 1,  # starts with 1
-                                                 upload_id=upload_id,
-                                                 chunk=chunks_index,
-                                                 chunks=chunks_num,
-                                                 size=len(chunks_data),
-                                                 start=chunks_index * chunk_size,
-                                                 end=chunks_index * chunk_size + len(chunks_data),
-                                                 total=filesize,
-                                                 ),
-                                         chunks_data,
-                                         )
-                    if r.status_code != 200:
+
+                    def upload_chunk():
+                        r = self.session.put('https:{endpoint}/{upos_uri}?'
+                                             'partNumber={part_number}&uploadId={upload_id}&chunk={chunk}&chunks={chunks}&size={size}&start={start}&end={end}&total={total}'
+                                             .format(endpoint=endpoint,
+                                                     upos_uri=upos_uri.replace('upos://', ''),
+                                                     part_number=chunks_index + 1,  # starts with 1
+                                                     upload_id=upload_id,
+                                                     chunk=chunks_index,
+                                                     chunks=chunks_num,
+                                                     size=len(chunks_data),
+                                                     start=chunks_index * chunk_size,
+                                                     end=chunks_index * chunk_size + len(chunks_data),
+                                                     total=filesize,
+                                                     ),
+                                             chunks_data,
+                                             )
+                        return r
+
+                    def retry_upload_chunk():
+                        """return :class:`Response` if upload success, else return None."""
+                        for i in range(max_retry):
+                            r = upload_chunk()
+                            if r.status_code == 200:
+                                return r
+                            Common.modifyLastUploadStatus(
+                                "Uploading >{}< @ {:.2f}% RETRY[{}]".format(filepath, 100.0 * chunks_index / chunks_num, max_retry))
+                        return None
+
+                    r = retry_upload_chunk()
+                    if r:
+                        Common.modifyLastUploadStatus(
+                            "Uploading >{}< @ {:.2f}%".format(filepath, 100.0 * chunks_index / chunks_num))
+                    else:
+                        Common.modifyLastUploadStatus(
+                            "Uploading >{}< FAILED @ {:.2f}%".format(filepath, 100.0 * chunks_index / chunks_num))
                         continue
                     chunks_data = f.read(chunk_size)
                     chunks_index += 1  # start with 0
-                    Common.modifyLastUploadStatus("Uploading >{}< @ {:.2f}%".format(filepath, 100.0*chunks_index/chunks_num))
-                    if (datetime.now()-_d).seconds < 2:
-                        sleep(1)
 
                 # NOT DELETE! Refer to https://github.com/comwrg/bilibiliupload/issues/15#issuecomment-424379769
                 self.session.post('https:{endpoint}/{upos_uri}?'
@@ -287,9 +303,9 @@ class Bilibili:
                                 'title': part.title,
                                 'desc': part.desc})
             Common.modifyLastUploadStatus("Upload >{}< Finished".format(filepath))
-            __f = open("uploaded.json","w")
+            __f = open("uploaded.json", "w")
             JSON.dump(self.videos, __f)
-
+            __f.close()
 
     def finishUpload(self,
                      title,
@@ -356,7 +372,7 @@ class Bilibili:
     def clear(self):
         self.files.clear()
         self.videos.clear()
-        if(os.path.exists("uploaded.json")):
+        if (os.path.exists("uploaded.json")):
             os.remove("uploaded.json")
 
     def appendUpload(self,
