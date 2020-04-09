@@ -11,13 +11,15 @@ def download():
     while Common.api.isLive and not Common.forceNotDownload:
         if not Common.streamUrl:
             Common.appendError("Download with No StreamUrl Specific")
-            Common.api.updRoomInfo(True)
             break
         path = datetime.strftime(datetime.now(), "%Y%m%d_%H%M.flv")
-        p = session.get(Common.streamUrl, stream=True, timeout=3)
+        try:
+            p = session.get(Common.streamUrl, stream=True, timeout=3)
+        except Exception as e:
+            Common.appendError("Download >{}< with Exception [{}]".format(path,e.__str__()))
+            break
         if p.status_code != 200:
             Common.appendDownloadStatus("Download with Response {}".format(p.status_code))
-            Common.api.updRoomInfo(True)
             break
         Common.appendDownloadStatus("Download >{}< Start".format(path))
         f = open(path, "wb")
@@ -42,8 +44,9 @@ def download():
         if os.path.getsize(path) < 1024 * 1024:
             Common.modifyLastDownloadStatus("Downloaded File >{}< is too small, will ignore it".format(path))
             os.remove(path)
-            break
+            continue
         Common.encodeQueue.put(path)
+    Common.api.updRoomInfo(True)
 
 
 def encode():
