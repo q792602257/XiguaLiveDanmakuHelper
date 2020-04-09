@@ -15,37 +15,34 @@ def download():
         path = datetime.strftime(datetime.now(), "%Y%m%d_%H%M.flv")
         try:
             p = session.get(Common.streamUrl, stream=True, timeout=3)
+            p.raise_for_status()
         except Exception as e:
             Common.appendError("Download >{}< with Exception [{}]".format(path,e.__str__()))
-            break
-        if p.status_code != 200:
-            Common.appendDownloadStatus("Download with Response {}".format(p.status_code))
             break
         Common.appendDownloadStatus("Download >{}< Start".format(path))
         f = open(path, "wb")
         _size = 0
         try:
-            for T in p.iter_content(chunk_size=64 * 1024):
+            for T in p.iter_content(chunk_size=Common.config["c_s"]):
                 if Common.forceNotDownload:
                     Common.modifyLastDownloadStatus("Force Stop Download".format(path))
-                    break
+                    return
                 f.write(T)
                 _size += len(T)
                 Common.modifyLastDownloadStatus(
                     "Downloading >{}< @ {:.2f}%".format(path, 100.0 * _size / Common.config["p_s"]))
                 if _size > Common.config["p_s"]:
                     Common.modifyLastDownloadStatus("Download >{}< Exceed MaxSize".format(path))
-                    break
             Common.modifyLastDownloadStatus("Download >{}< Finished".format(path))
         except Exception as e:
             Common.appendError("Download >{}< With Exception {}".format(path, e.__str__()))
             Common.api.updRoomInfo(True)
-        f.close()
-        if os.path.getsize(path) < 1024 * 1024:
+        finally:
+            f.close()
+        if os.path.getsize(path) < Common.config["i_s"]:
             Common.modifyLastDownloadStatus("Downloaded File >{}< is too small, will ignore it".format(path))
-            os.remove(path)
-            continue
-        Common.encodeQueue.put(path)
+        else:
+            Common.encodeQueue.put(path)
     Common.api.updRoomInfo(True)
 
 
@@ -68,8 +65,9 @@ def upload():
             Common.uploadVideo(i)
         except Exception as e:
             Common.appendError(e.__str__())
-            time.sleep(120)
             continue
+        finally:
+            time.sleep(120)
         i = Common.uploadQueue.get()
     Common.appendUploadStatus("Upload Daemon Quiting")
 
@@ -127,9 +125,8 @@ def run():
                 Common.api.updRoomInfo()
             except Exception as e:
                 Common.appendError(e.__str__())
-                time.sleep(2)
-                continue
-            time.sleep(0.5)
+            finally:
+                time.sleep(1)
         else:
             try:
                 Common.api.updRoomInfo()

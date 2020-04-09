@@ -26,7 +26,12 @@ config = {
     "l_c": 5,
     # 错误Log条数
     "elc": 10,
+    # 每一chunk大小
+    "c_s": 16 * 1024,
+    # 每一块视频大小
     "p_s": 2141000000,
+    # 忽略的大小
+    "i_s": 2048000,
     "max": 75,
     "exp": 1,
     "dow": "echo 'clean'",
@@ -79,7 +84,7 @@ def resetDelay():
 
 def doDelay():
     global delay
-    if -120 < getTimeDelta(datetime.now(), delay) < 60:
+    if -60 < getTimeDelta(datetime.now(), delay) < 60:
         delay = datetime.fromtimestamp(0)
         return True
     return False
