@@ -33,6 +33,7 @@ def download():
                     "Downloading >{}< @ {:.2f}%".format(path, 100.0 * _size / Common.config["p_s"]))
                 if _size > Common.config["p_s"]:
                     Common.modifyLastDownloadStatus("Download >{}< Exceed MaxSize".format(path))
+                    break
             Common.modifyLastDownloadStatus("Download >{}< Finished".format(path))
         except Exception as e:
             Common.appendError("Download >{}< With Exception {}".format(path, e.__str__()))
