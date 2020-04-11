@@ -207,7 +207,7 @@ class XiGuaLiveApi:
         return self.isLive
 
     def _getRoomInfo(self, force=False):
-        if self.roomID == 0:
+        if self.roomID == 0 or not self.roomID:
             self.isLive = False
             return False
         if (self._updRoomAt + timedelta(minutes=3) > datetime.now()) and not force:
