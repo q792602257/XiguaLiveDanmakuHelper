@@ -76,6 +76,8 @@ class XiGuaLiveApi:
                 self.roomPopularity = _data["data"]["popularity"]
 
     def getJson(self, url, **kwargs):
+        if "timeout" not in kwargs:
+            kwargs["timeout"] = 10
         try:
             p = self.s.get(url, **kwargs)
         except Exception as e:
