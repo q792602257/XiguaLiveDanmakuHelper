@@ -99,6 +99,8 @@ class XiGuaLiveApi:
             return None
 
     def postJson(self, url, data, **kwargs):
+        if "timeout" not in kwargs:
+            kwargs["timeout"] = 10
         try:
             p = self.s.post(url, data, **kwargs)
         except Exception as e:
