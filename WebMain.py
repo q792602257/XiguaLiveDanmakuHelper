@@ -2,7 +2,7 @@ import os
 from glob import glob
 from time import sleep
 from flask_cors import CORS
-from flask import Flask, jsonify, request, redirect, render_template, Response
+from flask import Flask, jsonify, request, render_template, Response, send_file
 import Common
 import threading
 from liveDownloader import run as RUN
@@ -163,30 +163,10 @@ def fileIndex():
 
 @app.route("/files/download/<path>", methods=["GET"])
 def fileDownload(path):
-    def generate(file, offset=0):
-        with open(file, "rb") as f:
-            f.seek(offset)
-            for row in f:
-                yield row
     if not (".mp4" in path or ".flv" in path):
         return Response(status=404)
     if os.path.exists(path):
-        if "RANGE" in request.headers:
-            offset = int(request.headers["RANGE"].replace("=", "-").split("-")[1].strip())
-            code = 206
-        else:
-            offset = 0
-            code = 200
-        return Response(generate(path, offset),
-                        status=code,
-                        mimetype='application/octet-stream',
-                        headers={
-                            "Content-Length": os.path.getsize(path),
-                            "Content-Range": "bytes {}-{}/{}".format(offset, os.path.getsize(path) - 1,
-                                                                     os.path.getsize(path)),
-                            "Accept-Ranges": "bytes",
-                            "Range": "bytes",
-                        })
+        return send_file(path, as_attachment=True)
     else:
         return Response(status=404)
 
