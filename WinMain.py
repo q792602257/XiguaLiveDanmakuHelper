@@ -192,12 +192,6 @@ if __name__ == "__main__":
     resetColor()
     print("西瓜直播礼物助手 by JerryYan")
     print("接口版本8.1.6")
-    if len(sys.argv) > 1:
-        name = sys.argv[1]
-        if len(sys.argv) > 2:
-            SHOW_ALL = sys.argv[2] == "a"
-    else:
-        name = readInput("请输入主播用户名，默认为", name, 3)
     print("搜索【", name, "】", end="\t", flush=True)
     api = WinMain(name)
     if not api.isValidUser:
