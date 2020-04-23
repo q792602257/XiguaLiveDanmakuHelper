@@ -14,18 +14,19 @@ from XiguaMessage_pb2 import FansClubMessage, SocialMessage
 
 DEBUG = False
 COMMON_GET_PARAM = (
-    "&iid=96159232732&device_id=55714661189&channel=xiaomi&aid=32&app_name=video_article&version_code=816"
-    "&version_name=8.1.6&device_platform=android&ab_version=941090,785218,668858,1046292,1073579,830454,956074,929436,"
-    "797199,1135476,1179370,994679,959010,900042,1113833,668854,1193963,901277,1043330,1038721,994822,1002058,1230687,"
-    "1189797,1143356,1143441,1143501,1143698,1143713,1371009,1243997,1392586,1395695,1395486,1398858,668852,668856,"
-    "668853,1186421,668851,668859,999124,668855,1039075&device_type=MI+8+SE&device_brand=Xiaomi&language=zh"
-    "&os_api=28&os_version=9&openudid=70d6668d41512c39&manifest_version_code=412&update_version_code=81606"
-    "&_rticket={TIMESTAMP:.0f}&cdid_ts={TIMESTAMP:.0f}&fp=a_fake_fp&tma_jssdk_version=1290000"
+    "&iid=96159232732&device_id=55714661189&channel=xiaomi&aid=32&app_name=video_article&version_code=844"
+    "&version_name=8.4.4&device_platform=android&ab_version=668855,1640207,1652557,1143698,1043330,1143713,"
+    "1477978,1189797,1635895,1631832,994822,900042,956074,1143356,1046292,1481027,929436,994679,1419059,"
+    "1073579,668854,1143441,668852,668853,941090,668858,668851,668859,668856,"
+    "1639440,1630487&device_type=MI+8+SE&device_brand=Xiaomi&language=zh"
+    "&os_api=28&os_version=9&openudid=70d6668d41512c39&manifest_version_code=444&update_version_code=84407"
+    "&_rticket={TIMESTAMP:.0f}&cdid_ts={TIMESTAMP:.0f}&fp=a_fake_fp&tma_jssdk_version=1.53.0.5"
     "&cdid=ed4295e8-5d9a-4cb9-b2a2-04009a3baa2d&oaid=a625f466e0975d42")
 SEARCH_USER_API = (
-    "https://security.snssdk.com/video/app/search/live/?format=json&search_sug=0&forum=0&m_tab=live&is_native_req=0"
-    "&offset=0&from=live&en_qc=1&pd=xigua_live&ssmix=a{COMMON}&keyword={keyword}")
-USER_INFO_API = "https://is.snssdk.com/video/app/user/home/v7/?to_user_id={userId}{COMMON}"
+    "https://search-hl.ixigua.com/video/app/search/search_content/?format=json"
+    "&fss=&keyword_type=input&offset=0&count=10&search_sug=0&forum=0&is_native_req=0"
+    "&search_start_time={TIMESTAMP:.0f}&from=live&en_qc=1&pd=xigua_live&ssmix=a{COMMON}&keyword={keyword}")
+USER_INFO_API = "https://api3-normal-c-hl.ixigua.com/video/app/user/home/v7/?to_user_id={userId}{COMMON}"
 ROOM_INFO_API = ("https://webcast3.ixigua.com/webcast/room/enter/?room_id={roomId}&webcast_sdk_version=1350"
                  "&webcast_language=zh&webcast_locale=zh_CN&pack_level=4{COMMON}")
 DANMAKU_GET_API = ("https://webcast3.ixigua.com/webcast/room/{roomId}/_fetch_message_polling/?webcast_sdk_version=1350"
@@ -51,6 +52,7 @@ class XiGuaLiveApi:
             name = "永恒de草薙"
         self.broadcaster = None
         self.isValidUser = False
+        self.name = str(name)
         if type(name) == User:
             self.broadcaster = name
             self.name = name.name
@@ -58,8 +60,6 @@ class XiGuaLiveApi:
             self.broadcaster = User()
             self.isValidUser = True
             self.broadcaster.ID = int(name)
-        else:
-            self.name = str(name)
         self.isLive = False
         self._rawRoomInfo = {}
         self.roomID = 0
@@ -237,7 +237,7 @@ class XiGuaLiveApi:
             compare = self.broadcaster
         if self.name is None or compare is None:
             return False
-        return self.name == compare.__str__() or compare.__str__() in self.name or self.name in compare.__str__()
+        return self.name == compare.__str__() or compare.__repr__() in self.name or self.name in compare.__repr__()
 
     def _forceSearchUser(self):
         """
@@ -420,7 +420,7 @@ if __name__ == "__main__":
             DEBUG = True
         name = sys.argv[1]
     print("西瓜直播弹幕助手 by JerryYan")
-    print("接口版本8.1.6")
+    print("接口版本8.4.4")
     print("搜索【", name, "】", end="\t", flush=True)
     api = XiGuaLiveApi(name)
     if not api.isValidUser:

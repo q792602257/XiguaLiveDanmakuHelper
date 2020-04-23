@@ -191,7 +191,7 @@ if __name__ == "__main__":
     name = "永恒de草薙"
     resetColor()
     print("西瓜直播礼物助手 by JerryYan")
-    print("接口版本8.1.6")
+    print("接口版本8.4.4")
     print("搜索【", name, "】", end="\t", flush=True)
     api = WinMain(name)
     if not api.isValidUser:
