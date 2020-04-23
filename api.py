@@ -162,16 +162,19 @@ class XiGuaLiveApi:
             for i in d["data"]:
                 if self.broadcaster is not None:
                     break
-                if i["block_type"] != 0:
+                if i["block_type"] != 2:
                     continue
                 if "cells" not in i or len(i["cells"]) == 0:
                     break
                 for _j in i["cells"]:
-                    _user = User(_j)
-                    if self._checkUsernameIsMatched(_user):
-                        self.isValidUser = True
-                        self.broadcaster = _user
-                        break
+                    if "room" in _j:
+                        _user = User(_j["room"])
+                        self.roomID = _j["room"]["room_id"]
+                        self.isLive = _j["room"]["is_living"]
+                        if self._checkUsernameIsMatched(_user):
+                            self.isValidUser = True
+                            self.broadcaster = _user
+                            break
         self._updRoomAt = datetime.now()
         return self._updateUserInfo()
 
