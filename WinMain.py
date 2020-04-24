@@ -121,10 +121,11 @@ class WinMain(Api):
                 return "人气:{} --弹幕助手 by JerryYan".format(self.roomPopularity)
 
     def onMessage(self, msg: str):
-        set_cmd_text_color(BACKGROUND_BLACK | FOREGROUND_DARKGRAY)
-        print("消息 : ", msg, end="")
-        resetColor()
-        print()
+        if SHOW_ALL:
+            set_cmd_text_color(BACKGROUND_BLACK | FOREGROUND_DARKGRAY)
+            print("消息 : ", msg, end="")
+            resetColor()
+            print()
 
     def onJoin(self, user: User):
         set_cmd_text_color(BACKGROUND_WHITE | FOREGROUND_BLACK)
