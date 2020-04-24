@@ -189,7 +189,7 @@ def warning(*args):
 
 
 if __name__ == "__main__":
-    name = "永恒de草薙"
+    name = "97621754276"
     resetColor()
     print("西瓜直播礼物助手 by JerryYan")
     print("接口版本8.4.4")
