@@ -31,7 +31,7 @@ def download():
                 _size += len(T)
                 Common.modifyLastDownloadStatus(
                     "Downloading >{}< @ {:.2f}%".format(path, 100.0 * _size / Common.config["p_s"]))
-                if _size > Common.config["p_s"]:
+                if _size > Common.config["p_s"] and not Common.config["dlO"]:
                     Common.modifyLastDownloadStatus("Download >{}< Exceed MaxSize".format(path))
                     break
             Common.modifyLastDownloadStatus("Download >{}< Finished".format(path))
