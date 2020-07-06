@@ -299,12 +299,21 @@ def appendError(obj):
 def loginBilibili(force=False):
     if config["dlO"] is False or forceNotUpload is False:
         global loginTime
+        global b
         if getTimeDelta(datetime.now(), loginTime) < 86400 * 10 and not force:
             return False
-        res = b.login(config["b_u"], config["b_p"])
-        loginTime = datetime.now()
-        appendOperation("登陆账号，结果为：[{}]".format(res))
-        return res
+        if os.path.exists('cookie'):
+            try:
+                with open('cookie', 'r', encoding='utf8') as f:
+                    _cookie = f.read(4096)
+                    b = Bilibili(_cookie)
+                    loginTime = datetime.now()
+                    appendOperation("Cookie 登录")
+                    return True
+            except Exception as e:
+                appendError(e)
+        appendOperation("Cookie 登录失败")
+        return False
     else:
         appendOperation("设置了不上传，所以不会登陆")
 
