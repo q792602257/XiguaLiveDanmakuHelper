@@ -7,23 +7,29 @@ from datetime import datetime, timedelta
 
 DEBUG = False
 COMMON_GET_PARAM = (
-    "&iid=96159232732&device_id=55714661189&channel=xiaomi&aid=32&app_name=video_article&version_code=844"
-    "&version_name=8.4.4&device_platform=android&ab_version=668855,1640207,1652557,1143698,1043330,1143713,"
-    "1477978,1189797,1635895,1631832,994822,900042,956074,1143356,1046292,1481027,929436,994679,1419059,"
-    "1073579,668854,1143441,668852,668853,941090,668858,668851,668859,668856,"
-    "1639440,1630487&device_type=MI+8+SE&device_brand=Xiaomi&language=zh"
-    "&os_api=28&os_version=9&openudid=70d6668d41512c39&manifest_version_code=444&update_version_code=84407"
-    "&_rticket={TIMESTAMP:.0f}&cdid_ts={TIMESTAMP:.0f}&fp=a_fake_fp&tma_jssdk_version=1.53.0.5"
+    "&iid=844059075938396&device_id=71008241150&channel=xiaomi&aid=32&app_name=video_article&version_code=918"
+    "&version_name=9.1.8&device_platform=android&ab_version=668852,668853,668858,668851,668859,668856,668855,"
+    "668854,1477978,994679,2186472,1477978,1189797,1635895,1631832,994822,900042,956074,1143356,1046292,1481027,"
+    "929436,994679,1419059,1073579,668854,1143441,668852,668853,941090,668858,668851,668859,668856,1639440,1630487&"
+    "device_typeMI+9&device_type=MI 9&device_brand=Xiaomi&language=zh"
+    "&os_api=29&os_version=10&openudid=4aeb1e2b627697be&manifest_version_code=518&update_version_code=91806"
+    "&_rticket={TIMESTAMP:.0f}&_rticket={TIMESTAMP:.0f}&cdid_ts={TIMESTAMP:.0f}&fp=a_fake_fp&tma_jssdk_version=1790001"
+    "&rom_version=miui_V12_V12.0.5.0.QFACNXM&oaid=693ea85657ef38ca"
     "&cdid=ed4295e8-5d9a-4cb9-b2a2-04009a3baa2d&oaid=a625f466e0975d42")
 SEARCH_USER_API = (
     "https://search-hl.ixigua.com/video/app/search/search_content/?format=json"
-    "&fss=&keyword_type=input&offset=0&count=10&search_sug=0&forum=0&is_native_req=0"
+    "&fss=search_subtab_switch&target_channel=video_search&keyword_type=search_subtab_switch&offset=0&count=10"
+    "&search_sug=1&forum=1&is_native_req=0&m_tab=video&pd=user&tab=user&_s_tma=SEARCH_STANDARD.list.fe_get_data"
+    '&_s_page_sub_route=/&_s_ec={{"filterDataType":[],"reserveFilterBar":true}}&__use_xigua_native_bridge_fetch__=1'
+    '&ab_param={{"is_show_filter_feature": 1, "is_hit_new_ui": 1}}'
     "&search_start_time={TIMESTAMP:.0f}&from=live&en_qc=1&pd=xigua_live&ssmix=a{COMMON}&keyword={keyword}")
-USER_INFO_API = "https://api3-normal-c-hl.ixigua.com/video/app/user/home/v7/?to_user_id={userId}{COMMON}"
-ROOM_INFO_API = "https://webcast3.ixigua.com/webcast/room/enter/?room_id={roomId}&pack_level=4{COMMON}"
+USER_INFO_API = "https://api100-quic-c-hl.ixigua.com/video/app/user/home/v7/?to_user_id={userId}{COMMON}"
+ROOM_INFO_API = ("https://webcast3.ixigua.com/webcast/room/enter/?room_id={roomId}&webcast_sdk_version=1350"
+                 "&webcast_language=zh&webcast_locale=zh_CN&pack_level=4{COMMON}")
 COMMON_HEADERS = {
-    "sdk-version": '1',
-    "User-Agent": "Dalvik/2.1.0 (Linux; U; Android 9) VideoArticle/8.1.6 cronet/TTNetVersion:b97574c0 2019-09-24",
+    "sdk-version": '2',
+    "passport-sdk-version": "19",
+    "User-Agent": "Dalvik/2.1.0 (Linux; U; Android 9) VideoArticle/9.1.8 cronet/TTNetVersion:b97574c0 2020-09-24",
     "Accept-Encoding": "gzip, deflate"
 }
 
@@ -40,6 +46,7 @@ class XiGuaLiveApi:
             name = "永恒de草薙"
         self.broadcaster = None
         self.isValidUser = False
+        self.name = str(name)
         if type(name) == User:
             self.broadcaster = name
             self.name = name.name
@@ -53,12 +60,13 @@ class XiGuaLiveApi:
         self._rawRoomInfo = {}
         self.roomID = 0
         self.roomPopularity = 0
-        self._cursor = "0"
         self.lottery = None
         self.s = requests.session()
         self.s.headers.update(COMMON_HEADERS)
         self._updRoomAt = datetime.fromtimestamp(0)
         self.updRoomInfo()
+        self._ext = ""
+        self._cursor = "0"
 
     def _updateRoomPopularity(self, _data):
         """
@@ -100,7 +108,7 @@ class XiGuaLiveApi:
         if "timeout" not in kwargs:
             kwargs["timeout"] = 10
         try:
-            p = self.s.post(url, data, **kwargs)
+            p = self.s.post(url, data=data, **kwargs)
         except Exception as e:
             print("网络请求失败")
             if DEBUG:
@@ -142,20 +150,23 @@ class XiGuaLiveApi:
             compare = self.broadcaster
         if self.name is None or compare is None:
             return False
-        return self.name == compare.__str__() or compare.__str__() in self.name or self.name in compare.__str__()
+        return self.name == compare.__str__() or compare.__repr__() in self.name or self.name in compare.__repr__()
 
     def _forceSearchUser(self):
         """
         搜索主播名
         :return:
         """
-        _formatData = {"COMMON": COMMON_GET_PARAM, "TIMESTAMP": time.time() * 1000, "keyword": self.name}
-        _url = SEARCH_USER_API.format_map(_formatData).format_map(_formatData)
+        _formatData = {"TIMESTAMP": time.time() * 1000, "keyword": self.name}
+        _COMMON = COMMON_GET_PARAM.format_map(_formatData)
+        _formatData['COMMON'] = _COMMON
+        _url = SEARCH_USER_API.format_map(_formatData)
         d = self.getJson(_url)
         if d is None:
             print("搜索接口请求失败")
             return False
         self.broadcaster = None
+        self.isValidUser = False
         if "data" in d and d["data"] is not None:
             for i in d["data"]:
                 if self.broadcaster is not None:
@@ -181,11 +192,13 @@ class XiGuaLiveApi:
         获取用户信息
         :return:
         """
-        self.isValidUser = False
         if self.broadcaster is None:
+            self.isValidUser = False
             return False
-        _formatData = {"COMMON": COMMON_GET_PARAM, "TIMESTAMP": time.time() * 1000, "userId": self.broadcaster.ID}
-        _url = USER_INFO_API.format_map(_formatData).format_map(_formatData)
+        _formatData = {"TIMESTAMP": time.time() * 1000, "userId": self.broadcaster.ID}
+        _COMMON = COMMON_GET_PARAM.format_map(_formatData)
+        _formatData['COMMON'] = _COMMON
+        _url = USER_INFO_API.format_map(_formatData)
         d = self.getJson(_url)
         if d is None:
             print("获取用户信息失败")
@@ -218,8 +231,10 @@ class XiGuaLiveApi:
             return False
         if (self._updRoomAt + timedelta(minutes=3) > datetime.now()) and not force:
             return self.isLive
-        _formatData = {"COMMON": COMMON_GET_PARAM, "TIMESTAMP": time.time() * 1000, "roomId": self.roomID}
-        _url = ROOM_INFO_API.format_map(_formatData).format_map(_formatData)
+        _formatData = {"TIMESTAMP": time.time() * 1000, "roomId": self.roomID}
+        _COMMON = COMMON_GET_PARAM.format_map(_formatData)
+        _formatData['COMMON'] = _COMMON
+        _url = ROOM_INFO_API.format_map(_formatData)
         d = self.getJson(_url)
         if d is None:
             print("获取房间信息接口请求失败")
