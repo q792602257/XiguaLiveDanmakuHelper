@@ -65,6 +65,8 @@ class XiGuaLiveApi:
             self.broadcaster = User()
             self.isValidUser = True
             self.broadcaster.ID = int(name)
+        else:
+            self.name = str(name)
         self.isLive = False
         self._rawRoomInfo = {}
         self.roomID = 0
@@ -91,6 +93,8 @@ class XiGuaLiveApi:
                 self.roomPopularity = _data["data"]["popularity"]
 
     def getJson(self, url, **kwargs):
+        if "timeout" not in kwargs:
+            kwargs["timeout"] = 10
         try:
             p = self.s.get(url, **kwargs)
         except Exception as e:
@@ -112,6 +116,8 @@ class XiGuaLiveApi:
             return None
 
     def postJson(self, url, data, **kwargs):
+        if "timeout" not in kwargs:
+            kwargs["timeout"] = 10
         try:
             p = self.s.post(url, data=data, **kwargs)
         except Exception as e:
@@ -299,13 +305,19 @@ class XiGuaLiveApi:
         if "user_info" not in d and d["user_info"] is None:
             self.apiChangedError("Api发生改变，请及时联系我", d)
             return False
+        self._updRoomAt = datetime.now()
         self.broadcaster = User(d)
         if not self._checkUsernameIsMatched():
             self.isLive = False
             return False
         self.isLive = d["user_info"]["is_living"]
-        self._updRoomAt = datetime.now()
-        self._rawRoomInfo = d["user_info"]['live_info']
+        if d["user_info"]['live_info'] is None:
+            if d["live_data"] is None:
+                self.isLive = False
+            else:
+                self._rawRoomInfo = d["live_data"]['live_info']
+        else:
+            self._rawRoomInfo = d["user_info"]['live_info']
         if self.isLive:
             self.roomID = d["user_info"]['live_info']['room_id']
             # 处理抽奖事件
@@ -316,7 +328,7 @@ class XiGuaLiveApi:
         return True
 
     def _getRoomInfo(self, force=False):
-        if self.roomID == 0:
+        if self.roomID == 0 or not self.roomID:
             self.isLive = False
             return False
         if not force and (self._updRoomAt + timedelta(minutes=10) > datetime.now()):
