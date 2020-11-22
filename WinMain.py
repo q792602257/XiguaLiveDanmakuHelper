@@ -190,9 +190,13 @@ def warning(*args):
 
 if __name__ == "__main__":
     name = "97621754276"
+    if len(sys.argv) > 2:
+        if sys.argv[-1] == "a":
+            SHOW_ALL = True
+        name = sys.argv[1]
     resetColor()
     print("西瓜直播礼物助手 by JerryYan")
-    print("接口版本8.4.4")
+    print("接口版本9.1.8")
     print("搜索【", name, "】", end="\t", flush=True)
     api = WinMain(name)
     if not api.isValidUser:
