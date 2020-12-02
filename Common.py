@@ -328,8 +328,8 @@ class downloader(XiGuaLiveApi):
         _result = super(downloader, self).updRoomInfo(force)
         if _prev_status != self.isLive and not self.isLive:
             resetDelay()
+        broadcaster = self.broadcaster
         if _result:
-            broadcaster = self.broadcaster
             if self.isLive:
                 self.updPlayList()
             else:

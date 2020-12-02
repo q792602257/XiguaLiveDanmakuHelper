@@ -5,9 +5,10 @@ import Common
 import os
 import requests
 
+session = requests.session()
+
 
 def download():
-    session = requests.session()
     while Common.api.isLive and not Common.forceNotDownload:
         if not Common.streamUrl:
             Common.appendError("Download with No StreamUrl Specific")
@@ -68,7 +69,7 @@ def upload():
             Common.appendError(e.__str__())
             continue
         finally:
-            time.sleep(120)
+            time.sleep(90)
         i = Common.uploadQueue.get()
     Common.appendUploadStatus("Upload Daemon Quiting")
 
