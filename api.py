@@ -7,13 +7,13 @@ from datetime import datetime, timedelta
 
 DEBUG = False
 COMMON_GET_PARAM = (
-    "&iid=844059075938396&device_id=71008241150&channel=xiaomi&aid=32&app_name=video_article&version_code=918"
-    "&version_name=9.1.8&device_platform=android&ab_version=668852,668853,668858,668851,668859,668856,668855,"
+    "&iid=844059075938396&device_id=71008241150&channel=xiaomi&aid=32&app_name=video_article&version_code=926"
+    "&version_name=9.2.6&device_platform=android&ab_version=668852,668853,668858,668851,668859,668856,668855,"
     "668854,1477978,994679,2186472,1477978,1189797,1635895,1631832,994822,900042,956074,1143356,1046292,1481027,"
     "929436,994679,1419059,1073579,668854,1143441,668852,668853,941090,668858,668851,668859,668856,1639440,1630487&"
     "device_typeMI+9&device_type=MI 9&device_brand=Xiaomi&language=zh"
-    "&os_api=29&os_version=10&openudid=4aeb1e2b627697be&manifest_version_code=518&update_version_code=91806"
-    "&_rticket={TIMESTAMP:.0f}&_rticket={TIMESTAMP:.0f}&cdid_ts={TIMESTAMP:.0f}&fp=a_fake_fp&tma_jssdk_version=1790001"
+    "&os_api=29&os_version=10&openudid=4aeb1e2b627697be&manifest_version_code=518&update_version_code=92609"
+    "&_rticket={TIMESTAMP:.0f}&_rticket={TIMESTAMP:.0f}&cdid_ts={TIMESTAMP:.0f}&fp=a_fake_fp&tma_jssdk_version=1830001"
     "&rom_version=miui_V12_V12.0.5.0.QFACNXM&oaid=693ea85657ef38ca"
     "&cdid=ed4295e8-5d9a-4cb9-b2a2-04009a3baa2d&oaid=a625f466e0975d42")
 SEARCH_USER_API = (
@@ -24,12 +24,14 @@ SEARCH_USER_API = (
     '&ab_param={{"is_show_filter_feature": 1, "is_hit_new_ui": 1}}'
     "&search_start_time={TIMESTAMP:.0f}&from=live&en_qc=1&pd=xigua_live&ssmix=a{COMMON}&keyword={keyword}")
 USER_INFO_API = "https://api100-quic-c-hl.ixigua.com/video/app/user/home/v7/?to_user_id={userId}{COMMON}"
-ROOM_INFO_API = ("https://webcast3.ixigua.com/webcast/room/enter/?room_id={roomId}&webcast_sdk_version=1350"
+ROOM_INFO_API = ("https://webcast3-normal-c-hl.ixigua.com/webcast/room/enter/?room_id={roomId}&webcast_sdk_version=1350"
                  "&webcast_language=zh&webcast_locale=zh_CN&pack_level=4{COMMON}")
 COMMON_HEADERS = {
     "sdk-version": '2',
     "passport-sdk-version": "19",
-    "User-Agent": "Dalvik/2.1.0 (Linux; U; Android 9) VideoArticle/9.1.8 cronet/TTNetVersion:b97574c0 2020-09-24",
+    "X-SS-DP": "32",
+    "User-Agent": "Dalvik/2.1.0 (Linux; U; Android 10) VideoArticle/9.2.6 cronet/TTNetVersion:828f6f3c 2020-09-06 "
+                  "QuicVersion:7aee791b 2020-06-05",
     "Accept-Encoding": "gzip, deflate"
 }
 
@@ -59,27 +61,12 @@ class XiGuaLiveApi:
         self.isLive = False
         self._rawRoomInfo = {}
         self.roomID = 0
-        self.roomPopularity = 0
-        self.lottery = None
         self.s = requests.session()
         self.s.headers.update(COMMON_HEADERS)
         self._updRoomAt = datetime.fromtimestamp(0)
         self.updRoomInfo()
         self._ext = ""
         self._cursor = "0"
-
-    def _updateRoomPopularity(self, _data):
-        """
-        更新房间人气的方法
-        Update Room Popularity
-        :param _data: Received Message
-        """
-        if "extra" in _data:
-            if "member_count" in _data["extra"] and _data["extra"]["member_count"] > 0:
-                self.roomPopularity = _data["extra"]["member_count"]
-        if "data" in _data:
-            if "popularity" in _data["data"]:
-                self.roomPopularity = _data["data"]["popularity"]
 
     def getJson(self, url, **kwargs):
         if "timeout" not in kwargs:
@@ -245,7 +232,6 @@ class XiGuaLiveApi:
         self._rawRoomInfo = d["data"]
         self.isLive = d["data"]["status"] == 2
         self._updRoomAt = datetime.now()
-        self._updateRoomPopularity(d)
         return self.isLive
 
     def updRoomInfo(self, force=False):
