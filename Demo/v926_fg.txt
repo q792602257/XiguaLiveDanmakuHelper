@@ -1,0 +1,256 @@
+1 {
+  1: "WebcastChatMessage"
+  2 {
+    1 {
+      1: "WebcastChatMessage"
+      2: 6902669212519992068
+      3: 6902629276546566925
+      6: 1
+      8 {
+        1: "webcast_chat_display_text"
+        2: "{0:user}{1:string}"
+        3 {
+          1: "#ff36c0cf"
+          4: 400
+        }
+        4 {
+          1: 11
+          2 {
+            1: "#60000000"
+            4: 400
+          }
+          21 {
+            1 {
+              1: 5518138898
+              3: "\345\247\232\345\247\232\347\220\263\347\232\2042\345\247\220\345\244\253"
+              4: 1
+              9 {
+                1: "https://p1-dy.bytexservice.com/img/user-avatar/deb96a5e7e07f60a613531670a570736~300x300.image"
+              }
+              21 {
+                1: "http://p9-webcast-ttcdn.byteimg.com/img/webcast/xigua_admin_badge_v2.png~tplv-obj.image"
+                1: "http://p1-webcast-ttcdn.byteimg.com/img/webcast/xigua_admin_badge_v2.png~tplv-obj.image"
+                2: "webcast/xigua_admin_badge_v2.png"
+                3: 16
+                4: 28
+                6: 3
+              }
+              21 {
+                1: "http://p1-webcast-ttcdn.byteimg.com/img/webcast/25_xigua_honor_level.png~tplv-obj.png"
+                1: "http://p9-webcast-ttcdn.byteimg.com/img/webcast/25_xigua_honor_level.png~tplv-obj.png"
+                2: "webcast/25_xigua_honor_level.png"
+                3: 16
+                4: 30
+                6: 1
+                7: "sslocal://webcast_webview?url=https%3A%2F%2Fwebcast.ixigua.com%2Ffalcon%2Fwebcast_xigua%2Fpage%2Fhonor_level%2Fuser%2Findex.html&hide_nav_bar=1&hide_status_bar=0&__live_platform__=webcast&type=fullscreen"
+              }
+              21 {
+                1: "http://p1-webcast-ttcdn.byteimg.com/img/webcast/xigua_fansclub_medal_15.png~tplv-obj.image"
+                1: "http://p6-webcast-ttcdn.byteimg.com/img/webcast/xigua_fansclub_medal_15.png~tplv-obj.image"
+                2: "webcast/xigua_fansclub_medal_15.png"
+                6: 7
+                8 {
+                  1: "\345\247\232\345\247\232\347\220\263"
+                  2: "#FFFFFF"
+                  3: 15
+                }
+              }
+              22 {
+                1: 13
+                2: 86
+                3: 2
+              }
+              23 {
+                6: 25
+                19 {
+                  1: "http://p1-webcast-ttcdn.byteimg.com/img/webcast/25_xigua_honor_level.png~tplv-obj.png"
+                  1: "http://p9-webcast-ttcdn.byteimg.com/img/webcast/25_xigua_honor_level.png~tplv-obj.png"
+                  2: "webcast/25_xigua_honor_level.png"
+                  3: 16
+                  4: 30
+                  6: 1
+                  7: "sslocal://webcast_webview?url=https%3A%2F%2Fwebcast.ixigua.com%2Ffalcon%2Fwebcast_xigua%2Fpage%2Fhonor_level%2Fuser%2Findex.html&hide_nav_bar=1&hide_status_bar=0&__live_platform__=webcast&type=fullscreen"
+                }
+              }
+              24 {
+                1 {
+                  1: "\345\247\232\345\247\232\347\220\263"
+                  2: 15
+                  3: 1
+                  4 {
+                    1: "\010\002\022\342\001\nZhttp://p1-webcast-ttcdn.byteimg.com/img/webcast/xigua_fansclub_medal_15.png~tplv-obj.image\nZhttp://p6-webcast-ttcdn.byteimg.com/img/webcast/xigua_fansclub_medal_15.png~tplv-obj.image\022#webcast/xigua_fansclub_medal_15.png\0300 \226\001"
+                    2: "\345\247\232\345\247\232\347\220\263"
+                  }
+                  6: 61788610240
+                }
+              }
+              32 {
+                2: 1
+              }
+              38: "0"
+              46: "MS4wLjABAAAAKkWCgUKAN3GtNdQ0jqr8zAt3KtIc9kAc1GaJ32VcH3E"
+              54: 3
+              61 {
+                1: "http://p9-webcast-ttcdn.byteimg.com/img/webcast/xigua_admin_badge_v2.png~tplv-obj.image"
+                1: "http://p1-webcast-ttcdn.byteimg.com/img/webcast/xigua_admin_badge_v2.png~tplv-obj.image"
+                2: "webcast/xigua_admin_badge_v2.png"
+                3: 16
+                4: 28
+                6: 3
+              }
+              61 {
+                1: "http://p1-webcast-ttcdn.byteimg.com/img/webcast/25_xigua_honor_level.png~tplv-obj.png"
+                1: "http://p9-webcast-ttcdn.byteimg.com/img/webcast/25_xigua_honor_level.png~tplv-obj.png"
+                2: "webcast/25_xigua_honor_level.png"
+                3: 16
+                4: 30
+                6: 1
+                7: "sslocal://webcast_webview?url=https%3A%2F%2Fwebcast.ixigua.com%2Ffalcon%2Fwebcast_xigua%2Fpage%2Fhonor_level%2Fuser%2Findex.html&hide_nav_bar=1&hide_status_bar=0&__live_platform__=webcast&type=fullscreen"
+              }
+              61 {
+                1: "http://p1-webcast-ttcdn.byteimg.com/img/webcast/xigua_fansclub_medal_15.png~tplv-obj.image"
+                1: "http://p6-webcast-ttcdn.byteimg.com/img/webcast/xigua_fansclub_medal_15.png~tplv-obj.image"
+                2: "webcast/xigua_fansclub_medal_15.png"
+                6: 7
+                8 {
+                  1: "\345\247\232\345\247\232\347\220\263"
+                  2: "#FFFFFF"
+                  3: 15
+                }
+              }
+            }
+            2: 1
+          }
+        }
+        4 {
+          1: 1
+          11: "@\345\247\232\345\256\266\344\272\214\345\247\221\345\207\211 \346\210\221\345\211\215\345\244\251\346\235\245\346\267\261\345\234\263\344\272\206"
+        }
+      }
+      11: 31003
+    }
+    2 {
+      1: 5518138898
+      3: "\345\247\232\345\247\232\347\220\263\347\232\2042\345\247\220\345\244\253"
+      4: 1
+      9 {
+        1: "https://p1-dy.bytexservice.com/img/user-avatar/deb96a5e7e07f60a613531670a570736~300x300.image"
+      }
+      21 {
+        1: "http://p9-webcast-ttcdn.byteimg.com/img/webcast/xigua_admin_badge_v2.png~tplv-obj.image"
+        1: "http://p1-webcast-ttcdn.byteimg.com/img/webcast/xigua_admin_badge_v2.png~tplv-obj.image"
+        2: "webcast/xigua_admin_badge_v2.png"
+        3: 16
+        4: 28
+        6: 3
+      }
+      21 {
+        1: "http://p1-webcast-ttcdn.byteimg.com/img/webcast/25_xigua_honor_level.png~tplv-obj.png"
+        1: "http://p9-webcast-ttcdn.byteimg.com/img/webcast/25_xigua_honor_level.png~tplv-obj.png"
+        2: "webcast/25_xigua_honor_level.png"
+        3: 16
+        4: 30
+        6: 1
+        7: "sslocal://webcast_webview?url=https%3A%2F%2Fwebcast.ixigua.com%2Ffalcon%2Fwebcast_xigua%2Fpage%2Fhonor_level%2Fuser%2Findex.html&hide_nav_bar=1&hide_status_bar=0&__live_platform__=webcast&type=fullscreen"
+      }
+      21 {
+        1: "http://p1-webcast-ttcdn.byteimg.com/img/webcast/xigua_fansclub_medal_15.png~tplv-obj.image"
+        1: "http://p6-webcast-ttcdn.byteimg.com/img/webcast/xigua_fansclub_medal_15.png~tplv-obj.image"
+        2: "webcast/xigua_fansclub_medal_15.png"
+        6: 7
+        8 {
+          1: "\345\247\232\345\247\232\347\220\263"
+          2: "#FFFFFF"
+          3: 15
+        }
+      }
+      22 {
+        1: 13
+        2: 86
+        3: 2
+      }
+      23 {
+        6: 25
+        19 {
+          1: "http://p1-webcast-ttcdn.byteimg.com/img/webcast/25_xigua_honor_level.png~tplv-obj.png"
+          1: "http://p9-webcast-ttcdn.byteimg.com/img/webcast/25_xigua_honor_level.png~tplv-obj.png"
+          2: "webcast/25_xigua_honor_level.png"
+          3: 16
+          4: 30
+          6: 1
+          7: "sslocal://webcast_webview?url=https%3A%2F%2Fwebcast.ixigua.com%2Ffalcon%2Fwebcast_xigua%2Fpage%2Fhonor_level%2Fuser%2Findex.html&hide_nav_bar=1&hide_status_bar=0&__live_platform__=webcast&type=fullscreen"
+        }
+      }
+      24 {
+        1 {
+          1: "\345\247\232\345\247\232\347\220\263"
+          2: 15
+          3: 1
+          4 {
+            1 {
+              1: 2
+              2 {
+                1: "http://p1-webcast-ttcdn.byteimg.com/img/webcast/xigua_fansclub_medal_15.png~tplv-obj.image"
+                1: "http://p6-webcast-ttcdn.byteimg.com/img/webcast/xigua_fansclub_medal_15.png~tplv-obj.image"
+                2: "webcast/xigua_fansclub_medal_15.png"
+                3: 48
+                4: 150
+              }
+            }
+            2: "\345\247\232\345\247\232\347\220\263"
+          }
+          6: 61788610240
+        }
+      }
+      32 {
+        2: 1
+      }
+      38: "0"
+      46: "MS4wLjABAAAAKkWCgUKAN3GtNdQ0jqr8zAt3KtIc9kAc1GaJ32VcH3E"
+      54: 3
+      61 {
+        1: "http://p9-webcast-ttcdn.byteimg.com/img/webcast/xigua_admin_badge_v2.png~tplv-obj.image"
+        1: "http://p1-webcast-ttcdn.byteimg.com/img/webcast/xigua_admin_badge_v2.png~tplv-obj.image"
+        2: "webcast/xigua_admin_badge_v2.png"
+        3: 16
+        4: 28
+        6: 3
+      }
+      61 {
+        1: "http://p1-webcast-ttcdn.byteimg.com/img/webcast/25_xigua_honor_level.png~tplv-obj.png"
+        1: "http://p9-webcast-ttcdn.byteimg.com/img/webcast/25_xigua_honor_level.png~tplv-obj.png"
+        2: "webcast/25_xigua_honor_level.png"
+        3: 16
+        4: 30
+        6: 1
+        7: "sslocal://webcast_webview?url=https%3A%2F%2Fwebcast.ixigua.com%2Ffalcon%2Fwebcast_xigua%2Fpage%2Fhonor_level%2Fuser%2Findex.html&hide_nav_bar=1&hide_status_bar=0&__live_platform__=webcast&type=fullscreen"
+      }
+      61 {
+        1: "http://p1-webcast-ttcdn.byteimg.com/img/webcast/xigua_fansclub_medal_15.png~tplv-obj.image"
+        1: "http://p6-webcast-ttcdn.byteimg.com/img/webcast/xigua_fansclub_medal_15.png~tplv-obj.image"
+        2: "webcast/xigua_fansclub_medal_15.png"
+        6: 7
+        8 {
+          1: "\345\247\232\345\247\232\347\220\263"
+          2: "#FFFFFF"
+          3: 15
+        }
+      }
+    }
+    3: "@\345\247\232\345\256\266\344\272\214\345\247\221\345\207\211 \346\210\221\345\211\215\345\244\251\346\235\245\346\267\261\345\234\263\344\272\206"
+    9 {
+      1 {
+        1: "http://p3-webcast-ttcdn.byteimg.com/img/webcast/userlabel_regular_chat.png~tplv-obj.image"
+        1: "http://p6-webcast-ttcdn.byteimg.com/img/webcast/userlabel_regular_chat.png~tplv-obj.image"
+        2: "webcast/userlabel_regular_chat.png"
+        5: "#E0BCD4"
+      }
+      2: 11
+    }
+  }
+  3: 6902669212519992068
+}
+2: "1607153101490_6902670004165030044_6902669995575083008_1"
+3: 1000
+4: 1607153101490
+5: "fetch_time:1607153101490|start_time:0|fetch_id:6902670004165030042|flag:0|seq:2080|next_cursor:1607153101490_6902670004165030044_6902669995575083008_1"

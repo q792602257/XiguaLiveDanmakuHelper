@@ -4,13 +4,11 @@ from XiguaMessage_pb2 import GiftMessage
 
 
 class Gift:
-    roomID = 0
     giftList = {}
 
     def __init__(self, json=None):
         self.ID = 0
         self.count = 0
-        self.amount = 0
         self.user = None
         self.isFinished = False
         self.backupName = None
@@ -31,10 +29,6 @@ class Gift:
 
     def parse(self, json):
         self.user = User(json)
-        if "common" in json and json["common"] is not None:
-            if Gift.roomID != int(json["common"]["room_id"]):
-                Gift.roomID = int(json["common"]["room_id"])
-                self.update()
         if "extra" in json and json["extra"] is not None:
             if "present_info" in json["extra"] and json["extra"]['present_info'] is not None:
                 self.ID = int(json["extra"]['present_info']['id'])
@@ -42,21 +36,6 @@ class Gift:
             elif "present_end_info" in json["extra"] and json["extra"]['present_end_info'] is not None:
                 self.ID = int(json["extra"]['present_end_info']['id'])
                 self.count = json["extra"]['present_end_info']['count']
-        if self.ID != 0 and self.ID in self.giftList:
-            self.amount = self.giftList[self.ID]['diamond_count'] * self.count
-        else:
-            self.update()
-
-    @classmethod
-    def update(cls):
-        p = requests.get("https://i.snssdk.com/videolive/gift/get_gift_list?room_id={roomID}"
-                         "&version_code=800&device_platform=android".format(roomID=Gift.roomID))
-        d = p.json()
-        if "gift_info" not in d:
-            print("错误：礼物更新失败")
-        else:
-            for i in d["gift_info"]:
-                cls.addGift(i)
 
     def isAnimate(self):
         if self.ID != 0 and self.ID in self.giftList:

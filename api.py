@@ -5,7 +5,6 @@ from Struct.MemberMsg import MemberMsg
 from Struct.User import User
 from Struct.Gift import Gift
 from Struct.Chat import Chat
-from Struct.Lottery import Lottery
 import requests
 import time
 from datetime import datetime, timedelta
@@ -14,13 +13,13 @@ from XiguaMessage_pb2 import FansClubMessage, SocialMessage
 
 DEBUG = False
 COMMON_GET_PARAM = (
-    "&iid=844059075938396&device_id=71008241150&channel=xiaomi&aid=32&app_name=video_article&version_code=918"
-    "&version_name=9.1.8&device_platform=android&ab_version=668852,668853,668858,668851,668859,668856,668855,"
+    "&iid=844059075938396&device_id=71008241150&channel=xiaomi&aid=32&app_name=video_article&version_code=926"
+    "&version_name=9.2.6&device_platform=android&ab_version=668852,668853,668858,668851,668859,668856,668855,"
     "668854,1477978,994679,2186472,1477978,1189797,1635895,1631832,994822,900042,956074,1143356,1046292,1481027,"
     "929436,994679,1419059,1073579,668854,1143441,668852,668853,941090,668858,668851,668859,668856,1639440,1630487&"
     "device_typeMI+9&device_type=MI 9&device_brand=Xiaomi&language=zh"
-    "&os_api=29&os_version=10&openudid=4aeb1e2b627697be&manifest_version_code=518&update_version_code=91806"
-    "&_rticket={TIMESTAMP:.0f}&_rticket={TIMESTAMP:.0f}&cdid_ts={TIMESTAMP:.0f}&fp=a_fake_fp&tma_jssdk_version=1790001"
+    "&os_api=29&os_version=10&openudid=4aeb1e2b627697be&manifest_version_code=518&update_version_code=92609"
+    "&_rticket={TIMESTAMP:.0f}&_rticket={TIMESTAMP:.0f}&cdid_ts={TIMESTAMP:.0f}&fp=a_fake_fp&tma_jssdk_version=1830001"
     "&rom_version=miui_V12_V12.0.5.0.QFACNXM&oaid=693ea85657ef38ca"
     "&cdid=ed4295e8-5d9a-4cb9-b2a2-04009a3baa2d&oaid=a625f466e0975d42")
 SEARCH_USER_API = (
@@ -31,16 +30,19 @@ SEARCH_USER_API = (
     '&ab_param={{"is_show_filter_feature": 1, "is_hit_new_ui": 1}}'
     "&search_start_time={TIMESTAMP:.0f}&from=live&en_qc=1&pd=xigua_live&ssmix=a{COMMON}&keyword={keyword}")
 USER_INFO_API = "https://api100-quic-c-hl.ixigua.com/video/app/user/home/v7/?to_user_id={userId}{COMMON}"
-ROOM_INFO_API = ("https://webcast3.ixigua.com/webcast/room/enter/?room_id={roomId}&webcast_sdk_version=1350"
+ROOM_INFO_API = ("https://webcast3-normal-c-hl.ixigua.com/webcast/room/enter/?room_id={roomId}&webcast_sdk_version=1350"
                  "&webcast_language=zh&webcast_locale=zh_CN&pack_level=4{COMMON}")
-DANMAKU_GET_API = ("https://webcast3.ixigua.com/webcast/room/{roomId}/_fetch_message_polling/?webcast_sdk_version=1350"
-                   "&webcast_language=zh&webcast_locale=zh_CN{COMMON}")
-GIFT_DATA_API = ("https://webcast.ixigua.com/webcast/gift/list/?room_id={roomId}&fetch_giftlist_from=2"
-                 "&webcast_sdk_version=1350&webcast_language=zh&webcast_locale=zh_CN{COMMON}")
+DANMAKU_GET_API = ("https://webcast3-normal-c-hl.ixigua.com/webcast/room/{roomId}/_fetch_message_polling/?"
+                   "webcast_sdk_version=1350&webcast_language=zh&webcast_locale=zh_CN{COMMON}")
+GIFT_DATA_API = ("https://webcast3-normal-c-hl.ixigua.com/webcast/gift/list/?room_id={roomId}&to_room_id={roomId}&"
+                 "gift_scene=1&fetch_giftlist_from=2&current_network_quality_info={{}}"
+                 "&webcast_sdk_version=1790&webcast_language=zh&webcast_locale=zh_CN{COMMON}")
 COMMON_HEADERS = {
     "sdk-version": '2',
     "passport-sdk-version": "19",
-    "User-Agent": "Dalvik/2.1.0 (Linux; U; Android 9) VideoArticle/9.1.8 cronet/TTNetVersion:b97574c0 2020-09-24",
+    "X-SS-DP": "32",
+    "User-Agent": "Dalvik/2.1.0 (Linux; U; Android 10) VideoArticle/9.2.6 cronet/TTNetVersion:828f6f3c 2020-09-06 "
+                  "QuicVersion:7aee791b 2020-06-05",
     "Accept-Encoding": "gzip, deflate"
 }
 
@@ -71,7 +73,6 @@ class XiGuaLiveApi:
         self._rawRoomInfo = {}
         self.roomID = 0
         self.roomPopularity = 0
-        self.lottery = None
         self.s = requests.session()
         self.s.headers.update(COMMON_HEADERS)
         self._updRoomAt = datetime.fromtimestamp(0)
@@ -231,13 +232,6 @@ class XiGuaLiveApi:
         print("消息 :", "主播离开了")
         self.updRoomInfo()
 
-    def onLottery(self, i: Lottery):
-        """
-        中奖的内容
-        :param i:
-        """
-        print("中奖消息 :", i)
-
     def _checkUsernameIsMatched(self, compare=None):
         """
         验证主播名字是自己想要的那个
@@ -320,11 +314,6 @@ class XiGuaLiveApi:
             self._rawRoomInfo = d["user_info"]['live_info']
         if self.isLive:
             self.roomID = d["user_info"]['live_info']['room_id']
-            # 处理抽奖事件
-            l = Lottery(self._rawRoomInfo)
-            if l.isActive:
-                # 因为现在每个房间只能同时开启一个抽奖，所以放一个就行了
-                self.lottery = l
         return True
 
     def _getRoomInfo(self, force=False):
@@ -348,7 +337,6 @@ class XiGuaLiveApi:
         self.isLive = d["data"]["status"] == 2
         self._updRoomAt = datetime.now()
         self._updateRoomPopularity(d)
-        Gift.roomID = self.roomID
         return self.isLive
 
     def updRoomInfo(self, force=False):
@@ -372,12 +360,9 @@ class XiGuaLiveApi:
         _formatData['COMMON'] = _COMMON
         _url = GIFT_DATA_API.format_map(_formatData)
         d = self.getJson(_url)
-        Gift.roomID = self.roomID
         if d is None or d["status_code"] != 0:
-            Gift.update()
-        elif 'pages' not in d["data"]:
-            Gift.update()
-        else:
+            return "异常"
+        elif 'pages' in d["data"]:
             for _page in d["data"]['pages']:
                 if 'gifts' in _page:
                     for _gift in _page['gifts']:
@@ -392,7 +377,7 @@ class XiGuaLiveApi:
         _formatData = {"TIMESTAMP": time.time() * 1000, "roomId": self.roomID}
         _COMMON = COMMON_GET_PARAM.format_map(_formatData)
         _formatData['COMMON'] = _COMMON
-        _url = DANMAKU_GET_API.format_map(_formatData).format_map(_formatData)
+        _url = DANMAKU_GET_API.format_map(_formatData)
         p = self.s.post(_url, data="cursor={cursor}&resp_content_type=protobuf&live_id=3&user_id=0&identity=audience"
                                    "last_rtt=85"
                                    "&internal_ext={ext}".format_map({"cursor": self._cursor, "ext": self._ext}),
@@ -429,12 +414,6 @@ class XiGuaLiveApi:
                     self.onMessage(_fansClubMessage.content)
             else:
                 pass
-        # 更新抽奖信息
-        if self.lottery is not None and self.lottery.ID != 0:
-            self.lottery.update()
-            if self.lottery.isFinished:
-                self.onLottery(self.lottery)
-                self.lottery = None
 
     @property
     def updateAt(self):
@@ -448,7 +427,7 @@ if __name__ == "__main__":
             DEBUG = True
         name = sys.argv[1]
     print("西瓜直播弹幕助手 by JerryYan")
-    print("接口版本8.4.4")
+    print("接口版本9.2.6")
     print("搜索【", name, "】", end="\t", flush=True)
     api = XiGuaLiveApi(name)
     if not api.isValidUser:
