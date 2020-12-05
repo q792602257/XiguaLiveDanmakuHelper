@@ -398,6 +398,9 @@ class XiGuaLiveApi:
             elif _each.method == "WebcastChatMessage":
                 _chat = Chat(_each.raw)
                 self.onChat(_chat)
+            elif _each.method == "WebcastControlMessage":
+                # 下播的时候会有个这个
+                self.onLeave(None)
             elif _each.method == "WebcastSocialMessage":
                 _socialMessage = SocialMessage()
                 _socialMessage.ParseFromString(_each.raw)
