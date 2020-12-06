@@ -13,7 +13,7 @@ CUSTOM_INFO = {
     'device_id': "55714661189",
     'cdid': "ed4295e8-5d9a-4cb9-b2a2-04009a3baa2d",
     'openudid': "70d6668d41512c39",
-    'aid': "32",
+    # 'aid': "32", # 又是一个不变的值
     'channel': "xiaomi",
     'device_brand': "Xiaomi",
     'device_type': "MI+8+SE",
@@ -32,16 +32,15 @@ VERSION_INFO = {
                   "1186421,668851,668859,999124,668855,1039075",
     'manifest_version_code': "518",
     'tma_jssdk_version': "1830001",
-    # 一个定值，几个版本换设备都没变过
-    'oaid': "a625f466e0975d42",
+    # 'oaid': "a625f466e0975d42", # 一个定值，几个版本换设备都没变过
 }
 COMMON_GET_PARAM = (
-    "&iid={iid}&device_id={device_id}&channel={channel}&aid={aid}&app_name={app_name}&version_code={version_code}&"
+    "&iid={iid}&device_id={device_id}&channel={channel}&aid=32&app_name={app_name}&version_code={version_code}&"
     "version_name={version_name}&device_platform=android&ab_version={ab_version}&device_type={device_type}&"
     "device_brand={device_brand}&language=zh&os_api={os_api}&os_version={os_version}&openudid={openudid}&fp=a_fake_fp&"
     "manifest_version_code={manifest_version_code}&update_version_code={version_code_full}&_rticket={{TIMESTAMP:.0f}}&"
     "_rticket={{TIMESTAMP:.0f}}&cdid_ts={{TIMESTAMP:.0f}}&tma_jssdk_version={tma_jssdk_version}&"
-    "rom_version={rom_version}&oaid={oaid}&cdid={cdid}").format_map({**CUSTOM_INFO, **VERSION_INFO})
+    "rom_version={rom_version}&cdid={cdid}&oaid=a625f466e0975d42").format_map({**VERSION_INFO, **CUSTOM_INFO})
 SEARCH_USER_API = (
     "https://search-hl.ixigua.com/video/app/search/search_content/?format=json"
     "&fss=search_subtab_switch&target_channel=video_search&keyword_type=search_subtab_switch&offset=0&count=10"
