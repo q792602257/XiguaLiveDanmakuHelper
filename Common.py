@@ -305,7 +305,7 @@ def loginBilibili(force=False):
         if os.path.exists('cookie'):
             try:
                 with open('cookie', 'r', encoding='utf8') as f:
-                    _cookie = f.read(4096)
+                    _cookie = f.readline().strip()
                     b = Bilibili(_cookie)
                     loginTime = datetime.now()
                     appendOperation("Cookie 登录")
