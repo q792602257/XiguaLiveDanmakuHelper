@@ -321,6 +321,9 @@ def loginBilibili(force=False):
 class downloader(XiGuaLiveApi):
     playlist = None
 
+    def _checkUsernameIsMatched(self, compare=None):
+        return True
+
     def updRoomInfo(self, force=False):
         global broadcaster
         _prev_status = self.isLive
