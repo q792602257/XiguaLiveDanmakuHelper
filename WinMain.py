@@ -10,6 +10,7 @@ from Struct.Gift import Gift
 from Struct.Chat import Chat
 from Struct.Lottery import Lottery
 from api import XiGuaLiveApi as Api
+from api import public_hello
 import msvcrt
 import ctypes
 
@@ -195,8 +196,7 @@ if __name__ == "__main__":
             SHOW_ALL = True
         name = sys.argv[1]
     resetColor()
-    print("西瓜直播礼物助手 by JerryYan")
-    print("接口版本9.2.6")
+    public_hello()
     print("搜索【", name, "】", end="\t", flush=True)
     api = WinMain(name)
     if not api.isValidUser:

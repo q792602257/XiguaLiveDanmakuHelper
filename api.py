@@ -19,7 +19,7 @@ CUSTOM_INFO = {
     'device_id': "55714661189",
     'cdid': "ed4295e8-5d9a-4cb9-b2a2-04009a3baa2d",
     'openudid': "70d6668d41512c39",
-    # 'aid': "32", # 又是一个不变的值
+    # 'aid': "32", # 是一个不变的值
     'channel': "xiaomi",
     'device_brand': "Xiaomi",
     'device_type': "MI+8+SE",
@@ -29,16 +29,14 @@ CUSTOM_INFO = {
 }
 VERSION_INFO = {
     'app_name': "video_article",
-    'version_code': "926",
-    'version_code_full': "92609",
-    'version_name': "9.2.6",
-    'ab_version': "941090,785218,668858,1046292,1073579,830454,956074,929436,797199,1135476,1179370,994679,959010,"
-                  "900042,1113833,668854,1193963,901277,1043330,1038721,994822,1002058,1230687,1189797,1143356,1143441,"
-                  "1143501,1143698,1143713,1371009,1243997,1392586,1395695,1395486,1398858,668852,668856,668853,"
-                  "1186421,668851,668859,999124,668855,1039075",
-    'manifest_version_code': "518",
+    'version_code': "942",
+    'version_code_full': "94214",
+    'version_name': "9.4.2",
+    'ab_version': "668852,668853,668858,668851,668859,668856,668855,2358970,"
+                  "668854,2393607,1477978,994679,2408463,2412359",
+    'manifest_version_code': "542",
     'tma_jssdk_version': "1830001",
-    # 'oaid': "a625f466e0975d42", # 一个定值，几个版本换设备都没变过
+    'oaid': "693ea85657ef38ca",
 }
 COMMON_GET_PARAM = (
     "&iid={iid}&device_id={device_id}&channel={channel}&aid=32&app_name={app_name}&version_code={version_code}&"
@@ -46,7 +44,8 @@ COMMON_GET_PARAM = (
     "device_brand={device_brand}&language=zh&os_api={os_api}&os_version={os_version}&openudid={openudid}&fp=a_fake_fp&"
     "manifest_version_code={manifest_version_code}&update_version_code={version_code_full}&_rticket={{TIMESTAMP:.0f}}&"
     "_rticket={{TIMESTAMP:.0f}}&cdid_ts={{TIMESTAMP:.0f}}&tma_jssdk_version={tma_jssdk_version}&"
-    "rom_version={rom_version}&cdid={cdid}&oaid=a625f466e0975d42").format_map({**VERSION_INFO, **CUSTOM_INFO})
+    "rom_version={rom_version}&cdid={cdid}&oaid={oaid}").format_map({**VERSION_INFO, **CUSTOM_INFO})
+WEBCAST_GET_PARAMS = "webcast_sdk_version=1350&webcast_language=zh&webcast_locale=zh_CN"
 SEARCH_USER_API = (
     "https://search-hl.ixigua.com/video/app/search/search_content/?format=json"
     "&fss=search_subtab_switch&target_channel=video_search&keyword_type=search_subtab_switch&offset=0&count=10"
@@ -55,17 +54,16 @@ SEARCH_USER_API = (
     '&ab_param={{"is_show_filter_feature": 1, "is_hit_new_ui": 1}}'
     "&search_start_time={TIMESTAMP:.0f}&from=live&en_qc=1&pd=xigua_live&ssmix=a{COMMON}&keyword={keyword}")
 USER_INFO_API = "https://api100-quic-c-hl.ixigua.com/video/app/user/home/v7/?to_user_id={userId}{COMMON}"
-ROOM_INFO_API = ("https://webcast3-normal-c-hl.ixigua.com/webcast/room/enter/?room_id={roomId}&webcast_sdk_version=1350"
-                 "&webcast_language=zh&webcast_locale=zh_CN&pack_level=4{COMMON}")
-DANMAKU_GET_API = ("https://webcast3-normal-c-hl.ixigua.com/webcast/room/{roomId}/_fetch_message_polling/?"
-                   "webcast_sdk_version=1350&webcast_language=zh&webcast_locale=zh_CN{COMMON}")
+ROOM_INFO_API = "https://webcast3-normal-c-hl.ixigua.com/webcast/room/enter/?room_id={roomId}&pack_level=4{COMMON}"
+DANMAKU_GET_API = "https://webcast3-normal-c-hl.ixigua.com/webcast/im/fetch/?{WEBCAST}{COMMON}"
 GIFT_DATA_API = ("https://webcast3-normal-c-hl.ixigua.com/webcast/gift/list/?room_id={roomId}&to_room_id={roomId}&"
-                 "gift_scene=1&fetch_giftlist_from=2&current_network_quality_info={{}}"
-                 "&webcast_sdk_version=1790&webcast_language=zh&webcast_locale=zh_CN{COMMON}")
+                 "gift_scene=1&fetch_giftlist_from=2&current_network_quality_info={{}}&"
+                 "{WEBCAST}{COMMON}")
 COMMON_HEADERS = {
     "sdk-version": '2',
-    "passport-sdk-version": "19",
+    "passport-sdk-version": "21",
     "X-SS-DP": "32",
+    "x-vc-bdturing-sdk-version": "2.0.1",
     "User-Agent": "Dalvik/2.1.0 (Linux; U; Android 10) VideoArticle/9.2.6 cronet/TTNetVersion:828f6f3c 2020-09-06 "
                   "QuicVersion:7aee791b 2020-06-05",
     "Accept-Encoding": "gzip, deflate"
@@ -383,6 +381,7 @@ class XiGuaLiveApi:
         _formatData = {"TIMESTAMP": time.time() * 1000, "roomId": self.roomID}
         _COMMON = COMMON_GET_PARAM.format_map(_formatData)
         _formatData['COMMON'] = _COMMON
+        _formatData['WEBCAST'] = WEBCAST_GET_PARAMS
         _url = GIFT_DATA_API.format_map(_formatData)
         d = self.getJson(_url)
         if d is None or d["status_code"] != 0:
@@ -402,10 +401,12 @@ class XiGuaLiveApi:
         _formatData = {"TIMESTAMP": time.time() * 1000, "roomId": self.roomID}
         _COMMON = COMMON_GET_PARAM.format_map(_formatData)
         _formatData['COMMON'] = _COMMON
+        _formatData['WEBCAST'] = WEBCAST_GET_PARAMS
         _url = DANMAKU_GET_API.format_map(_formatData)
-        p = self.s.post(_url, data="cursor={cursor}&resp_content_type=protobuf&live_id=3&user_id=0&identity=audience"
-                                   "last_rtt=85"
-                                   "&internal_ext={ext}".format_map({"cursor": self._cursor, "ext": self._ext}),
+        p = self.s.post(_url, data="room_id={roomId}&fetch_rule=0&cursor={cursor}&"
+                                   "resp_content_type=protobuf&live_id=3&user_id=0&identity=audience&"
+                                   "last_rtt=85&internal_ext={ext}"
+                        .format_map({"roomId":self.roomID, "cursor": self._cursor, "ext": self._ext}),
                         headers={"Content-Type": "application/x-www-form-urlencoded"})
         if p.status_code != 200:
             return
@@ -448,14 +449,18 @@ class XiGuaLiveApi:
         return self._updRoomAt
 
 
+def public_hello():
+    print("西瓜直播弹幕助手 by JerryYan")
+    print("接口版本：{version_name}({version_code_full})".format_map(VERSION_INFO))
+
+
 if __name__ == "__main__":
     name = "永恒de草薙"
     if len(sys.argv) > 2:
         if sys.argv[-1] == "d":
             DEBUG = True
         name = sys.argv[1]
-    print("西瓜直播弹幕助手 by JerryYan")
-    print("接口版本9.2.6")
+    public_hello()
     print("搜索【", name, "】", end="\t", flush=True)
     api = XiGuaLiveApi(name)
     if not api.isValidUser:

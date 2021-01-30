@@ -5,6 +5,8 @@
 ### 因西瓜直播弹幕接口换成了ProtoBuf，已经尝试解析出了部分proto
 （[v7旧版本](https://github.com/q792602257/XiguaLiveDanmakuHelper/tree/v7)仍可用就是带动画的礼物不显示而已）
 
+### 从安卓9.4版本后 *（大概是）* 发现需要连接Websocket才能获取弹幕，且又是魔改protobuf（搞不懂），手动断开Websocket后才会轮询请求
+
 ### ~~西瓜直播弹幕助手--界面版~~
 
 > 界面版：[q792602257/XiguaDanmakuHelperGUI](https://github.com/q792602257/XiguaDanmakuHelperGUI "C# ver")
@@ -12,10 +14,10 @@
 
 ### 西瓜直播弹幕接口```api.py```
 
-> - 基于安卓9.2.6
+> - 基于安卓9.4.2(94214)
 
 ### 西瓜直播弹幕助手--礼物端```WinMain.py```
 
 ### ~~计划更新~~
 
-### 并没有呢，这段时间太忙了
+### 随缘更新
