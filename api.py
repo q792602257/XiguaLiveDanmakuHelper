@@ -282,6 +282,7 @@ class XiGuaLiveApi:
             return False
         self.broadcaster = None
         self.isValidUser = False
+        self.isLive = False
         if "data" in d and d["data"] is not None:
             for i in d["data"]:
                 if self.broadcaster is not None:
@@ -310,6 +311,7 @@ class XiGuaLiveApi:
         if self.broadcaster is None:
             self.isValidUser = False
             return False
+        self.isLive = False
         _formatData = {"TIMESTAMP": time.time() * 1000, "userId": self.broadcaster.ID}
         _COMMON = COMMON_GET_PARAM.format_map(_formatData)
         _formatData['COMMON'] = _COMMON
@@ -346,6 +348,7 @@ class XiGuaLiveApi:
             return False
         if (self._updRoomAt + timedelta(minutes=3) > datetime.now()) and not force:
             return self.isLive
+        self.isLive = False
         _formatData = {"TIMESTAMP": time.time() * 1000, "roomId": self.roomID}
         _COMMON = COMMON_GET_PARAM.format_map(_formatData)
         _formatData['COMMON'] = _COMMON
