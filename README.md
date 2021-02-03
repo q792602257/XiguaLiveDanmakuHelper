@@ -3,7 +3,6 @@
 ## 现在西瓜视频搜索接口无法使用，建议开发者自己找到自己的用户ID，写死加载即可
 
 ### 因西瓜直播弹幕接口换成了ProtoBuf，已经尝试解析出了部分proto
-（[v7旧版本](https://github.com/q792602257/XiguaLiveDanmakuHelper/tree/v7)仍可用就是带动画的礼物不显示而已）
 
 ### 从安卓9.4版本后 *（大概是）* 发现需要连接Websocket才能获取弹幕，且又是魔改protobuf（搞不懂），手动断开Websocket后才会轮询请求
 
