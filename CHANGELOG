@@ -1,0 +1,2 @@
+# 接口版本9.4.2(94214)
+弹幕接口改为`/webcast/im/fetch/`，发现会先连接websocket，然而websocket又是魔改protobuf，实在是弄不懂
