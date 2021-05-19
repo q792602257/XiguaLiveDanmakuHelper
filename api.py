@@ -17,14 +17,17 @@ DEBUG = False
 CUSTOM_INFO = {
     'iid': "3993882704224472",
     'device_id': "71008241150",
-    'cdid': "c927a88b-ca4c-427a-9c8b-43da247b9860",
-    'openudid': "630fd57b61c64c4c",
+    'cdid': "f93b3708-3fec-498f-9080-723a5679f4c0",
+    'openudid': "4aeb1e2b627697be",
     # 'aid': "32", # 是一个不变的值
     'channel': "xiaomi",
     'device_brand': "Xiaomi",
-    'device_type': "MI 9",
+    'device_type': "MI+9",
     'os_api': "29",
     'os_version': "10",
+    'abi': "armeabi-v7a",
+    'dpi': "480",
+    'resolution': "1080*2217",
     'rom_version': "miui_V12_V12.0.6.0.QFACNXM",
 }
 VERSION_INFO = {
@@ -33,21 +36,23 @@ VERSION_INFO = {
     'version_code_full': "96615",
     'version_name': "9.6.6",
     'ab_version': "668851,2678488,668858,2678385,668859,2678471,668856,2678470,668855,2678439,668854,994679,"
-                  "2678460,2713007,2738381,668853,2678466,668852,2678435,2625016",
+                  "2678460,2713070,2738381,2744004,668853,2678466,668852,2678435,2625016",
     'manifest_version_code': "566",
     'tma_jssdk_version': "2010000",
     'oaid': "693ea85657ef38ca",
 }
 COMMON_GET_PARAM = (
-    "&iid={iid}&device_id={device_id}&channel={channel}&aid=32&app_name={app_name}&version_code={version_code}&"
-    "version_name={version_name}&device_platform=android&ab_version={ab_version}&device_type={device_type}&"
-    "device_brand={device_brand}&language=zh&os_api={os_api}&os_version={os_version}&openudid={openudid}&fp=a_fake_fp&"
-    "manifest_version_code={manifest_version_code}&update_version_code={version_code_full}&_rticket={{TIMESTAMP:.0f}}&"
-    "_rticket={{TIMESTAMP:.0f}}&cdid_ts={{TIMESTAMP:.0f}}&tma_jssdk_version={tma_jssdk_version}&"
+    "&iid={iid}&device_id={device_id}&ac=wifi&channel={channel}&aid=32&app_name={app_name}&version_code={version_code}&"
+    "version_name={version_name}&device_platform=android&ab_version={ab_version}&ssmix=a&device_type={device_type}&"
+    "device_brand={device_brand}&language=zh&os_api={os_api}&os_version={os_version}&openudid={openudid}&"
+    "manifest_version_code={manifest_version_code}&resolution={resolution}&dpi={dpi}&"
+    "update_version_code={version_code_full}&_rticket={{TIMESTAMP:.0f}}&"
+    "cdid_ts={{TIMESTAMP:.0f}}&host_abi={abi}&tma_jssdk_version={tma_jssdk_version}&"
     "rom_version={rom_version}&cdid={cdid}&oaid={oaid}").format_map({**VERSION_INFO, **CUSTOM_INFO})
-WEBCAST_GET_PARAMS = "webcast_sdk_version=1990&webcast_language=zh&webcast_locale=zh_CN&webcast_gps_access=0"
-ROOM_ENTER_POST_PARAMS = "room_id={roomId}&hold_living_room=1&is_login=0&enter_from_uid_by_shared=0&video_id=0&" \
-                         "scenario=0&enter_type=click&enter_source=click_pgc_WITHIN_pgc-head_portrait&live_room_mode=0"
+WEBCAST_GET_PARAMS = "webcast_sdk_version=1990&webcast_language=zh&webcast_locale=zh_CN&webcast_gps_access=1"
+ROOM_ENTER_POST_PARAMS = (
+    "room_id={roomId}&hold_living_room=1&is_login=0&enter_from_uid_by_shared=0&video_id=0&"
+    "scenario=0&enter_type=click&enter_source=click_pgc_WITHIN_pgc-head_portrait&live_room_mode=0")
 SEARCH_USER_API = (
     "https://search-hl.ixigua.com/video/app/search/search_content/?format=json"
     "&fss=search_subtab_switch&target_channel=video_search&keyword_type=search_subtab_switch&offset=0&count=10"
@@ -62,12 +67,13 @@ GIFT_DATA_API = ("https://webcast3-normal-c-hl.ixigua.com/webcast/gift/list/?roo
                  "gift_scene=1&fetch_giftlist_from=2&current_network_quality_info={{}}&"
                  "{WEBCAST}{COMMON}")
 COMMON_HEADERS = {
+    "x-vc-bdturing-sdk-version": "2.0.1",
     "sdk-version": '2',
     "passport-sdk-version": "21",
-    "X-SS-DP": "32",
-    "x-vc-bdturing-sdk-version": "2.0.1",
     "User-Agent": "Dalvik/2.1.0 (Linux; U; Android 10; MI 9 MIUI/V12.0.6.0.QFACNXM) VideoArticle/9.6.6 "
                   "cronet/TTNetVersion:4b936afe 2021-01-13 QuicVersion:47946d2a 2020-10-14",
+    "X-SS-STUB": "74103A7F40FDC66E0675705DCA2C3A77",
+    "X-SS-DP": "32",
     "Accept-Encoding": "gzip, deflate"
 }
 
@@ -151,6 +157,7 @@ class XiGuaLiveApi:
             if DEBUG:
                 print("POST")
                 print("URL", url)
+                print("DATA", data)
                 print("ERR ", e.__str__())
             return None
         try:
@@ -160,7 +167,9 @@ class XiGuaLiveApi:
             if DEBUG:
                 print("POST JSON")
                 print("URL", url)
+                print("DATA", data)
                 print("CNT", p.text)
+                print("HDR", p.headers)
                 print("ERR ", e.__str__())
             return None
 
@@ -355,7 +364,12 @@ class XiGuaLiveApi:
         _formatData['WEBCAST'] = WEBCAST_GET_PARAMS
         _url = ROOM_INFO_API.format_map(_formatData)
         _postData = ROOM_ENTER_POST_PARAMS.format_map({'roomId': self.roomID})
-        _headers = {"response-format": "json", 'content-type': 'application/x-www-form-urlencoded; charset=UTF-8'}
+        _headers = {"response-format": "json",
+                    'Connection': "keep-alive",
+                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                    'Content-Length': str(len(_postData)),
+                    **COMMON_HEADERS,
+                    }
         d = self.postJson(_url, _postData, headers=_headers)
         self.isLive = False
         if d is None:
@@ -365,7 +379,7 @@ class XiGuaLiveApi:
             print("接口提示：【{}】".format(d["data"]["message"]))
             return False
         self._rawRoomInfo = d["data"]
-        self.isLive = d["data"]["status"] == 2
+        self.isLive = self._rawRoomInfo["status"] == 2
         self._updRoomAt = datetime.now()
         self._updateRoomPopularity(d)
         return self.isLive
