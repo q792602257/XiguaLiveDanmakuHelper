@@ -15,27 +15,27 @@ DEBUG = False
 # 自己抓的自己设备的参数，建议开发者自己抓一个长期使用
 # 如果有大佬破解初次激活设备时的数据也行，可以自己生成一堆用
 CUSTOM_INFO = {
-    'iid': "96159232732",
-    'device_id': "55714661189",
-    'cdid': "ed4295e8-5d9a-4cb9-b2a2-04009a3baa2d",
-    'openudid': "70d6668d41512c39",
+    'iid': "3993882704224472",
+    'device_id': "71008241150",
+    'cdid': "c927a88b-ca4c-427a-9c8b-43da247b9860",
+    'openudid': "630fd57b61c64c4c",
     # 'aid': "32", # 是一个不变的值
     'channel': "xiaomi",
     'device_brand': "Xiaomi",
-    'device_type': "MI+8+SE",
-    'os_api': "28",
-    'os_version': "9",
-    'rom_version': "miui_V12_V12.0.2.0.QEBCNXM",
+    'device_type': "MI 9",
+    'os_api': "29",
+    'os_version': "10",
+    'rom_version': "miui_V12_V12.0.6.0.QFACNXM",
 }
 VERSION_INFO = {
     'app_name': "video_article",
-    'version_code': "942",
-    'version_code_full': "94214",
-    'version_name': "9.4.2",
-    'ab_version': "668852,668853,668858,668851,668859,668856,668855,2358970,"
-                  "668854,2393607,1477978,994679,2408463,2412359",
-    'manifest_version_code': "542",
-    'tma_jssdk_version': "1830001",
+    'version_code': "966",
+    'version_code_full': "96615",
+    'version_name': "9.6.6",
+    'ab_version': "668851,2678488,668858,2678385,668859,2678471,668856,2678470,668855,2678439,668854,994679,"
+                  "2678460,2713007,2738381,668853,2678466,668852,2678435,2625016",
+    'manifest_version_code': "566",
+    'tma_jssdk_version': "2010000",
     'oaid': "693ea85657ef38ca",
 }
 COMMON_GET_PARAM = (
@@ -53,7 +53,7 @@ SEARCH_USER_API = (
     '&_s_page_sub_route=/&_s_ec={{"filterDataType":[],"reserveFilterBar":true}}&__use_xigua_native_bridge_fetch__=1'
     '&ab_param={{"is_show_filter_feature": 1, "is_hit_new_ui": 1}}'
     "&search_start_time={TIMESTAMP:.0f}&from=live&en_qc=1&pd=xigua_live&ssmix=a{COMMON}&keyword={keyword}")
-USER_INFO_API = "https://api100-quic-c-hl.ixigua.com/video/app/user/home/v7/?to_user_id={userId}{COMMON}"
+USER_INFO_API = "https://ib-hl.snssdk.com/video/app/user/userhome/v8/?to_user_id={userId}{COMMON}"
 ROOM_INFO_API = "https://webcast3-normal-c-hl.ixigua.com/webcast/room/enter/?room_id={roomId}&pack_level=4{COMMON}"
 DANMAKU_GET_API = "https://webcast3-normal-c-hl.ixigua.com/webcast/im/fetch/?{WEBCAST}{COMMON}"
 GIFT_DATA_API = ("https://webcast3-normal-c-hl.ixigua.com/webcast/gift/list/?room_id={roomId}&to_room_id={roomId}&"
@@ -64,8 +64,8 @@ COMMON_HEADERS = {
     "passport-sdk-version": "21",
     "X-SS-DP": "32",
     "x-vc-bdturing-sdk-version": "2.0.1",
-    "User-Agent": "Dalvik/2.1.0 (Linux; U; Android 10) VideoArticle/9.2.6 cronet/TTNetVersion:828f6f3c 2020-09-06 "
-                  "QuicVersion:7aee791b 2020-06-05",
+    "User-Agent": "Dalvik/2.1.0 (Linux; U; Android 10; MI 9 MIUI/V12.0.6.0.QFACNXM) VideoArticle/9.6.6 "
+                  "cronet/TTNetVersion:4b936afe 2021-01-13 QuicVersion:47946d2a 2020-10-14",
     "Accept-Encoding": "gzip, deflate"
 }
 
@@ -321,22 +321,21 @@ class XiGuaLiveApi:
             print("获取用户信息失败")
             return False
         self.isValidUser = d["status"] == 0
-        if "user_info" not in d and d["user_info"] is None:
+        _d = d.get('data', {})
+        if "user_home_info" not in _d and _d['user_home_info']['user_info'] is None:
             self.apiChangedError("Api发生改变，请及时联系我", d)
             return False
         self._updRoomAt = datetime.now()
-        self.broadcaster = User(d)
+        self.broadcaster = User(_d['user_home_info'])
         if not self._checkUsernameIsMatched():
             self.isLive = False
             return False
-        self.isLive = d["user_info"]["is_living"]
-        if d["user_info"]['live_info'] is None:
-            if d["live_data"] is None:
-                self.isLive = False
-            else:
-                self._rawRoomInfo = d["live_data"]['live_info']
+        self.isLive = 'user_live_info_list' in _d
+        if self.isLive and len(_d['user_live_info_list']) != 0:
+            # 既然有长度,默认个0应该没事
+            self._rawRoomInfo = _d['user_live_info_list'][0]['live_info']
         else:
-            self._rawRoomInfo = d["user_info"]['live_info']
+            self.isLive = False
         if self.isLive:
             self.roomID = self._rawRoomInfo['room_id']
             return self._getRoomInfo(True)
