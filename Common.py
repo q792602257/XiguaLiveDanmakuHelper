@@ -342,13 +342,17 @@ class downloader(XiGuaLiveApi):
     def updPlayList(self):
         global streamUrl
         if self.isLive and "stream_url" in self._rawRoomInfo:
-            self.playlist = self._rawRoomInfo["stream_url"]["flv_pull_url"]
-            if type(self.playlist) is dict:
-                for _ in self.playlist.values():
-                    self.playlist = _
-                    break
-            self.playlist = self.playlist.replace("_uhd", "").replace("_sd", "").replace("_ld", "")
-            streamUrl = self.playlist
+            if 'rtmp_pull_url' in self._rawRoomInfo["stream_url"]:
+                self.playlist = self._rawRoomInfo["stream_url"]['rtmp_pull_url']
+                streamUrl = self.playlist
+            elif 'flv_pull_url' in self._rawRoomInfo["stream_url"]:
+                _playlist = self._rawRoomInfo["stream_url"]["flv_pull_url"]
+                if type(_playlist) is dict:
+                    for _ in _playlist.values():
+                        self.playlist = _
+                        break
+                self.playlist = self.playlist.replace("_hd5", "").replace("_sd5", "").replace("_ld5", "").replace("_md", "")
+                streamUrl = self.playlist
         else:
             streamUrl = None
             self.playlist = None

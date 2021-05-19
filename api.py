@@ -45,7 +45,9 @@ COMMON_GET_PARAM = (
     "manifest_version_code={manifest_version_code}&update_version_code={version_code_full}&_rticket={{TIMESTAMP:.0f}}&"
     "_rticket={{TIMESTAMP:.0f}}&cdid_ts={{TIMESTAMP:.0f}}&tma_jssdk_version={tma_jssdk_version}&"
     "rom_version={rom_version}&cdid={cdid}&oaid={oaid}").format_map({**VERSION_INFO, **CUSTOM_INFO})
-WEBCAST_GET_PARAMS = "webcast_sdk_version=1350&webcast_language=zh&webcast_locale=zh_CN"
+WEBCAST_GET_PARAMS = "webcast_sdk_version=1990&webcast_language=zh&webcast_locale=zh_CN&webcast_gps_access=0"
+ROOM_ENTER_POST_PARAMS = "room_id={roomId}&hold_living_room=1&is_login=0&enter_from_uid_by_shared=0&video_id=0&" \
+                         "scenario=0&enter_type=click&enter_source=click_pgc_WITHIN_pgc-head_portrait&live_room_mode=0"
 SEARCH_USER_API = (
     "https://search-hl.ixigua.com/video/app/search/search_content/?format=json"
     "&fss=search_subtab_switch&target_channel=video_search&keyword_type=search_subtab_switch&offset=0&count=10"
@@ -54,7 +56,7 @@ SEARCH_USER_API = (
     '&ab_param={{"is_show_filter_feature": 1, "is_hit_new_ui": 1}}'
     "&search_start_time={TIMESTAMP:.0f}&from=live&en_qc=1&pd=xigua_live&ssmix=a{COMMON}&keyword={keyword}")
 USER_INFO_API = "https://ib-hl.snssdk.com/video/app/user/userhome/v8/?to_user_id={userId}{COMMON}"
-ROOM_INFO_API = "https://webcast3-normal-c-hl.ixigua.com/webcast/room/enter/?room_id={roomId}&pack_level=4{COMMON}"
+ROOM_INFO_API = "https://webcast3-normal-c-hl.ixigua.com/webcast/room/enter/?{WEBCAST}{COMMON}"
 DANMAKU_GET_API = "https://webcast3-normal-c-hl.ixigua.com/webcast/im/fetch/?{WEBCAST}{COMMON}"
 GIFT_DATA_API = ("https://webcast3-normal-c-hl.ixigua.com/webcast/gift/list/?room_id={roomId}&to_room_id={roomId}&"
                  "gift_scene=1&fetch_giftlist_from=2&current_network_quality_info={{}}&"
@@ -156,7 +158,7 @@ class XiGuaLiveApi:
         except Exception as e:
             print("解析请求失败")
             if DEBUG:
-                print("GET JSON")
+                print("POST JSON")
                 print("URL", url)
                 print("CNT", p.text)
                 print("ERR ", e.__str__())
@@ -347,12 +349,15 @@ class XiGuaLiveApi:
             return False
         if (self._updRoomAt + timedelta(minutes=3) > datetime.now()) and not force:
             return self.isLive
-        self.isLive = False
-        _formatData = {"TIMESTAMP": time.time() * 1000, "roomId": self.roomID}
+        _formatData = {"TIMESTAMP": time.time() * 1000}
         _COMMON = COMMON_GET_PARAM.format_map(_formatData)
         _formatData['COMMON'] = _COMMON
+        _formatData['WEBCAST'] = WEBCAST_GET_PARAMS
         _url = ROOM_INFO_API.format_map(_formatData)
-        d = self.getJson(_url)
+        _postData = ROOM_ENTER_POST_PARAMS.format_map({'roomId': self.roomID})
+        _headers = {"response-format": "json", 'content-type': 'application/x-www-form-urlencoded; charset=UTF-8'}
+        d = self.postJson(_url, _postData, headers=_headers)
+        self.isLive = False
         if d is None:
             print("获取房间信息接口请求失败")
             return False
