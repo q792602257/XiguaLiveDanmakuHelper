@@ -6,12 +6,12 @@ import psutil
 from api import XiGuaLiveApi
 import json
 import threading
-from bilibili import *
+from bilibili import Bilibili, VideoPart
 
 # 默认设置
 config = {
     # 录像的主播名
-    "l_u": "永恒de草薙",
+    "l_u": "97621754276",
     "b_u": "自己的B站账号",
     "b_p": "自己的B站密码",
     # 标题及预留时间位置
@@ -302,18 +302,14 @@ def loginBilibili(force=False):
         global b
         if getTimeDelta(datetime.now(), loginTime) < 86400 * 10 and not force:
             return False
-        if os.path.exists('cookie'):
-            try:
-                with open('cookie', 'r', encoding='utf8') as f:
-                    _cookie = f.readline().strip()
-                    b = Bilibili(_cookie)
-                    loginTime = datetime.now()
-                    appendOperation("Cookie 登录")
-                    return True
-            except Exception as e:
-                appendError(e)
-        appendOperation("Cookie 登录失败")
-        return False
+        try:
+            b.login()
+            loginTime = datetime.now()
+            return True
+        except Exception as e:
+            appendError(e)
+            appendOperation("登录失败")
+            return False
     else:
         appendOperation("设置了不上传，所以不会登陆")
 
@@ -373,7 +369,7 @@ def uploadVideo(name):
     loginBilibili()
     doClean()
     if forceNotUpload is False:
-        b.preUpload(VideoPart(name, os.path.basename(name)))
+        b.preUpload(VideoPart(title=name, path=os.path.basename(name)))
     else:
         appendUploadStatus("设置了不上传，所以[{}]不会上传了".format(name))
     if not forceNotEncode:
@@ -403,9 +399,9 @@ def encodeVideo(name):
     _new_name = os.path.splitext(name)[0] + ".mp4"
     _code = os.system(config["enc"].format(f=name, t=_new_name))
     if _code != 0:
-        Common.appendError("Encode {} with Non-Zero Return.".format(name))
+        appendError("Encode {} with Non-Zero Return.".format(name))
         return False
-    Common.modifyLastEncodeStatus("Encode >{}< Finished".format(name))
+    modifyLastEncodeStatus("Encode >{}< Finished".format(name))
     uploadQueue.put(_new_name)
 
 
