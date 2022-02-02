@@ -8,4 +8,5 @@ rsa>=4.0
 urllib3>=1.25.9
 flask>=2.0.2
 flask_cors>=3.0.10
-protobuf>=3.19.4
+protobuf>=3.19.3
+python-dotenv>=0.19.2
