@@ -10,10 +10,8 @@ from bilibili import Bilibili, VideoPart
 
 # 默认设置
 config = {
-    # 录像的主播名
+    # 录像的主播ID
     "l_u": "97621754276",
-    "b_u": "自己的B站账号",
-    "b_p": "自己的B站密码",
     # 标题及预留时间位置
     "t_t": "【永恒de草薙直播录播】直播于 {}",
     # 标签
