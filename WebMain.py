@@ -20,8 +20,6 @@ def index():
 @app.route("/config", methods=["GET"])
 def readConfig():
     config = Common.config.copy()
-    config.pop("b_p")
-    config.pop("mv")
     return jsonify(config)
 
 
