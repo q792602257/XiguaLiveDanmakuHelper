@@ -31,7 +31,6 @@ config = {
     # 忽略的大小
     "i_s": 2048000,
     "max": 75,
-    "exp": 1,
     "dow": "echo 'clean'",
     # 仅下载
     "dlO": True,
@@ -150,7 +149,7 @@ def getCurrentStatus():
         "outSpeed": parseSize(_outSpeed),
         "inSpeed": parseSize(_inSpeed),
         "doCleanTime": datetime.strftime(doCleanTime, dt_format),
-        "fileExpire": config["exp"],
+        "fileExpire": "-",
     }
 
 
