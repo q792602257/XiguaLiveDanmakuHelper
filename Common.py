@@ -330,6 +330,8 @@ class downloader(XiGuaLiveApi):
         global broadcaster
         _prev_status = self.isLive
         doClean()
+        if not force and self.isLive:
+            return _prev_status
         _result = super(downloader, self).updRoomInfo(force)
         if _prev_status != self.isLive and not self.isLive:
             resetDelay()
