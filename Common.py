@@ -149,7 +149,6 @@ def getCurrentStatus():
         "outSpeed": parseSize(_outSpeed),
         "inSpeed": parseSize(_inSpeed),
         "doCleanTime": datetime.strftime(doCleanTime, dt_format),
-        "fileExpire": "-",
     }
 
 
