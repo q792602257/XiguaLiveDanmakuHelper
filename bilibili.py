@@ -55,7 +55,7 @@ class Bilibili:
         :param parts: e.g. VideoPart('part path', 'part title', 'part desc'), or [VideoPart(...), VideoPart(...)]
         :type parts: VideoPart or list<VideoPart>
         """
-        from Common import appendUploadStatus, modifyLastUploadStatus
+        from Common import appendUploadStatus, modifyLastUploadStatus, appendError
         if not isinstance(parts, list):
             parts = [parts]
 
@@ -63,10 +63,10 @@ class Bilibili:
             modifyLastUploadStatus("Uploading >{}< @ {:.2f}%".format(video_part.path, 100.0 * chunks_index / chunks_num))
         for part in parts:
             appendUploadStatus("Start Uploading >{}<".format(part.path))
-            while True:
-                status = core.upload_video_part(self.access_token, self.session_id, self.user_id, part, max_retry, cb=log_status)
-                if status:
-                    break
+            status = core.upload_video_part(self.access_token, self.session_id, self.user_id, part, max_retry, cb=log_status)
+            if status:
+                modifyLastUploadStatus("Upload >{}< Failed".format(part.path))
+                continue
             # 上传完毕
             modifyLastUploadStatus("Upload >{}< Finished；【{}】".format(part.path, part.server_file_name))
             self.parts.append(part)
