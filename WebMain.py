@@ -110,6 +110,13 @@ def insertUpload():
         return jsonify({"message": "no filename specific", "code": 400, "status": 1})
 
 
+@app.route("/upload/discard", methods=["POST"])
+def discardUpload():
+    Common.uploadQueue.empty()
+    Common.b.clear()
+    return jsonify({"message": "ok", "code": 200, "status": 0})
+
+
 @app.route("/upload/finish", methods=["POST"])
 def finishUpload():
     Common.appendOperation("设置当前已完成上传")
