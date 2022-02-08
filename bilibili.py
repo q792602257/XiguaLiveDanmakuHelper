@@ -65,11 +65,11 @@ class Bilibili:
             appendUploadStatus("Start Uploading >{}<".format(part.path))
             status = core.upload_video_part(self.access_token, self.session_id, self.user_id, part, max_retry, cb=log_status)
             if status:
+                # 上传完毕
+                modifyLastUploadStatus("Upload >{}< Finished；【{}】".format(part.path, part.server_file_name))
+                self.parts.append(part)
+            else:
                 modifyLastUploadStatus("Upload >{}< Failed".format(part.path))
-                continue
-            # 上传完毕
-            modifyLastUploadStatus("Upload >{}< Finished；【{}】".format(part.path, part.server_file_name))
-            self.parts.append(part)
 
     def finishUpload(self,
                      title,
