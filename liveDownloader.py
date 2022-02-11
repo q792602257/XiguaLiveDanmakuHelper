@@ -45,6 +45,7 @@ def download():
             Common.modifyLastDownloadStatus("Downloaded File >{}< is too small, will ignore it".format(path))
         else:
             Common.encodeQueue.put(path)
+        Common.doUpdatePlaylist()
     Common.api.updRoomInfo(True)
 
 

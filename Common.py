@@ -361,6 +361,12 @@ class downloader(XiGuaLiveApi):
 api = downloader(config["l_u"])
 
 
+def doUpdatePlaylist(_force=False):
+    p = threading.Thread(target=api.updRoomInfo, args=(_force,))
+    p.setDaemon(True)
+    p.start()
+
+
 def refreshDownloader():
     global api
     api = downloader(config["l_u"])
