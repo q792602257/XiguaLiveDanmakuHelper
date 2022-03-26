@@ -420,6 +420,8 @@ class XiGuaLiveApi:
         获取弹幕
         """
         self.updRoomInfo()
+        if not self.isLive:
+            return
         _formatData = {"TIMESTAMP": time.time() * 1000, "roomId": self.roomID}
         _COMMON = COMMON_GET_PARAM.format_map(_formatData)
         _formatData['COMMON'] = _COMMON
