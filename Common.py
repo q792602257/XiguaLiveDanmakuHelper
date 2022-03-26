@@ -312,6 +312,18 @@ def loginBilibili(force=False):
 
 class downloader(XiGuaLiveApi):
     __playlist = None
+    __danmakuFile = None
+    __danmakuBiasTime = None
+
+    def onChat(self, chat):
+        if self.__danmakuFile is not None and self.__danmakuFile.writable():
+            now = datetime.now()
+            if self.__danmakuBiasTime is None:
+                return
+            ts = (now - self.__danmakuBiasTime).total_seconds()
+            _c = """<d p="{:.2f},1,24,16777215,{:.0f},0,{},0" user="{}">{}</d>""".format(ts, now.timestamp()*1000, chat.user.ID, chat.user.name, chat.content)
+            self.__danmakuFile.write(_c.encode("UTF-8"))
+            self.__danmakuFile.flush()
 
     @property
     def playlist(self):
@@ -356,6 +368,12 @@ class downloader(XiGuaLiveApi):
                 self.playlist = self.playlist.replace("_hd5", "").replace("_sd5", "").replace("_ld5", "").replace("_md", "")
         else:
             self.playlist = None
+
+    def initSave(self, f):
+        if self.__danmakuFile is not None and not self.__danmakuFile.closed:
+            self.__danmakuFile.close()
+        self.__danmakuBiasTime = datetime.now()
+        self.__danmakuFile = open(f, "wb")
 
 
 api = downloader(config["l_u"])

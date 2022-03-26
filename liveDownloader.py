@@ -20,6 +20,7 @@ def download():
         except Exception as e:
             Common.appendError("Download >{}< with Exception [{}]".format(path,e.__str__()))
             break
+        Common.api.initSave(path+".xml")
         Common.appendDownloadStatus("Download >{}< Start".format(path))
         f = open(path, "wb")
         _size = 0
@@ -125,7 +126,7 @@ def run():
             if not Common.forceNotEncode:
                 awakeEncode()
             try:
-                Common.api.updRoomInfo()
+                Common.api.getDanmaku()
             except Exception as e:
                 Common.appendError(e.__str__())
             finally:
