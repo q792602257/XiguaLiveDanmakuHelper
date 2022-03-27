@@ -47,7 +47,8 @@ class Gift:
                 return self.giftList[self.ID]["type"] == 2
         return False
 
-    def _getGiftName(self):
+    @property
+    def name(self):
         if self.ID in self.giftList:
             return self.giftList[self.ID]["name"]
         elif self.backupName is not None:
@@ -56,13 +57,13 @@ class Gift:
             return "未知礼物[{}]".format(self.ID)
 
     def __str__(self):
-        return "{user} 送出的 {count} 个 {name}".format(user=self.user, count=self.count, name=self._getGiftName())
+        return "{user} 送出的 {count} 个 {name}".format(user=self.user, count=self.count, name=self.name)
 
     def __unicode__(self):
         return self.__str__()
 
     def __repr__(self):
-        return "西瓜礼物【{}(ID:{})】".format(self._getGiftName(), self.ID)
+        return "西瓜礼物【{}(ID:{})】".format(self.name, self.ID)
 
     @classmethod
     def addGift(cls, _gift):
