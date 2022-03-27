@@ -321,7 +321,7 @@ class downloader(XiGuaLiveApi):
             if self.__danmakuBiasTime is None:
                 return
             ts = (now - self.__danmakuBiasTime).total_seconds()
-            _c = """<gift ts="{:.2f}" user="{}" giftname="{}" giftcount="{}"></gift>""".format(ts, gift.user.name, gift.name, gift.count)
+            _c = """<gift ts="{:.2f}" user="{}" giftname="{}" giftcount="{}"></gift>\r\n""".format(ts, gift.user.name, gift.name, gift.count)
             self.__danmakuFile.write(_c.encode("UTF-8"))
 
     def onChat(self, chat):
@@ -330,13 +330,8 @@ class downloader(XiGuaLiveApi):
             if self.__danmakuBiasTime is None:
                 return
             ts = (now - self.__danmakuBiasTime).total_seconds()
-            _c = """<d p="{:.2f},1,24,16777215,{:.0f},0,{},0" user="{}">{}</d>""".format(ts, now.timestamp()*1000, chat.user.ID, chat.user.name, chat.content)
+            _c = """<d p="{:.2f},1,24,16777215,{:.0f},0,{},0" user="{}">{}</d>\r\n""".format(ts, now.timestamp()*1000, chat.user.ID, chat.user.name, chat.content)
             self.__danmakuFile.write(_c.encode("UTF-8"))
-
-    def getDanmaku(self):
-        super(downloader, self).getDanmaku()
-        if self.__danmakuFile is not None and self.__danmakuFile.writable():
-            self.__danmakuFile.flush()
 
     @property
     def playlist(self):
