@@ -54,16 +54,16 @@ ROOM_ENTER_POST_PARAMS = (
     "room_id={roomId}&hold_living_room=1&is_login=0&enter_from_uid_by_shared=0&video_id=0&"
     "scenario=0&enter_type=click&enter_source=click_pgc_WITHIN_pgc-head_portrait&live_room_mode=0")
 SEARCH_USER_API = (
-    "https://search-hl.ixigua.com/video/app/search/search_content/?format=json"
+    "https://search5-search-lq.ixigua.com/video/app/search/live/?format=json&keyword_type=search_subtab_switch"
     "&fss=search_subtab_switch&target_channel=video_search&keyword_type=search_subtab_switch&offset=0&count=10"
     "&search_sug=1&forum=1&is_native_req=0&m_tab=video&pd=user&tab=user&_s_tma=SEARCH_STANDARD.list.fe_get_data"
     '&_s_page_sub_route=/&_s_ec={{"filterDataType":[],"reserveFilterBar":true}}&__use_xigua_native_bridge_fetch__=1'
     '&ab_param={{"is_show_filter_feature": 1, "is_hit_new_ui": 1}}'
     "&search_start_time={TIMESTAMP:.0f}&from=live&en_qc=1&pd=xigua_live&ssmix=a{COMMON}&keyword={keyword}")
-USER_INFO_API = "https://ib-hl.snssdk.com/video/app/user/userhome/v8/?to_user_id={userId}{COMMON}"
-ROOM_INFO_API = "https://webcast3-normal-c-hl.ixigua.com/webcast/room/enter/?{WEBCAST}{COMMON}"
-DANMAKU_GET_API = "https://webcast3-normal-c-hl.ixigua.com/webcast/im/fetch/?{WEBCAST}{COMMON}"
-GIFT_DATA_API = ("https://webcast3-normal-c-hl.ixigua.com/webcast/gift/list/?room_id={roomId}&to_room_id={roomId}&"
+USER_INFO_API = "https://ib-lq.snssdk.com/video/app/user/userhome/v8/?to_user_id={userId}{COMMON}"
+ROOM_INFO_API = "https://webcast5-normal-c-lq.ixigua.com/webcast/room/enter/?{WEBCAST}{COMMON}"
+DANMAKU_GET_API = "https://webcast5-normal-c-lq.ixigua.com/webcast/im/fetch/?{WEBCAST}{COMMON}"
+GIFT_DATA_API = ("https://webcast5-normal-c-hl.ixigua.com/webcast/gift/list/?room_id={roomId}&to_room_id={roomId}&"
                  "gift_scene=1&fetch_giftlist_from=2&current_network_quality_info={{}}&"
                  "{WEBCAST}{COMMON}")
 COMMON_HEADERS = {
@@ -298,11 +298,11 @@ class XiGuaLiveApi:
             for i in d["data"]:
                 if self.broadcaster is not None:
                     break
-                if i["block_type"] != 2:
+                if i["card_type"] != 3:
                     continue
-                if "cells" not in i or len(i["cells"]) == 0:
+                if "search_data" not in i or len(i["search_data"]) == 0:
                     break
-                for _j in i["cells"]:
+                for _j in i["search_data"]:
                     if "room" in _j:
                         _user = User(_j["room"])
                         self.roomID = _j["room"]["room_id"]
