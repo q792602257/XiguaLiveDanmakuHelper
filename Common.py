@@ -315,6 +315,10 @@ class downloader(XiGuaLiveApi):
     __danmakuFile = None
     __danmakuBiasTime = None
 
+    def getDanmaku(self):
+        if self.__danmakuFile is not None and self.__danmakuFile.writable():
+            self.__danmakuFile.flush()
+
     def onPresentEnd(self, gift):
         if self.__danmakuFile is not None and self.__danmakuFile.writable():
             now = datetime.now()
@@ -354,6 +358,10 @@ class downloader(XiGuaLiveApi):
             return _prev_status
         _result = super(downloader, self).updRoomInfo(force)
         if _prev_status != self.isLive and not self.isLive:
+            # 及时保存
+            self.__danmakuFile.close()
+            self.__danmakuFile = None
+            self.__danmakuBiasTime = None
             resetDelay()
         broadcaster = self.broadcaster
         if _result:
