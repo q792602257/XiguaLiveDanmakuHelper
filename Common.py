@@ -316,6 +316,7 @@ class downloader(XiGuaLiveApi):
     __danmakuBiasTime = None
 
     def getDanmaku(self):
+        super(downloader, self).getDanmaku()
         if self.__danmakuFile is not None and self.__danmakuFile.writable():
             self.__danmakuFile.flush()
 
