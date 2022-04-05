@@ -12,6 +12,8 @@ from bilibili import Bilibili, VideoPart
 config = {
     # 录像的主播ID
     "l_u": "97621754276",
+    # 视频位置
+    "path": ".",
     # 标题及预留时间位置
     "t_t": "【永恒de草薙直播录播】直播于 {}",
     # 标签
@@ -414,7 +416,7 @@ def uploadVideo(name):
     loginBilibili()
     doClean()
     if forceNotUpload is False:
-        b.preUpload(VideoPart(title=name, path=os.path.basename(name)))
+        b.preUpload(VideoPart(path=name, title=os.path.basename(name)))
     else:
         appendUploadStatus("设置了不上传，所以[{}]不会上传了".format(name))
     if not forceNotEncode:

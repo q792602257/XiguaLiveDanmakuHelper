@@ -14,15 +14,18 @@ def download():
             Common.appendError("Download with No StreamUrl Specific")
             break
         path = datetime.strftime(datetime.now(), "%Y%m%d_%H%M.flv")
+        base_path = Common.config["path"]
+        if not os.path.isdir(base_path):
+            os.makedirs(base_path)
         try:
             p = session.get(Common.streamUrl, stream=True, timeout=3)
             p.raise_for_status()
         except Exception as e:
             Common.appendError("Download >{}< with Exception [{}]".format(path,e.__str__()))
             break
-        Common.api.initSave(path+".xml")
+        Common.api.initSave(os.path.join(base_path, path)+".xml")
         Common.appendDownloadStatus("Download >{}< Start".format(path))
-        f = open(path, "wb")
+        f = open(os.path.join(base_path, path), "wb")
         _size = 0
         try:
             for T in p.iter_content(chunk_size=Common.config["c_s"]):
