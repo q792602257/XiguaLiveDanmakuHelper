@@ -45,10 +45,10 @@ def download():
             Common.api.updRoomInfo(True)
         finally:
             f.close()
-        if os.path.getsize(path) < Common.config["i_s"]:
+        if os.path.getsize(os.path.join(base_path, path)) < Common.config["i_s"]:
             Common.modifyLastDownloadStatus("Downloaded File >{}< is too small, will ignore it".format(path))
         else:
-            Common.encodeQueue.put(path)
+            Common.encodeQueue.put(os.path.join(base_path, path))
         Common.doUpdatePlaylist()
     Common.api.updRoomInfo(True)
 
